@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+  <meta name="theme-color" content="#123B70">
+  <meta
+    name="description"
+    content="Birthday Reminder Web App"
+  >
+  <title>Birthday Reminder</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="brand-block">
+        <div class="brand-icon">🎂</div>
+        <div>
+          <strong>Birthday Reminder</strong>
+          <small>Web App v1.1</small>
+        </div>
+      </div>
+
+      <nav class="side-nav">
+        <button class="nav-link is-active" data-nav="dashboard" type="button">
+          <span>⌂</span><span>Dashboard</span>
+        </button>
+        <button class="nav-link" data-nav="birthdays" type="button">
+          <span>☷</span><span>Birthdays</span>
+        </button>
+        <button class="nav-link" data-nav="yearly" type="button">
+          <span>▣</span><span>Yearly List</span>
+        </button>
+        <button class="nav-link" data-nav="settings" type="button">
+          <span>⚙</span><span>Settings</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-note">
+        <span class="status-dot"></span>
+        Google Sheets connected
+      </div>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Birthday Reminder v4.3</p>
+          <h1 id="pageTitle">Dashboard</h1>
+        </div>
+
+        <div class="top-actions">
+          <button
+            class="icon-button"
+            id="installButton"
+            type="button"
+            title="Install app"
+            hidden
+          >⬇</button>
+
+          <button
+            class="icon-button"
+            id="refreshButton"
+            type="button"
+            title="Refresh"
+          >↻</button>
+
+          <button
+            class="primary-button desktop-add"
+            id="topAddBirthdayButton"
+            type="button"
+          >＋ Add Birthday</button>
+        </div>
+      </header>
+
+      <main class="content">
+        <section
+          id="connectionBanner"
+          class="connection-banner"
+          hidden
+        ></section>
+
+        <section id="dashboardView" class="view is-active">
+          <section class="dashboard-heading-card">
+            <div>
+              <p class="eyebrow light">Birthday management</p>
+              <h2>Birthday Reminder v4.3</h2>
+              <p>
+                Track celebrations, prepare wishes and never miss an important date.
+              </p>
+            </div>
+            <button
+              class="light-button"
+              id="dashboardAddButton"
+              type="button"
+            >＋ New Birthday</button>
+          </section>
+
+          <div class="stats-grid four">
+            <article class="stat-card">
+              <div class="stat-icon blue">👥</div>
+              <div>
+                <span>Total Birthdays</span>
+                <strong id="totalCount">0</strong>
+              </div>
+            </article>
+
+            <article class="stat-card">
+              <div class="stat-icon green">🎉</div>
+              <div>
+                <span>Today</span>
+                <strong id="todayCount">0</strong>
+              </div>
+            </article>
+
+            <article class="stat-card">
+              <div class="stat-icon amber">📅</div>
+              <div>
+                <span id="upcomingLabel">Next 7 Days</span>
+                <strong id="upcomingCount">0</strong>
+              </div>
+            </article>
+
+            <article class="stat-card">
+              <div class="stat-icon purple">▦</div>
+              <div>
+                <span>This Month</span>
+                <strong id="thisMonthCount">0</strong>
+              </div>
+            </article>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="dashboard-left">
+              <article class="panel next-birthday-panel">
+                <div class="panel-header">
+                  <div>
+                    <p class="eyebrow">Next celebration</p>
+                    <h2>Next Birthday</h2>
+                  </div>
+                  <span id="nextBirthdayDays" class="count-badge">—</span>
+                </div>
+
+                <div id="nextBirthdayCard" class="next-person-card">
+                  <div class="empty-state">No birthday loaded.</div>
+                </div>
+              </article>
+
+              <article class="panel">
+                <div class="panel-header">
+                  <div>
+                    <p class="eyebrow">Coming up</p>
+                    <h2>Upcoming Birthdays</h2>
+                  </div>
+                  <button
+                    class="text-button"
+                    data-nav="birthdays"
+                    type="button"
+                  >View all</button>
+                </div>
+                <div class="table-wrap">
+                  <table class="dashboard-table">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Date</th>
+                        <th>Days</th>
+                        <th>Relation</th>
+                        <th>Wish</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody id="upcomingTableBody"></tbody>
+                  </table>
+                </div>
+              </article>
+            </div>
+
+            <div class="dashboard-right">
+              <article class="panel">
+                <div class="panel-header">
+                  <div>
+                    <p class="eyebrow">Birthday trend</p>
+                    <h2>Upcoming Months</h2>
+                  </div>
+                </div>
+                <div id="monthChart" class="month-chart"></div>
+              </article>
+
+              <article class="panel today-panel">
+                <div class="panel-header">
+                  <div>
+                    <p class="eyebrow">Celebrate now</p>
+                    <h2>Today's Birthdays</h2>
+                  </div>
+                  <span id="missedBadge" class="soft-badge">0 missed</span>
+                </div>
+                <div id="todayBirthdayList" class="compact-list"></div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="birthdaysView" class="view">
+          <section class="panel search-panel">
+            <div class="search-row">
+              <label class="search-box">
+                <span>⌕</span>
+                <input
+                  id="birthdaySearch"
+                  type="search"
+                  placeholder="Search name, relation, month, mobile or WhatsApp"
+                >
+              </label>
+
+              <select id="genderFilter">
+                <option value="">All genders</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+                <option value="Prefer not to say">Prefer not to say</option>
+              </select>
+
+              <select id="wishStatusFilter">
+                <option value="">All wish statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="Sent">Sent</option>
+                <option value="Skipped">Skipped</option>
+              </select>
+            </div>
+
+            <div class="filter-row">
+              <button class="filter-chip is-active" data-filter="all" type="button">All</button>
+              <button class="filter-chip" data-filter="today" type="button">Today</button>
+              <button class="filter-chip" data-filter="upcoming" type="button">Upcoming</button>
+              <button class="filter-chip" data-filter="thisMonth" type="button">This Month</button>
+              <button class="filter-chip" data-filter="nextMonth" type="button">Next Month</button>
+              <button class="filter-chip" data-filter="missed" type="button">Missed</button>
+            </div>
+
+            <p id="resultCount" class="result-count">0 records</p>
+          </section>
+
+          <div id="birthdayList" class="birthday-grid"></div>
+        </section>
+
+        <section id="yearlyView" class="view">
+          <section class="panel yearly-toolbar">
+            <label>
+              <span class="field-label">Birthday list year</span>
+              <input id="yearInput" type="number" min="1900" max="2200">
+            </label>
+            <button
+              class="primary-button"
+              id="loadYearButton"
+              type="button"
+            >Load Year</button>
+          </section>
+          <div id="yearlyList" class="year-groups"></div>
+        </section>
+
+        <section id="settingsView" class="view">
+          <form id="settingsForm" class="settings-card">
+            <div class="settings-section">
+              <p class="eyebrow">Connection</p>
+              <h2>Apps Script API</h2>
+
+              <label>
+                <span class="field-label">Web App URL</span>
+                <input
+                  id="apiUrlInput"
+                  type="url"
+                  placeholder="https://script.google.com/macros/s/.../exec"
+                  required
+                >
+              </label>
+
+              <label>
+                <span class="field-label">Private access key</span>
+                <input
+                  id="apiKeyInput"
+                  type="password"
+                  placeholder="Your private access key"
+                  required
+                >
+              </label>
+            </div>
+
+            <div class="settings-section">
+              <p class="eyebrow">Reminder preferences</p>
+              <h2>Birthday Settings</h2>
+
+              <div class="settings-grid">
+                <label>
+                  <span class="field-label">Reminder days</span>
+                  <input
+                    id="reminderDaysInput"
+                    type="number"
+                    min="0"
+                    max="365"
+                    value="7"
+                  >
+                </label>
+
+                <label>
+                  <span class="field-label">Yearly list year</span>
+                  <input
+                    id="settingsYearInput"
+                    type="number"
+                    min="1900"
+                    max="2200"
+                  >
+                </label>
+
+                <label>
+                  <span class="field-label">Default country code</span>
+                  <input
+                    id="countryCodeInput"
+                    type="text"
+                    value="91"
+                    maxlength="4"
+                  >
+                </label>
+              </div>
+
+              <label>
+                <span class="field-label">WhatsApp birthday message</span>
+                <textarea
+                  id="whatsappMessageInput"
+                  rows="5"
+                  maxlength="500"
+                ></textarea>
+                <small>Use {name}, {date}, {age} and {relation} placeholders.</small>
+              </label>
+            </div>
+
+            <div class="form-actions">
+              <button
+                class="secondary-button"
+                id="testConnectionButton"
+                type="button"
+              >Test Connection</button>
+              <span class="action-spacer"></span>
+              <button class="primary-button" type="submit">Save Settings</button>
+            </div>
+          </form>
+        </section>
+      </main>
+    </div>
+
+    <button
+      class="fab"
+      id="addBirthdayButton"
+      type="button"
+      aria-label="Add birthday"
+    >＋</button>
+
+    <nav class="bottom-nav">
+      <button class="mobile-nav is-active" data-nav="dashboard" type="button">
+        <span>⌂</span><small>Home</small>
+      </button>
+      <button class="mobile-nav" data-nav="birthdays" type="button">
+        <span>☷</span><small>Birthdays</small>
+      </button>
+      <button class="mobile-nav" data-nav="yearly" type="button">
+        <span>▣</span><small>Year</small>
+      </button>
+      <button class="mobile-nav" data-nav="settings" type="button">
+        <span>⚙</span><small>Settings</small>
+      </button>
+    </nav>
+  </div>
+
+  <dialog id="birthdayDialog">
+    <form id="birthdayForm" method="dialog" class="dialog-card">
+      <div class="dialog-header">
+        <div>
+          <p class="eyebrow">Birthday record</p>
+          <h2 id="dialogTitle">Add Birthday</h2>
+        </div>
+        <button
+          class="icon-button"
+          id="closeDialogButton"
+          type="button"
+        >×</button>
+      </div>
+
+      <input id="recordIdInput" type="hidden">
+
+      <div class="form-grid">
+        <label class="full">
+          <span class="field-label">Name *</span>
+          <input id="nameInput" type="text" maxlength="100" required>
+        </label>
+
+        <label>
+          <span class="field-label">Gender *</span>
+          <select id="genderInput" required>
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+            <option value="Prefer not to say">Prefer not to say</option>
+          </select>
+        </label>
+
+        <label>
+          <span class="field-label">DOB *</span>
+          <input id="dobInput" type="date" required>
+        </label>
+
+        <label>
+          <span class="field-label">Mobile</span>
+          <input id="mobileInput" type="tel" maxlength="30">
+        </label>
+
+        <label>
+          <span class="field-label">WhatsApp Number</span>
+          <input id="whatsappInput" type="tel" maxlength="30">
+        </label>
+
+        <label>
+          <span class="field-label">Relation</span>
+          <input id="relationInput" type="text">
+        </label>
+
+        <label>
+          <span class="field-label">Email</span>
+          <input id="emailInput" type="email">
+        </label>
+
+        <label class="full">
+          <span class="field-label">Notes</span>
+          <textarea id="notesInput" rows="3" maxlength="1000"></textarea>
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button
+          class="danger-button"
+          id="deleteBirthdayButton"
+          type="button"
+          hidden
+        >Delete</button>
+        <span class="action-spacer"></span>
+        <button
+          class="secondary-button"
+          id="cancelBirthdayButton"
+          type="button"
+        >Cancel</button>
+        <button
+          class="primary-button"
+          id="saveBirthdayButton"
+          type="submit"
+        >Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="wishDialog">
+    <form id="wishForm" method="dialog" class="dialog-card wish-dialog-card">
+      <div class="dialog-header">
+        <div>
+          <p class="eyebrow">WhatsApp message</p>
+          <h2 id="wishPersonName">Birthday Wish</h2>
+          <p id="wishPersonMeta" class="muted-text"></p>
+        </div>
+        <button
+          class="icon-button"
+          id="closeWishDialogButton"
+          type="button"
+        >×</button>
+      </div>
+
+      <input id="wishRecordId" type="hidden">
+
+      <label>
+        <span class="field-label">WhatsApp Number</span>
+        <input id="wishNumberInput" type="tel">
+      </label>
+
+      <label>
+        <span class="field-label">Generated Message</span>
+        <textarea id="wishMessageInput" rows="8" maxlength="1000"></textarea>
+      </label>
+
+      <div class="wish-status-line">
+        <span>Current status</span>
+        <strong id="wishCurrentStatus" class="wish-badge pending">Pending</strong>
+      </div>
+
+      <div class="form-actions wish-actions">
+        <button
+          class="secondary-button"
+          id="copyWishButton"
+          type="button"
+        >Copy Message</button>
+
+        <button
+          class="secondary-button"
+          id="skipWishButton"
+          type="button"
+        >Mark Skipped</button>
+
+        <span class="action-spacer"></span>
+
+        <button
+          class="primary-button whatsapp-button"
+          id="openWhatsAppButton"
+          type="button"
+        >Open WhatsApp</button>
+
+        <button
+          class="primary-button"
+          id="markSentButton"
+          type="button"
+        >Mark Sent</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status"></div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
