@@ -1,224 +1,137 @@
-# Birthday Reminder Web App v1.1
+# Birthday Reminder Web App v1.2
 
-Professional dashboard, advanced search and filters, Wish Status tracking,
-and a WhatsApp message generator for Birthday Reminder System v4.3.
+This update focuses on dashboard consistency and daily usability.
 
-## What is new in v1.1
+## Fixed
 
-### Professional dashboard
+### Upcoming Birthdays consistency
 
-- Full-width responsive desktop layout
-- Four summary cards:
-  - Total Birthdays
-  - Today
-  - Next reminder period
-  - This Month
-- Detailed Next Birthday card
-- Upcoming Birthdays table
-- Today's Birthdays panel
-- Upcoming six-month birthday chart
-- Missed-wish count
+- `Next Birthday` can show the next birthday even when it is outside the
+  short reminder period.
+- The dashboard Upcoming Birthdays table now explicitly shows birthdays
+  within the next **30 days**.
+- The top `Next 7 Days` card continues to use the configurable Reminder Days
+  setting.
 
-### Smart search and filters
+Example:
 
-One search field searches:
+- Next Birthday: 28 days away
+- Next 7 Days KPI: 0
+- Upcoming 30 Days table: contains that birthday
+
+### Past-wish wording
+
+The unclear `20 missed` badge was removed from Today's Birthdays.
+
+A new actionable KPI is shown:
+
+`Past Wishes Pending`
+
+Clicking it opens the Birthdays page with the Missed filter selected.
+
+### Age and relation
+
+- Known DOB: age is calculated automatically.
+- Unknown birth year: shows `Age: —`.
+- Empty relation is hidden.
+- Available relation is shown as a compact badge.
+
+### Empty states
+
+Upcoming Birthdays now shows:
+
+`🎉 You're all caught up!`
+
+`No birthdays in the next 30 days.`
+
+## New dashboard metrics
+
+The main KPI row remains:
+
+- Total Birthdays
+- Today
+- Next reminder period
+- This Month
+
+A compact analytics row adds:
+
+- Upcoming 30 Days
+- Average / Month
+- Wishes Sent Today
+- Past Wishes Pending
+
+`This Year` was not added because, in a birthday directory, it normally
+duplicates Total Birthdays.
+
+## Search
+
+A global search box is available in the desktop header.
+
+It searches:
 
 - Name
 - Relation
-- Birthday month
-- Gender
-- Mobile number
-- WhatsApp number
+- Month
+- Mobile
+- WhatsApp
 - Email
-- Wish Status
-
-Quick filters:
-
-- All
-- Today
-- Upcoming
-- This Month
-- Next Month
-- Missed
-
-Additional filters:
-
 - Gender
 - Wish Status
 
-### Wish Status
+## Chart interaction
 
-The app tracks birthday wishes separately for each birthday year:
+- Hover/focus tooltip
+- Click a month to open the Birthdays page filtered by that month
 
-- Pending
-- Sent
-- Skipped
-- Missed
+## Dark mode
 
-A new Google Sheet tab named `Wish History` is created automatically.
-Existing Birthday data is not modified.
+Use the moon/sun button in the header.
+The selection is saved in the browser.
 
-### WhatsApp message generator
+## Notifications and sync
 
-- Creates a message from the saved template
-- Supports placeholders:
-  - `{name}`
-  - `{date}`
-  - `{age}`
-  - `{relation}`
-- Copy Message
-- Open WhatsApp
-- Mark Sent
-- Mark Skipped
+Settings now includes:
 
-The WhatsApp button prepares a message. The user still presses Send inside
-WhatsApp.
+- Enable Browser Alerts
+- Sync Google Calendar
+- Send Email Digest Now
+
+Browser alerts work while the app is being used. Reliable notifications while
+the browser is completely closed require a push-notification service.
 
 ---
 
-# Upgrade from Web App v1.0
+# Update instructions
 
-## Part 1 — Replace the Apps Script API
+## 1. Replace Apps Script backend
 
-1. Open the Birthday Reminder Google Sheet.
-2. Open `Extensions > Apps Script`.
-3. Open the existing Web API file. It may currently be named:
-   - `09_WebApp.gs`, or
-   - `09_WebAppApi.gs`
-4. Delete its complete old contents.
-5. Paste the complete contents of:
-
-   `apps-script/09_WebAppApi.gs`
-
-6. Save the Apps Script project.
-
-You do not need to replace files 01–08.
-
-Your existing `BIRTHDAY_WEB_API_KEY` Script Property remains valid.
-
-### API key setup
-
-If the key is already saved in Script Properties, do not change it.
-
-For a new project, either:
-
-- Add this Script Property manually:
-
-  Property:
-  `BIRTHDAY_WEB_API_KEY`
-
-  Value:
-  your own private key of at least 10 characters
-
-or run:
-
-`configureBirthdayWebApi`
-
-The v1.1 function no longer opens a prompt. It generates a private key and
-prints it in the Execution Log. It does not replace an existing key.
-
-## Part 2 — Redeploy the Apps Script Web App
-
-Saving code is not enough for an existing deployment.
-
-1. Open `Deploy > Manage deployments`.
-2. Click the Edit pencil on the Web App deployment.
-3. Under Version, choose `New version`.
-4. Click `Deploy`.
-5. Keep the same `/exec` URL.
-
-Recommended deployment settings:
-
-- Execute as: `Me`
-- Who has access: `Anyone`
-
-The private API key protects the API actions.
-
-## Part 3 — Replace GitHub Pages files
-
-Upload the complete contents inside the `github-pages` folder to the root of
-the existing GitHub repository.
-
-Replace:
-
-- `index.html`
-- `404.html`
-- `manifest.webmanifest`
-- `sw.js`
-- `assets/style.css`
-- `js/app.js`
-- icons if requested by GitHub
-
-Do not upload the outer `github-pages` folder as a nested folder. Its contents
-must be at the repository root.
-
-## Part 4 — Refresh the installed app
-
-The Service Worker cache name changed in v1.1.
-
-After GitHub Pages finishes deploying:
-
-1. Open the GitHub Pages URL.
-2. Press `Ctrl + Shift + R` on desktop.
-
-For an installed mobile PWA that still shows the old interface:
-
-1. Close the app.
-2. Open the GitHub Pages URL in Chrome.
-3. Refresh it.
-4. Reopen or reinstall the PWA if required.
-
-The app uses the same browser storage key as v1.0, so the saved Apps Script
-URL, access key and settings should remain available.
-
----
-
-# Files
-
-## GitHub Pages frontend
-
-`github-pages/`
-
-## Apps Script backend
+Replace the complete existing Web API code with:
 
 `apps-script/09_WebAppApi.gs`
 
----
+Then:
 
-# Important behaviour
+1. Save.
+2. Open Deploy > Manage deployments.
+3. Edit the deployment.
+4. Select New version.
+5. Deploy.
 
-## Missed filter
+The `/exec` URL and existing private API key remain unchanged.
 
-A birthday is considered Missed when:
+## 2. Replace GitHub Pages frontend
 
-- its birthday date in the current year has passed, and
-- its Wish Status is still Pending.
+For the easiest update, use:
 
-Marking it Sent or Skipped removes it from the Missed filter.
+`Birthday_Reminder_GitHub_Pages_v1.2_Flat.zip`
 
-## Wish History
+Delete the old frontend files from the GitHub repository root and upload all
+files from the flat package directly to the root.
 
-The backend creates this sheet automatically:
+## 3. Refresh
 
-`Wish History`
+After GitHub Pages deploys:
 
-Columns:
-
-- Record ID
-- Birthday Year
-- Status
-- Channel
-- Message
-- Updated At
-
-## Calendar birthdays
-
-Calendar-imported birthdays can be viewed and wished from the Web App.
-Their source birthday should still be managed in Google Calendar.
-
-## Security
-
-- Never commit the private API key into GitHub files.
-- The key is stored in Apps Script Script Properties and browser local storage.
-- This access-key model is suitable for a private/small-team app.
-- A public multi-user product should use full user authentication.
+- Open the site with `?v=1.2`
+- Press Ctrl + Shift + R
+- Reopen the installed PWA if necessary

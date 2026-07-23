@@ -9,13 +9,13 @@
   <meta name="theme-color" content="#123B70">
   <meta
     name="description"
-    content="Birthday Reminder Web App"
+    content="Birthday Reminder Web App v1.2"
   >
   <title>Birthday Reminder</title>
-  <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="icon" href="./icon-192.png">
-  <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./style.css?v=1.1.1">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="assets/style.css">
 </head>
 
 <body>
@@ -25,7 +25,7 @@
         <div class="brand-icon">🎂</div>
         <div>
           <strong>Birthday Reminder</strong>
-          <small>Web App v1.1</small>
+          <small>Web App v1.2</small>
         </div>
       </div>
 
@@ -44,9 +44,12 @@
         </button>
       </nav>
 
-      <div class="sidebar-note">
+      <div
+        id="connectionStatusNote"
+        class="sidebar-note is-disconnected"
+      >
         <span class="status-dot"></span>
-        Google Sheets connected
+        <span>Not connected</span>
       </div>
     </aside>
 
@@ -57,7 +60,29 @@
           <h1 id="pageTitle">Dashboard</h1>
         </div>
 
+        <form
+          id="globalSearchForm"
+          class="global-search"
+          role="search"
+        >
+          <span>⌕</span>
+          <input
+            id="globalSearchInput"
+            type="search"
+            placeholder="Search name, relation, month or number"
+            aria-label="Search birthdays"
+          >
+        </form>
+
         <div class="top-actions">
+          <button
+            class="icon-button"
+            id="themeToggleButton"
+            type="button"
+            title="Switch to dark mode"
+            aria-label="Switch theme"
+          >☾</button>
+
           <button
             class="icon-button"
             id="installButton"
@@ -138,6 +163,37 @@
             </article>
           </div>
 
+          <div class="analytics-strip">
+            <button
+              class="metric-card"
+              id="upcoming30Metric"
+              type="button"
+            >
+              <span>Upcoming 30 Days</span>
+              <strong id="upcoming30Count">0</strong>
+            </button>
+
+            <article class="metric-card">
+              <span>Average / Month</span>
+              <strong id="averageMonthCount">0</strong>
+            </article>
+
+            <article class="metric-card">
+              <span>Wishes Sent Today</span>
+              <strong id="sentTodayCount">0</strong>
+            </article>
+
+            <button
+              class="metric-card warning"
+              id="pastPendingMetric"
+              type="button"
+              title="Open pending past wishes"
+            >
+              <span>Past Wishes Pending</span>
+              <strong id="pastPendingCount">0</strong>
+            </button>
+          </div>
+
           <div class="dashboard-grid">
             <div class="dashboard-left">
               <article class="panel next-birthday-panel">
@@ -159,6 +215,10 @@
                   <div>
                     <p class="eyebrow">Coming up</p>
                     <h2>Upcoming Birthdays</h2>
+                    <p
+                      id="upcomingTableCaption"
+                      class="panel-caption"
+                    >Next 30 days</p>
                   </div>
                   <button
                     class="text-button"
@@ -201,7 +261,6 @@
                     <p class="eyebrow">Celebrate now</p>
                     <h2>Today's Birthdays</h2>
                   </div>
-                  <span id="missedBadge" class="soft-badge">0 missed</span>
                 </div>
                 <div id="todayBirthdayList" class="compact-list"></div>
               </article>
@@ -340,6 +399,36 @@
                 ></textarea>
                 <small>Use {name}, {date}, {age} and {relation} placeholders.</small>
               </label>
+            </div>
+
+            <div class="settings-section">
+              <p class="eyebrow">Notifications and sync</p>
+              <h2>Actions</h2>
+
+              <div class="settings-action-grid">
+                <button
+                  class="secondary-button"
+                  id="browserNotificationButton"
+                  type="button"
+                >Enable Browser Alerts</button>
+
+                <button
+                  class="secondary-button"
+                  id="refreshCalendarButton"
+                  type="button"
+                >Sync Google Calendar</button>
+
+                <button
+                  class="secondary-button"
+                  id="sendEmailDigestButton"
+                  type="button"
+                >Send Email Digest Now</button>
+              </div>
+
+              <small>
+                Browser alerts work when the app is open. Automatic email
+                scheduling remains available from the Google Sheet menu.
+              </small>
             </div>
 
             <div class="form-actions">
@@ -529,6 +618,6 @@
 
   <div id="toast" class="toast" role="status"></div>
 
-  <script src="./app.js?v=1.1.1"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>

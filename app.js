@@ -9,6 +9,8 @@ const DEFAULT_SETTINGS = {
   reminderDays: 7,
   listYear: new Date().getFullYear(),
   countryCode: "91",
+  theme: "light",
+  browserNotifications: false,
   defaultWhatsAppMessage:
     "🎉 Happy Birthday, {name}! Wishing you happiness, good health and success."
 };
@@ -39,6 +41,11 @@ async function initApp() {
   cacheElements();
   bindEvents();
   populateSettingsForm();
+  applyTheme(
+    state.settings.theme || "light"
+  );
+  updateBrowserNotificationButton();
+  updateConnectionStatus(false);
   registerServiceWorker();
 
   if (!isConfigured()) {
@@ -57,11 +64,15 @@ async function initApp() {
 function cacheElements() {
   [
     "pageTitle",
+    "globalSearchForm",
+    "globalSearchInput",
+    "themeToggleButton",
     "installButton",
     "refreshButton",
     "topAddBirthdayButton",
     "dashboardAddButton",
     "connectionBanner",
+    "connectionStatusNote",
     "dashboardView",
     "birthdaysView",
     "yearlyView",
@@ -71,12 +82,18 @@ function cacheElements() {
     "upcomingCount",
     "upcomingLabel",
     "thisMonthCount",
+    "upcoming30Metric",
+    "upcoming30Count",
+    "averageMonthCount",
+    "sentTodayCount",
+    "pastPendingMetric",
+    "pastPendingCount",
+    "upcomingTableCaption",
     "nextBirthdayDays",
     "nextBirthdayCard",
     "upcomingTableBody",
     "monthChart",
     "todayBirthdayList",
-    "missedBadge",
     "birthdaySearch",
     "genderFilter",
     "wishStatusFilter",
@@ -93,6 +110,9 @@ function cacheElements() {
     "countryCodeInput",
     "whatsappMessageInput",
     "testConnectionButton",
+    "browserNotificationButton",
+    "refreshCalendarButton",
+    "sendEmailDigestButton",
     "addBirthdayButton",
     "birthdayDialog",
     "birthdayForm",
@@ -148,6 +168,38 @@ function bindEvents() {
   elements.refreshButton.addEventListener(
     "click",
     refreshCurrentView
+  );
+
+  elements.globalSearchForm.addEventListener(
+    "submit",
+    submitGlobalSearch
+  );
+
+  elements.themeToggleButton.addEventListener(
+    "click",
+    toggleTheme
+  );
+
+  elements.pastPendingMetric.addEventListener(
+    "click",
+    openPastPendingWishes
+  );
+
+  elements.upcoming30Metric.addEventListener(
+    "click",
+    function () {
+      state.activeFilter = "all";
+      elements.birthdaySearch.value = "";
+      elements.genderFilter.value = "";
+      elements.wishStatusFilter.value = "";
+      navigateTo("birthdays");
+      renderBirthdayList();
+    }
+  );
+
+  elements.monthChart.addEventListener(
+    "click",
+    handleMonthChartClick
   );
 
   [
@@ -236,6 +288,21 @@ function bindEvents() {
   elements.testConnectionButton.addEventListener(
     "click",
     testConnection
+  );
+
+  elements.browserNotificationButton.addEventListener(
+    "click",
+    enableBrowserNotifications
+  );
+
+  elements.refreshCalendarButton.addEventListener(
+    "click",
+    refreshGoogleCalendar
+  );
+
+  elements.sendEmailDigestButton.addEventListener(
+    "click",
+    sendEmailDigestNow
   );
 
   elements.birthdayForm.addEventListener(
@@ -346,6 +413,418 @@ function handleActionClick(event) {
 }
 
 
+function submitGlobalSearch(event) {
+  event.preventDefault();
+
+  const query =
+    elements.globalSearchInput.value
+      .trim();
+
+  elements.birthdaySearch.value =
+    query;
+
+  state.activeFilter = "all";
+
+  document
+    .querySelectorAll("[data-filter]")
+    .forEach(function (button) {
+      button.classList.toggle(
+        "is-active",
+        button.dataset.filter === "all"
+      );
+    });
+
+  navigateTo("birthdays");
+  renderBirthdayList();
+}
+
+
+function openPastPendingWishes() {
+  state.activeFilter = "missed";
+
+  elements.birthdaySearch.value = "";
+  elements.wishStatusFilter.value = "";
+  elements.genderFilter.value = "";
+
+  document
+    .querySelectorAll("[data-filter]")
+    .forEach(function (button) {
+      button.classList.toggle(
+        "is-active",
+        button.dataset.filter === "missed"
+      );
+    });
+
+  navigateTo("birthdays");
+  renderBirthdayList();
+}
+
+
+function handleMonthChartClick(event) {
+  const column =
+    event.target.closest(
+      "[data-chart-month]"
+    );
+
+  if (!column) {
+    return;
+  }
+
+  const month =
+    column.dataset.chartMonth || "";
+
+  elements.globalSearchInput.value =
+    month;
+
+  elements.birthdaySearch.value =
+    month;
+
+  state.activeFilter = "all";
+
+  document
+    .querySelectorAll("[data-filter]")
+    .forEach(function (button) {
+      button.classList.toggle(
+        "is-active",
+        button.dataset.filter === "all"
+      );
+    });
+
+  navigateTo("birthdays");
+  renderBirthdayList();
+}
+
+
+function relationBadgeHtml(relation) {
+  const value =
+    String(relation || "").trim();
+
+  if (!value) {
+    return "";
+  }
+
+  const lower =
+    value.toLowerCase();
+
+  let icon = "👤";
+
+  if (
+    /friend|dost/.test(lower)
+  ) {
+    icon = "👥";
+  } else if (
+    /office|colleague|work|staff|employee/.test(lower)
+  ) {
+    icon = "🏢";
+  } else if (
+    /family|mother|father|brother|sister|son|daughter|wife|husband|uncle|aunt|cousin/.test(lower)
+  ) {
+    icon = "👪";
+  }
+
+  return `
+    <span class="relation-badge">
+      ${icon} ${escapeHtml(value)}
+    </span>
+  `;
+}
+
+
+function toggleTheme() {
+  const nextTheme =
+    document.documentElement.dataset.theme ===
+      "dark"
+      ? "light"
+      : "dark";
+
+  state.settings.theme =
+    nextTheme;
+
+  saveLocalSettings();
+  applyTheme(nextTheme);
+}
+
+
+function applyTheme(theme) {
+  const normalized =
+    theme === "dark"
+      ? "dark"
+      : "light";
+
+  document.documentElement.dataset.theme =
+    normalized;
+
+  elements.themeToggleButton.textContent =
+    normalized === "dark"
+      ? "☀"
+      : "☾";
+
+  elements.themeToggleButton.title =
+    normalized === "dark"
+      ? "Switch to light mode"
+      : "Switch to dark mode";
+
+  const themeMeta =
+    document.querySelector(
+      'meta[name="theme-color"]'
+    );
+
+  if (themeMeta) {
+    themeMeta.setAttribute(
+      "content",
+      normalized === "dark"
+        ? "#081a31"
+        : "#123B70"
+    );
+  }
+}
+
+
+function updateConnectionStatus(connected) {
+  if (!elements.connectionStatusNote) {
+    return;
+  }
+
+  elements.connectionStatusNote
+    .classList.toggle(
+      "is-disconnected",
+      !connected
+    );
+
+  const label =
+    elements.connectionStatusNote
+      .querySelector("span:last-child");
+
+  if (label) {
+    label.textContent =
+      connected
+        ? "Google Sheets connected"
+        : "Not connected";
+  }
+}
+
+
+async function enableBrowserNotifications() {
+  if (!("Notification" in window)) {
+    showToast(
+      "Browser notifications are not supported.",
+      true
+    );
+    return;
+  }
+
+  const permission =
+    await Notification.requestPermission();
+
+  state.settings.browserNotifications =
+    permission === "granted";
+
+  saveLocalSettings();
+  updateBrowserNotificationButton();
+
+  if (permission === "granted") {
+    showToast(
+      "Browser alerts enabled."
+    );
+
+    maybeNotifyTodayBirthdays(true);
+  } else {
+    showToast(
+      "Browser notification permission was not granted.",
+      true
+    );
+  }
+}
+
+
+function updateBrowserNotificationButton() {
+  if (!elements.browserNotificationButton) {
+    return;
+  }
+
+  const enabled =
+    state.settings.browserNotifications === true &&
+    "Notification" in window &&
+    Notification.permission === "granted";
+
+  elements.browserNotificationButton.textContent =
+    enabled
+      ? "Browser Alerts Enabled"
+      : "Enable Browser Alerts";
+}
+
+
+async function maybeNotifyTodayBirthdays(force) {
+  if (
+    state.settings.browserNotifications !== true ||
+    !("Notification" in window) ||
+    Notification.permission !== "granted" ||
+    !state.dashboard ||
+    !Array.isArray(
+      state.dashboard.todayBirthdays
+    ) ||
+    !state.dashboard.todayBirthdays.length
+  ) {
+    return;
+  }
+
+  const todayKey =
+    new Date().toISOString().slice(0, 10);
+
+  const storageKey =
+    "birthdayReminderNotificationDate";
+
+  if (
+    !force &&
+    localStorage.getItem(storageKey) === todayKey
+  ) {
+    return;
+  }
+
+  const names =
+    state.dashboard.todayBirthdays
+      .slice(0, 3)
+      .map(function (record) {
+        return record.name;
+      })
+      .join(", ");
+
+  const extra =
+    state.dashboard.todayBirthdays.length > 3
+      ? " and " +
+        (
+          state.dashboard.todayBirthdays.length - 3
+        ) +
+        " more"
+      : "";
+
+  const title =
+    "🎉 Birthday reminder";
+
+  const options = {
+    body:
+      names +
+      extra +
+      " celebrating today.",
+    icon: "icons/icon-192.png",
+    badge: "icons/icon-192.png"
+  };
+
+  try {
+    if (
+      "serviceWorker" in navigator
+    ) {
+      const registration =
+        await navigator.serviceWorker.ready;
+
+      await registration.showNotification(
+        title,
+        options
+      );
+    } else {
+      new Notification(
+        title,
+        options
+      );
+    }
+
+    localStorage.setItem(
+      storageKey,
+      todayKey
+    );
+  } catch (error) {
+    // Notification errors do not block the app.
+  }
+}
+
+
+async function refreshGoogleCalendar() {
+  if (!isConfigured()) {
+    showToast(
+      "Configure the API first.",
+      true
+    );
+    return;
+  }
+
+  setButtonLoading(
+    elements.refreshCalendarButton,
+    true,
+    "Syncing..."
+  );
+
+  try {
+    const response =
+      await apiPost(
+        "refreshCalendar",
+        {}
+      );
+
+    await reloadBirthdayData();
+
+    showToast(
+      "Calendar synced. " +
+      (
+        response.data.count || 0
+      ) +
+      " record(s) refreshed."
+    );
+  } catch (error) {
+    handleApiError(error);
+  } finally {
+    setButtonLoading(
+      elements.refreshCalendarButton,
+      false,
+      "Sync Google Calendar"
+    );
+  }
+}
+
+
+async function sendEmailDigestNow() {
+  if (!isConfigured()) {
+    showToast(
+      "Configure the API first.",
+      true
+    );
+    return;
+  }
+
+  setButtonLoading(
+    elements.sendEmailDigestButton,
+    true,
+    "Sending..."
+  );
+
+  try {
+    const response =
+      await apiPost(
+        "sendEmailDigest",
+        {}
+      );
+
+    if (response.data.sent) {
+      showToast(
+        "Email digest sent."
+      );
+    } else {
+      showToast(
+        "No email was sent. Check the recipient setting and upcoming birthdays.",
+        true
+      );
+    }
+  } catch (error) {
+    handleApiError(error);
+  } finally {
+    setButtonLoading(
+      elements.sendEmailDigestButton,
+      false,
+      "Send Email Digest Now"
+    );
+  }
+}
+
+
 function findRecordById(id) {
   return (
     state.birthdays.find(
@@ -376,6 +855,7 @@ async function loadInitialData() {
     renderDashboard();
     renderBirthdayList();
     clearConnectionBanner();
+    maybeNotifyTodayBirthdays();
 
   } catch (error) {
     handleApiError(error);
@@ -460,10 +940,14 @@ function renderDashboard() {
     total: 0,
     today: 0,
     upcoming: 0,
+    upcoming30: 0,
     thisMonth: 0,
-    missed: 0,
+    averagePerMonth: 0,
+    sentToday: 0,
+    pastPending: 0,
     reminderDays:
       state.settings.reminderDays,
+    dashboardUpcomingDays: 30,
     nextBirthday: null,
     upcomingBirthdays: [],
     todayBirthdays: [],
@@ -482,6 +966,20 @@ function renderDashboard() {
   elements.thisMonthCount.textContent =
     data.thisMonth || 0;
 
+  elements.upcoming30Count.textContent =
+    data.upcoming30 || 0;
+
+  elements.averageMonthCount.textContent =
+    Number(data.averagePerMonth || 0)
+      .toFixed(1)
+      .replace(/\.0$/, "");
+
+  elements.sentTodayCount.textContent =
+    data.sentToday || 0;
+
+  elements.pastPendingCount.textContent =
+    data.pastPending || 0;
+
   elements.upcomingLabel.textContent =
     "Next " +
     (
@@ -490,16 +988,20 @@ function renderDashboard() {
     ) +
     " Days";
 
-  elements.missedBadge.textContent =
-    (data.missed || 0) +
-    " missed";
+  elements.upcomingTableCaption.textContent =
+    "Next " +
+    (
+      data.dashboardUpcomingDays || 30
+    ) +
+    " days";
 
   renderNextBirthday(
     data.nextBirthday
   );
 
   renderDashboardTable(
-    data.upcomingBirthdays || []
+    data.upcomingBirthdays || [],
+    data.dashboardUpcomingDays || 30
   );
 
   renderTodayList(
@@ -512,13 +1014,18 @@ function renderDashboard() {
 }
 
 
+
 function renderNextBirthday(record) {
   if (!record) {
     elements.nextBirthdayDays.textContent =
       "—";
 
-    elements.nextBirthdayCard.innerHTML =
-      '<div class="empty-state">No birthday records are available.</div>';
+    elements.nextBirthdayCard.innerHTML = `
+      <div class="empty-state engaging">
+        <strong>🎂 No birthday records yet</strong>
+        <span>Add a birthday to start planning celebrations.</span>
+      </div>
+    `;
 
     return;
   }
@@ -527,13 +1034,16 @@ function renderNextBirthday(record) {
     daysText(record.daysLeft);
 
   const ageText =
-    record.age !== ""
-      ? "Age " + record.age
-      : "Age not available";
+    record.age !== "" &&
+    record.age !== null &&
+    record.age !== undefined
+      ? "Age: " + record.age
+      : "Age: —";
 
-  const relation =
-    record.relation ||
-    "Relation not specified";
+  const relationBadge =
+    relationBadgeHtml(
+      record.relation
+    );
 
   elements.nextBirthdayCard.innerHTML = `
     <div class="next-person-content">
@@ -543,15 +1053,17 @@ function renderNextBirthday(record) {
 
       <div>
         <h3>${escapeHtml(record.name)}</h3>
+
         <p class="meta-line">
           ${formatDate(record.nextBirthday)}
           · ${escapeHtml(record.day || "")}
-        </p>
-        <p class="meta-line">
-          ${escapeHtml(relation)}
           · ${escapeHtml(ageText)}
-          · ${wishStatusText(record)}
         </p>
+
+        <div class="meta-badges">
+          ${relationBadge}
+          ${wishBadgeHtml(record)}
+        </div>
       </div>
 
       <div class="quick-actions">
@@ -574,17 +1086,28 @@ function renderNextBirthday(record) {
 }
 
 
-function renderDashboardTable(records) {
+
+function renderDashboardTable(
+  records,
+  upcomingDays
+) {
+  const days =
+    Number(upcomingDays) || 30;
+
   if (!records.length) {
     elements.upcomingTableBody.innerHTML = `
       <tr>
         <td colspan="6">
-          <div class="empty-state">
-            No upcoming birthdays.
+          <div class="empty-state engaging">
+            <strong>🎉 You're all caught up!</strong>
+            <span>
+              No birthdays in the next ${days} days.
+            </span>
           </div>
         </td>
       </tr>
     `;
+
     return;
   }
 
@@ -592,6 +1115,13 @@ function renderDashboardTable(records) {
     records
       .slice(0, 10)
       .map(function (record) {
+        const relation =
+          record.relation
+            ? relationBadgeHtml(
+                record.relation
+              )
+            : "";
+
         return `
           <tr>
             <td>
@@ -604,10 +1134,23 @@ function renderDashboardTable(records) {
                 </strong>
               </div>
             </td>
-            <td>${formatDate(record.nextBirthday)}</td>
-            <td>${daysText(record.daysLeft)}</td>
-            <td>${escapeHtml(record.relation || "—")}</td>
-            <td>${wishBadgeHtml(record)}</td>
+
+            <td>
+              ${formatDate(record.nextBirthday)}
+            </td>
+
+            <td>
+              ${daysText(record.daysLeft)}
+            </td>
+
+            <td>
+              ${relation}
+            </td>
+
+            <td>
+              ${wishBadgeHtml(record)}
+            </td>
+
             <td>
               <button
                 class="action-icon"
@@ -624,10 +1167,16 @@ function renderDashboardTable(records) {
 }
 
 
+
 function renderTodayList(records) {
   if (!records.length) {
-    elements.todayBirthdayList.innerHTML =
-      '<div class="empty-state">No birthdays today.</div>';
+    elements.todayBirthdayList.innerHTML = `
+      <div class="empty-state engaging compact-empty">
+        <strong>✓ Nothing due today</strong>
+        <span>Check the upcoming list for the next celebration.</span>
+      </div>
+    `;
+
     return;
   }
 
@@ -640,13 +1189,15 @@ function renderTodayList(records) {
             <span class="mini-avatar">
               ${initial(record.name)}
             </span>
+
             <div>
               <h3>${escapeHtml(record.name)}</h3>
-              <p>
-                ${escapeHtml(record.relation || "No relation")}
-                · ${wishStatusText(record)}
-              </p>
+              <div class="meta-badges">
+                ${relationBadgeHtml(record.relation)}
+                ${wishBadgeHtml(record)}
+              </div>
             </div>
+
             <button
               class="action-icon"
               type="button"
@@ -661,10 +1212,16 @@ function renderTodayList(records) {
 }
 
 
+
 function renderMonthChart(monthCounts) {
   if (!monthCounts.length) {
-    elements.monthChart.innerHTML =
-      '<div class="empty-state">No chart data.</div>';
+    elements.monthChart.innerHTML = `
+      <div class="empty-state engaging">
+        <strong>No chart data yet</strong>
+        <span>Add birthdays to see the monthly trend.</span>
+      </div>
+    `;
+
     return;
   }
 
@@ -680,35 +1237,54 @@ function renderMonthChart(monthCounts) {
   elements.monthChart.innerHTML =
     monthCounts
       .map(function (item) {
+        const count =
+          Number(item.count) || 0;
+
         const height = Math.max(
           5,
           Math.round(
-            ((Number(item.count) || 0) /
-              maximum) *
-              100
+            (count / maximum) * 100
           )
         );
 
+        const birthdayWord =
+          count === 1
+            ? "birthday"
+            : "birthdays";
+
         return `
-          <div class="chart-column">
-            <div class="chart-track">
-              <div
+          <button
+            class="chart-column"
+            type="button"
+            data-chart-month="${escapeAttribute(item.month)}"
+            data-chart-label="${escapeAttribute(item.label)}"
+            aria-label="Show ${escapeAttribute(item.label)} birthdays"
+          >
+            <span class="chart-tooltip">
+              ${escapeHtml(item.label)}:
+              ${count} ${birthdayWord}
+            </span>
+
+            <span class="chart-track">
+              <span
                 class="chart-bar"
                 style="height:${height}%"
-                title="${escapeAttribute(item.label)}: ${item.count}"
-              ></div>
-            </div>
+              ></span>
+            </span>
+
             <strong class="chart-count">
-              ${Number(item.count) || 0}
+              ${count}
             </strong>
+
             <span class="chart-label">
               ${escapeHtml(item.month)}
             </span>
-          </div>
+          </button>
         `;
       })
       .join("");
 }
+
 
 
 function renderBirthdayList() {
@@ -879,13 +1455,17 @@ function matchesTimeFilter(
 
 
 function birthdayCardHtml(record) {
-  const relation =
-    record.relation || "No relation";
-
   const contact =
     record.whatsapp ||
     record.mobile ||
-    "No number";
+    "";
+
+  const ageText =
+    record.age !== "" &&
+    record.age !== null &&
+    record.age !== undefined
+      ? "Age: " + record.age
+      : "Age: —";
 
   return `
     <article class="birthday-card">
@@ -903,13 +1483,22 @@ function birthdayCardHtml(record) {
           ${formatDate(record.nextBirthday)}
           · ${escapeHtml(record.day || "")}
           · ${daysText(record.daysLeft)}
+          · ${escapeHtml(ageText)}
         </p>
 
-        <p class="card-meta">
-          ${escapeHtml(relation)}
-          · ${escapeHtml(record.gender || "Gender not specified")}
-          · ${escapeHtml(contact)}
-        </p>
+        <div class="meta-badges">
+          ${relationBadgeHtml(record.relation)}
+          ${
+            record.gender
+              ? `<span class="info-badge">${escapeHtml(record.gender)}</span>`
+              : ""
+          }
+          ${
+            contact
+              ? `<span class="info-badge contact">${escapeHtml(contact)}</span>`
+              : ""
+          }
+        </div>
       </div>
 
       <div class="card-footer">
@@ -936,6 +1525,7 @@ function birthdayCardHtml(record) {
     </article>
   `;
 }
+
 
 
 function wishBadgeHtml(record) {
@@ -1846,6 +2436,8 @@ function populateSettingsForm() {
   elements.whatsappMessageInput.value =
     state.settings
       .defaultWhatsAppMessage;
+
+  updateBrowserNotificationButton();
 }
 
 
@@ -2148,7 +2740,10 @@ function showConnectionBanner(
 
   elements.connectionBanner.textContent =
     message;
+
+  updateConnectionStatus(false);
 }
+
 
 
 function clearConnectionBanner() {
@@ -2157,7 +2752,10 @@ function clearConnectionBanner() {
 
   elements.connectionBanner.textContent =
     "";
+
+  updateConnectionStatus(true);
 }
+
 
 
 function handleApiError(error) {

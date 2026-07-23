@@ -1,20 +1,22 @@
 # Changelog
 
-## v1.1
+## v1.2
 
-- Redesigned desktop dashboard to use the full available width
-- Added four summary cards
-- Added Next Birthday details and quick actions
-- Added Upcoming Birthdays table
-- Added Today's Birthdays panel
-- Added six-month birthday chart
-- Added smart search
-- Added Today, Upcoming, This Month, Next Month and Missed filters
-- Added Gender and Wish Status filters
-- Added Wish History sheet
-- Added Pending, Sent and Skipped states
-- Added Missed-wish calculation
-- Added WhatsApp message generator
-- Added message copy, WhatsApp launch, Mark Sent and Mark Skipped
-- Updated PWA cache to v1.1
-- Reworked configureBirthdayWebApi() so it no longer times out waiting for a UI prompt
+- Fixed Upcoming Birthdays dashboard inconsistency
+- Dashboard table now uses a clearly labelled 30-day window
+- Removed unclear missed badge from Today's Birthdays
+- Added actionable Past Wishes Pending KPI
+- Added Upcoming 30 Days KPI
+- Added Average / Month KPI
+- Added Wishes Sent Today KPI
+- Improved missing age display to `Age: —`
+- Added relation badges and hid empty relation fields
+- Improved empty states
+- Added chart hover tooltip
+- Added click-month filtering
+- Added global desktop search
+- Added persistent dark mode
+- Fixed sidebar connection-status indicator
+- Added browser-alert permission control
+- Added Google Calendar sync action
+- Added Send Email Digest Now action

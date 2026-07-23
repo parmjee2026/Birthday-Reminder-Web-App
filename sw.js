@@ -1,18 +1,20 @@
-const CACHE_NAME = "birthday-reminder-v1-1-1-flat";
+const CACHE_NAME = "birthday-reminder-v1-2";
 
 const APP_SHELL = [
   "./",
-  "./index.html",
-  "./style.css?v=1.1.1",
-  "./app.js?v=1.1.1",
-  "./manifest.webmanifest",
-  "./icon-192.png",
-  "./icon-512.png"
+  "index.html",
+  "assets/style.css",
+  "js/app.js",
+  "manifest.webmanifest",
+  "icons/icon-192.png",
+  "icons/icon-512.png"
 ];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL))
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(APP_SHELL);
+    })
   );
 
   self.skipWaiting();
@@ -45,22 +47,39 @@ self.addEventListener("fetch", (event) => {
     url.hostname.includes("script.google.com") ||
     url.hostname.includes("googleusercontent.com")
   ) {
-    event.respondWith(fetch(request));
+    event.respondWith(
+      fetch(request).catch(() => {
+        return new Response(
+          JSON.stringify({
+            success: false,
+            error: "You are offline."
+          }),
+          {
+            headers: {
+              "Content-Type": "application/json"
+            }
+          }
+        );
+      })
+    );
+
     return;
   }
 
-  // Network first prevents an old broken stylesheet from staying cached.
   event.respondWith(
-    fetch(request)
-      .then((response) => {
-        const copy = response.clone();
+    caches.match(request).then((cached) => {
+      return (
+        cached ||
+        fetch(request).then((response) => {
+          const copy = response.clone();
 
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(request, copy);
-        });
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(request, copy);
+          });
 
-        return response;
-      })
-      .catch(() => caches.match(request))
+          return response;
+        })
+      );
+    })
   );
 });
