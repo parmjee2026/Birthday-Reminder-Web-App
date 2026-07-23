@@ -1,11 +1,12 @@
 {
-  "name": "Birthday Reminder Web App v1.2.1",
+  "name": "Birthday Reminder Firebase Free",
   "short_name": "Birthdays",
-  "description": "Self-contained birthday dashboard with reminders and wishes",
-  "start_url": "./?v=1.2.1",
+  "description": "Free multi-user Birthday Reminder with Google Login and Google Contacts sync",
+  "start_url": "./?v=2.0",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#f4f7fb",
-  "theme_color": "#0d47a1",
+  "background_color": "#f3f7fc",
+  "theme_color": "#123b70",
   "icons": [
     {
       "src": "./icon-192.png",
@@ -19,6 +20,5 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ],
-  "scope": "./"
+  ]
 }

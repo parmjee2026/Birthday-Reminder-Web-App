@@ -1,4 +1,4 @@
-const CACHE_NAME = "birthday-reminder-v1-2-1-single-file";
+const CACHE_NAME = "birthday-reminder-firebase-free-v2";
 
 const APP_SHELL = [
   "./",
@@ -37,35 +37,34 @@ self.addEventListener("activate", function (event) {
 });
 
 self.addEventListener("fetch", function (event) {
-  const request = event.request;
-
-  if (request.method !== "GET") {
+  if (event.request.method !== "GET") {
     return;
   }
 
-  const url = new URL(request.url);
+  const url = new URL(event.request.url);
 
   if (
-    url.hostname.includes("script.google.com") ||
-    url.hostname.includes("googleusercontent.com")
+    url.hostname.includes("googleapis.com") ||
+    url.hostname.includes("gstatic.com") ||
+    url.hostname.includes("firebaseapp.com")
   ) {
-    event.respondWith(fetch(request));
+    event.respondWith(fetch(event.request));
     return;
   }
 
   event.respondWith(
-    fetch(request)
+    fetch(event.request)
       .then(function (response) {
         const copy = response.clone();
 
         caches.open(CACHE_NAME).then(function (cache) {
-          cache.put(request, copy);
+          cache.put(event.request, copy);
         });
 
         return response;
       })
       .catch(function () {
-        return caches.match(request);
+        return caches.match(event.request);
       })
   );
 });
