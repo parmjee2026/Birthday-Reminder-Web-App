@@ -1,18 +1,16 @@
-const CACHE_NAME = "birthday-reminder-v1-2";
+const CACHE_NAME = "birthday-reminder-v1-2-1-single-file";
 
 const APP_SHELL = [
   "./",
-  "index.html",
-  "assets/style.css",
-  "js/app.js",
-  "manifest.webmanifest",
-  "icons/icon-192.png",
-  "icons/icon-512.png"
+  "./index.html",
+  "./manifest.webmanifest",
+  "./icon-192.png",
+  "./icon-512.png"
 ];
 
-self.addEventListener("install", (event) => {
+self.addEventListener("install", function (event) {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
+    caches.open(CACHE_NAME).then(function (cache) {
       return cache.addAll(APP_SHELL);
     })
   );
@@ -20,13 +18,17 @@ self.addEventListener("install", (event) => {
   self.skipWaiting();
 });
 
-self.addEventListener("activate", (event) => {
+self.addEventListener("activate", function (event) {
   event.waitUntil(
-    caches.keys().then((keys) => {
+    caches.keys().then(function (keys) {
       return Promise.all(
         keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
+          .filter(function (key) {
+            return key !== CACHE_NAME;
+          })
+          .map(function (key) {
+            return caches.delete(key);
+          })
       );
     })
   );
@@ -34,7 +36,7 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
-self.addEventListener("fetch", (event) => {
+self.addEventListener("fetch", function (event) {
   const request = event.request;
 
   if (request.method !== "GET") {
@@ -47,39 +49,23 @@ self.addEventListener("fetch", (event) => {
     url.hostname.includes("script.google.com") ||
     url.hostname.includes("googleusercontent.com")
   ) {
-    event.respondWith(
-      fetch(request).catch(() => {
-        return new Response(
-          JSON.stringify({
-            success: false,
-            error: "You are offline."
-          }),
-          {
-            headers: {
-              "Content-Type": "application/json"
-            }
-          }
-        );
-      })
-    );
-
+    event.respondWith(fetch(request));
     return;
   }
 
   event.respondWith(
-    caches.match(request).then((cached) => {
-      return (
-        cached ||
-        fetch(request).then((response) => {
-          const copy = response.clone();
+    fetch(request)
+      .then(function (response) {
+        const copy = response.clone();
 
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, copy);
-          });
+        caches.open(CACHE_NAME).then(function (cache) {
+          cache.put(request, copy);
+        });
 
-          return response;
-        })
-      );
-    })
+        return response;
+      })
+      .catch(function () {
+        return caches.match(request);
+      })
   );
 });

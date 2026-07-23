@@ -1,56 +1,52 @@
-BIRTHDAY REMINDER GITHUB PAGES v1.1 — FLAT PATH FIX
+BIRTHDAY REMINDER WEB APP v1.2.1 — SINGLE-FILE FIX
 
-WHY THE PAGE LOOKED LIKE PLAIN TEXT
------------------------------------
-The HTML file was loading, but GitHub Pages could not load:
-- assets/style.css
-- and possibly js/app.js
+PROBLEM FIXED
+-------------
+The page was showing plain HTML because GitHub Pages could not load the
+external style.css and app.js files.
 
-This normally happens when folders were not uploaded at the expected paths,
-or when files were uploaded inside an extra nested folder.
+This package embeds all CSS and JavaScript directly inside index.html.
+There is no external style.css or app.js dependency.
 
-THIS FIX
---------
-All required frontend files are now kept directly in the repository root:
-
+UPLOAD THESE FILES DIRECTLY TO REPOSITORY ROOT
+-----------------------------------------------
+.nojekyll
 index.html
-style.css
-app.js
 manifest.webmanifest
 sw.js
 404.html
 icon-192.png
 icon-512.png
 
-UPLOAD STEPS
-------------
-1. Open the GitHub repository.
-2. Delete the old frontend files and folders:
-   - index.html
-   - assets
-   - js
-   - icons
-   - manifest.webmanifest
-   - sw.js
-   - 404.html
+DELETE OLD FRONTEND FILES/FOLDERS FIRST
+---------------------------------------
+index.html
+style.css
+app.js
+assets/
+js/
+icons/
+manifest.webmanifest
+sw.js
+404.html
 
-3. Extract this ZIP.
-4. Upload all eight files directly to the repository root.
-5. Commit the changes.
-6. Open Settings > Pages and confirm:
-   - Source: Deploy from a branch
-   - Branch: main
-   - Folder: / (root)
-
-7. Wait until the Pages deployment finishes.
+STEPS
+-----
+1. Extract this ZIP.
+2. Open the GitHub repository Code tab.
+3. Delete the old frontend files/folders listed above.
+4. Upload every extracted file directly to the repository root.
+5. Commit changes.
+6. Confirm Settings > Pages:
+   Branch: main
+   Folder: / (root)
+7. Wait for deployment.
 8. Open:
-   https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=1.1.1
+   https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=1.2.1
+9. Press Ctrl + Shift + R.
 
-9. Press:
-   Ctrl + Shift + R
-
-If an installed PWA still shows the old version:
+If the installed PWA still shows the old page:
 - uninstall the old installed app,
 - clear the site's cached data,
-- open the URL again,
-- reinstall it.
+- reopen the v1.2.1 URL,
+- install the app again.

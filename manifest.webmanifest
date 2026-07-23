@@ -1,23 +1,24 @@
 {
-  "name": "Birthday Reminder Web App v1.2",
+  "name": "Birthday Reminder Web App v1.2.1",
   "short_name": "Birthdays",
-  "description": "Professional birthday dashboard with search, wishes and reminders",
-  "start_url": "./?v=1.2",
+  "description": "Self-contained birthday dashboard with reminders and wishes",
+  "start_url": "./?v=1.2.1",
   "display": "standalone",
   "background_color": "#f4f7fb",
   "theme_color": "#0d47a1",
   "icons": [
     {
-      "src": "icons/icon-192.png",
+      "src": "./icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "icons/icon-512.png",
+      "src": "./icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "scope": "./"
 }

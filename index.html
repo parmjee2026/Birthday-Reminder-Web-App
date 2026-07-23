@@ -1,6 +1,9 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <meta charset="utf-8">
   <meta
     name="viewport"
@@ -9,13 +12,1548 @@
   <meta name="theme-color" content="#123B70">
   <meta
     name="description"
-    content="Birthday Reminder Web App v1.2"
+    content="Birthday Reminder Web App v1.2.1"
   >
   <title>Birthday Reminder</title>
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="icons/icon-192.png">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <link rel="stylesheet" href="assets/style.css">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon-192.png">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <style>
+:root {
+  --navy: #123b70;
+  --navy-dark: #0b274a;
+  --blue: #2d7ff9;
+  --blue-soft: #eaf2ff;
+  --green: #1b8f5a;
+  --green-soft: #e7f7ef;
+  --amber: #a56a00;
+  --amber-soft: #fff3d6;
+  --purple: #7357c7;
+  --purple-soft: #f0ebff;
+  --red: #b3261e;
+  --red-soft: #fce8e6;
+  --surface: #ffffff;
+  --page: #f4f7fb;
+  --text: #1e293b;
+  --muted: #667085;
+  --line: #dce4ee;
+  --line-soft: #edf1f6;
+  --shadow: 0 14px 38px rgba(28, 43, 64, 0.08);
+  --radius: 18px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--page);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background:
+    radial-gradient(
+      circle at 90% 0%,
+      rgba(45, 127, 249, 0.11),
+      transparent 28%
+    ),
+    var(--page);
+  color: var(--text);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.app-layout {
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 30;
+  display: flex;
+  width: 248px;
+  flex-direction: column;
+  padding: 24px 18px;
+  background: var(--navy-dark);
+  color: #fff;
+}
+
+.brand-block {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 8px 26px;
+}
+
+.brand-icon {
+  display: grid;
+  width: 45px;
+  height: 45px;
+  place-items: center;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 25px;
+}
+
+.brand-block strong,
+.brand-block small {
+  display: block;
+}
+
+.brand-block strong {
+  font-size: 15px;
+}
+
+.brand-block small {
+  margin-top: 3px;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 11px;
+}
+
+.side-nav {
+  display: grid;
+  gap: 7px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 13px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.72);
+  text-align: left;
+}
+
+.nav-link span:first-child {
+  width: 24px;
+  font-size: 20px;
+  text-align: center;
+}
+
+.nav-link.is-active,
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.sidebar-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 13px;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 11px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #45d483;
+  box-shadow: 0 0 0 4px rgba(69, 212, 131, 0.12);
+}
+
+.sidebar-note.is-disconnected .status-dot {
+  background: #f4b740;
+  box-shadow: 0 0 0 4px rgba(244, 183, 64, 0.12);
+}
+
+.workspace {
+  min-height: 100vh;
+  margin-left: 248px;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  min-height: 84px;
+  padding: 16px 30px;
+  border-bottom: 1px solid rgba(220, 228, 238, 0.88);
+  background: rgba(244, 247, 251, 0.91);
+  backdrop-filter: blur(18px);
+}
+
+.topbar h1 {
+  margin: 2px 0 0;
+  font-size: 26px;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--blue);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.eyebrow.light {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.content {
+  width: min(100%, 1380px);
+  margin: 0 auto;
+  padding: 26px 30px 44px;
+}
+
+.view {
+  display: none;
+}
+
+.view.is-active {
+  display: block;
+  animation: enter 180ms ease;
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.connection-banner {
+  margin-bottom: 16px;
+  padding: 13px 15px;
+  border-radius: 12px;
+  background: var(--amber-soft);
+  color: var(--amber);
+  font-weight: 700;
+}
+
+.dashboard-heading-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 132px;
+  padding: 25px 28px;
+  border-radius: 24px;
+  background:
+    linear-gradient(
+      135deg,
+      var(--navy-dark),
+      var(--navy) 65%,
+      #225b9d
+    );
+  box-shadow: var(--shadow);
+  color: #fff;
+}
+
+.dashboard-heading-card h2 {
+  margin: 5px 0 7px;
+  font-size: clamp(25px, 3vw, 36px);
+}
+
+.dashboard-heading-card p:last-child {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.light-button {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 17px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-weight: 800;
+}
+
+.stats-grid {
+  display: grid;
+  gap: 14px;
+  margin: 17px 0;
+}
+
+.stats-grid.four {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 104px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: 0 7px 20px rgba(28, 43, 64, 0.045);
+}
+
+.stat-icon {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 15px;
+  font-size: 21px;
+}
+
+.stat-icon.blue {
+  background: var(--blue-soft);
+}
+
+.stat-icon.green {
+  background: var(--green-soft);
+}
+
+.stat-icon.amber {
+  background: var(--amber-soft);
+}
+
+.stat-icon.purple {
+  background: var(--purple-soft);
+}
+
+.stat-card span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.stat-card strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 30px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.75fr) minmax(300px, 1fr);
+  gap: 17px;
+}
+
+.dashboard-left,
+.dashboard-right {
+  display: grid;
+  align-content: start;
+  gap: 17px;
+}
+
+.panel {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: 0 7px 22px rgba(28, 43, 64, 0.045);
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 18px 19px 14px;
+}
+
+.panel-header h2 {
+  margin: 4px 0 0;
+  font-size: 18px;
+}
+
+.count-badge,
+.soft-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 11px;
+  border-radius: 999px;
+  background: var(--blue-soft);
+  color: var(--navy);
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.soft-badge {
+  background: var(--red-soft);
+  color: var(--red);
+}
+
+.next-person-card {
+  padding: 0 19px 20px;
+}
+
+.next-person-content {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 17px;
+  padding: 20px;
+  border-radius: 17px;
+  background:
+    linear-gradient(
+      135deg,
+      #edf5ff,
+      #f8fbff
+    );
+}
+
+.large-avatar {
+  display: grid;
+  width: 68px;
+  height: 68px;
+  place-items: center;
+  border-radius: 20px;
+  background: var(--navy);
+  color: #fff;
+  font-size: 27px;
+  font-weight: 900;
+}
+
+.next-person-content h3 {
+  margin: 0 0 6px;
+  font-size: 22px;
+}
+
+.meta-line {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.quick-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.primary-button,
+.secondary-button,
+.danger-button,
+.whatsapp-button {
+  min-height: 42px;
+  padding: 0 15px;
+  border-radius: 11px;
+  font-weight: 800;
+}
+
+.primary-button {
+  border: 1px solid var(--blue);
+  background: var(--blue);
+  color: #fff;
+}
+
+.secondary-button {
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--text);
+}
+
+.danger-button {
+  border: 1px solid #f3b7b3;
+  background: var(--red-soft);
+  color: var(--red);
+}
+
+.whatsapp-button {
+  border-color: #199b58;
+  background: #199b58;
+  color: #fff;
+}
+
+.icon-button {
+  display: inline-grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--text);
+  font-size: 19px;
+}
+
+.text-button {
+  border: 0;
+  background: transparent;
+  color: var(--blue);
+  font-weight: 800;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  padding: 0 14px 14px;
+}
+
+.dashboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  white-space: nowrap;
+}
+
+.dashboard-table th,
+.dashboard-table td {
+  padding: 11px 10px;
+  border-bottom: 1px solid var(--line-soft);
+  text-align: left;
+  font-size: 12px;
+}
+
+.dashboard-table th {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.dashboard-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.table-person {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 150px;
+}
+
+.mini-avatar {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 11px;
+  background: var(--blue-soft);
+  color: var(--navy);
+  font-weight: 850;
+}
+
+.action-icon {
+  display: inline-grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--text);
+}
+
+.month-chart {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(34px, 1fr));
+  align-items: end;
+  gap: 9px;
+  min-height: 240px;
+  padding: 20px 17px 18px;
+}
+
+.chart-column {
+  display: grid;
+  grid-template-rows: 1fr auto auto;
+  align-items: end;
+  gap: 7px;
+  height: 205px;
+  text-align: center;
+}
+
+.chart-track {
+  position: relative;
+  display: flex;
+  height: 150px;
+  align-items: end;
+  justify-content: center;
+  border-radius: 10px;
+  background: #f5f8fc;
+  overflow: hidden;
+}
+
+.chart-bar {
+  width: 72%;
+  min-height: 7px;
+  border-radius: 8px 8px 3px 3px;
+  background:
+    linear-gradient(
+      180deg,
+      #4f9bff,
+      #2d7ff9
+    );
+  transition: height 220ms ease;
+}
+
+.chart-count {
+  color: var(--navy);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.chart-label {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.compact-list {
+  display: grid;
+  gap: 8px;
+  padding: 0 15px 15px;
+}
+
+.compact-person {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 11px;
+  border: 1px solid var(--line-soft);
+  border-radius: 13px;
+}
+
+.compact-person h3 {
+  margin: 0 0 3px;
+  font-size: 13px;
+}
+
+.compact-person p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.search-panel {
+  margin-bottom: 17px;
+  padding: 17px;
+  overflow: visible;
+}
+
+.search-row {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) 190px 190px;
+  gap: 11px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.search-box input {
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 13px;
+}
+
+.filter-chip {
+  min-height: 34px;
+  padding: 0 13px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.filter-chip.is-active {
+  border-color: var(--blue);
+  background: var(--blue-soft);
+  color: var(--navy);
+}
+
+.result-count {
+  margin: 12px 2px 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 11px 12px;
+  outline: 0;
+  background: #fff;
+  color: var(--text);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(45, 127, 249, 0.12);
+}
+
+.birthday-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.birthday-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 13px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(28, 43, 64, 0.045);
+}
+
+.avatar {
+  display: grid;
+  width: 50px;
+  height: 50px;
+  place-items: center;
+  border-radius: 15px;
+  background: var(--blue-soft);
+  color: var(--navy);
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.card-main {
+  min-width: 0;
+}
+
+.card-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.card-heading h3 {
+  margin: 0;
+  overflow: hidden;
+  font-size: 16px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-meta {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.card-footer {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line-soft);
+}
+
+.card-footer .spacer {
+  flex: 1;
+}
+
+.days-badge,
+.wish-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 9px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.days-badge {
+  background: var(--blue-soft);
+  color: var(--navy);
+}
+
+.days-badge.today {
+  background: var(--green-soft);
+  color: var(--green);
+}
+
+.wish-badge.pending {
+  background: var(--amber-soft);
+  color: var(--amber);
+}
+
+.wish-badge.sent {
+  background: var(--green-soft);
+  color: var(--green);
+}
+
+.wish-badge.skipped {
+  background: #eef1f4;
+  color: #596273;
+}
+
+.wish-badge.missed {
+  background: var(--red-soft);
+  color: var(--red);
+}
+
+.small-button {
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: #fff;
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.small-button.message {
+  border-color: #b9d1f7;
+  background: var(--blue-soft);
+  color: var(--navy);
+}
+
+.yearly-toolbar {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+  margin-bottom: 17px;
+  padding: 16px;
+}
+
+.yearly-toolbar label {
+  width: min(260px, 100%);
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 6px;
+  color: #475467;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.year-groups {
+  display: grid;
+  gap: 16px;
+}
+
+.month-group {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #fff;
+}
+
+.month-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0;
+  padding: 13px 16px;
+  background: var(--blue-soft);
+  color: var(--navy);
+  font-size: 15px;
+}
+
+.month-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 12px;
+}
+
+.settings-card {
+  display: grid;
+  max-width: 820px;
+  gap: 17px;
+}
+
+.settings-section {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #fff;
+  box-shadow: 0 7px 22px rgba(28, 43, 64, 0.045);
+}
+
+.settings-section h2 {
+  margin: 4px 0 2px;
+  font-size: 19px;
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.settings-section small {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 4px;
+}
+
+.action-spacer {
+  flex: 1;
+}
+
+dialog {
+  width: min(680px, calc(100vw - 24px));
+  max-height: calc(100vh - 24px);
+  padding: 0;
+  overflow: auto;
+  border: 0;
+  border-radius: 22px;
+  box-shadow: 0 26px 80px rgba(0, 0, 0, 0.24);
+}
+
+dialog::backdrop {
+  background: rgba(9, 20, 35, 0.52);
+  backdrop-filter: blur(4px);
+}
+
+.dialog-card {
+  padding: 22px;
+  background: #fff;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.dialog-header h2 {
+  margin: 4px 0 0;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 13px;
+}
+
+.form-grid .full {
+  grid-column: 1 / -1;
+}
+
+.wish-dialog-card {
+  display: grid;
+  gap: 14px;
+}
+
+.muted-text {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.wish-status-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 12px;
+  border-radius: 12px;
+  background: var(--page);
+  font-size: 12px;
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 32px;
+  z-index: 70;
+  max-width: min(480px, calc(100vw - 32px));
+  padding: 13px 17px;
+  transform: translate(-50%, 18px);
+  border-radius: 12px;
+  background: #1f2937;
+  box-shadow: var(--shadow);
+  color: #fff;
+  opacity: 0;
+  pointer-events: none;
+  transition: 180ms ease;
+}
+
+.toast.is-visible {
+  transform: translate(-50%, 0);
+  opacity: 1;
+}
+
+.empty-state {
+  padding: 28px 16px;
+  border: 1px dashed var(--line);
+  border-radius: 13px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.bottom-nav,
+.fab {
+  display: none;
+}
+
+@media (max-width: 1080px) {
+  .sidebar {
+    width: 214px;
+  }
+
+  .workspace {
+    margin-left: 214px;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-right {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .stats-grid.four {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 780px) {
+  .sidebar {
+    display: none;
+  }
+
+  .workspace {
+    margin-left: 0;
+    padding-bottom: 84px;
+  }
+
+  .topbar {
+    min-height: 74px;
+    padding:
+      calc(12px + env(safe-area-inset-top))
+      16px
+      12px;
+  }
+
+  .topbar h1 {
+    font-size: 22px;
+  }
+
+  .desktop-add {
+    display: none;
+  }
+
+  .content {
+    padding: 16px;
+  }
+
+  .dashboard-heading-card {
+    align-items: flex-start;
+    min-height: auto;
+    padding: 21px;
+  }
+
+  .dashboard-heading-card .light-button {
+    display: none;
+  }
+
+  .stats-grid.four {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .stat-card {
+    min-height: 94px;
+    padding: 13px;
+  }
+
+  .stat-icon {
+    width: 41px;
+    height: 41px;
+  }
+
+  .stat-card strong {
+    font-size: 25px;
+  }
+
+  .dashboard-right {
+    grid-template-columns: 1fr;
+  }
+
+  .next-person-content {
+    grid-template-columns: auto 1fr;
+  }
+
+  .quick-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+
+  .search-row {
+    grid-template-columns: 1fr;
+  }
+
+  .birthday-grid,
+  .month-list {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bottom-nav {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 40;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding:
+      7px
+      10px
+      calc(7px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(16px);
+  }
+
+  .mobile-nav {
+    display: grid;
+    gap: 2px;
+    min-height: 53px;
+    place-items: center;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    color: var(--muted);
+  }
+
+  .mobile-nav span {
+    font-size: 20px;
+  }
+
+  .mobile-nav small {
+    font-size: 10px;
+    font-weight: 800;
+  }
+
+  .mobile-nav.is-active {
+    background: var(--blue-soft);
+    color: var(--navy);
+  }
+
+  .fab {
+    position: fixed;
+    right: 18px;
+    bottom: calc(78px + env(safe-area-inset-bottom));
+    z-index: 45;
+    display: grid;
+    width: 56px;
+    height: 56px;
+    place-items: center;
+    border: 0;
+    border-radius: 18px;
+    background: var(--blue);
+    box-shadow: 0 13px 28px rgba(45, 127, 249, 0.35);
+    color: #fff;
+    font-size: 27px;
+  }
+
+  .toast {
+    bottom: calc(83px + env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 520px) {
+  .dashboard-heading-card h2 {
+    font-size: 25px;
+  }
+
+  .stats-grid.four {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .stat-card {
+    display: block;
+  }
+
+  .stat-icon {
+    margin-bottom: 9px;
+  }
+
+  .panel-header {
+    padding: 16px 15px 12px;
+  }
+
+  .month-chart {
+    gap: 5px;
+    padding-inline: 10px;
+  }
+
+  .chart-label {
+    font-size: 9px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-grid .full {
+    grid-column: auto;
+  }
+
+  .form-actions {
+    flex-wrap: wrap;
+  }
+
+  .wish-actions .action-spacer {
+    display: none;
+  }
+
+  .wish-actions button {
+    flex: 1 1 44%;
+  }
+}
+
+
+/* ============================================================
+   Birthday Reminder Web App v1.2.1 enhancements
+   ============================================================ */
+
+.global-search {
+  display: flex;
+  width: min(420px, 34vw);
+  align-items: center;
+  gap: 9px;
+  margin-left: auto;
+  padding: 0 13px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--surface);
+  box-shadow: 0 4px 14px rgba(28, 43, 64, 0.035);
+}
+
+.global-search input {
+  min-width: 0;
+  border: 0;
+  padding-inline: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.analytics-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: -2px 0 17px;
+}
+
+.metric-card {
+  display: flex;
+  min-height: 72px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: var(--surface);
+  color: var(--text);
+  text-align: left;
+  box-shadow: 0 5px 16px rgba(28, 43, 64, 0.035);
+}
+
+button.metric-card:hover {
+  border-color: var(--blue);
+  transform: translateY(-1px);
+}
+
+.metric-card.warning {
+  background: var(--amber-soft);
+}
+
+.metric-card span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 780;
+}
+
+.metric-card strong {
+  color: var(--navy);
+  font-size: 23px;
+}
+
+.panel-caption {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.meta-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  margin-top: 8px;
+}
+
+.relation-badge,
+.info-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 27px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: var(--blue-soft);
+  color: var(--navy);
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.info-badge {
+  background: var(--line-soft);
+  color: var(--muted);
+}
+
+.info-badge.contact {
+  max-width: 210px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.empty-state.engaging {
+  display: grid;
+  gap: 6px;
+}
+
+.empty-state.engaging strong {
+  color: var(--text);
+  font-size: 14px;
+}
+
+.empty-state.engaging span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.compact-empty {
+  margin: 0;
+}
+
+.chart-column {
+  position: relative;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.chart-column:hover .chart-bar,
+.chart-column:focus-visible .chart-bar {
+  filter: brightness(1.06);
+  transform: scaleX(1.06);
+}
+
+.chart-column:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+
+.chart-tooltip {
+  position: absolute;
+  z-index: 5;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  width: max-content;
+  max-width: 170px;
+  padding: 7px 9px;
+  transform: translate(-50%, 5px);
+  border-radius: 9px;
+  background: #172033;
+  color: #fff;
+  font-size: 10px;
+  line-height: 1.35;
+  opacity: 0;
+  pointer-events: none;
+  transition: 150ms ease;
+}
+
+.chart-column:hover .chart-tooltip,
+.chart-column:focus-visible .chart-tooltip {
+  transform: translate(-50%, 0);
+  opacity: 1;
+}
+
+.settings-action-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+html[data-theme="dark"] {
+  --surface: #10243d;
+  --page: #081a2d;
+  --text: #e8eef8;
+  --muted: #a7b4c6;
+  --line: #29405d;
+  --line-soft: #1a314c;
+  --blue-soft: #173b66;
+  --green-soft: #123c30;
+  --amber-soft: #4c3815;
+  --purple-soft: #312850;
+  --red-soft: #4e2525;
+  --shadow: 0 14px 38px rgba(0, 0, 0, 0.24);
+}
+
+html[data-theme="dark"] body {
+  background:
+    radial-gradient(
+      circle at 90% 0%,
+      rgba(45, 127, 249, 0.13),
+      transparent 30%
+    ),
+    var(--page);
+}
+
+html[data-theme="dark"] .topbar {
+  border-color: rgba(41, 64, 93, 0.9);
+  background: rgba(8, 26, 45, 0.9);
+}
+
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] .icon-button,
+html[data-theme="dark"] .secondary-button,
+html[data-theme="dark"] .action-icon,
+html[data-theme="dark"] .small-button {
+  border-color: var(--line);
+  background: #0d2139;
+  color: var(--text);
+}
+
+html[data-theme="dark"] .next-person-content {
+  background:
+    linear-gradient(
+      135deg,
+      #102b4b,
+      #12243a
+    );
+}
+
+html[data-theme="dark"] .chart-track {
+  background: #0c2038;
+}
+
+html[data-theme="dark"] .dashboard-table th {
+  color: var(--muted);
+}
+
+html[data-theme="dark"] .bottom-nav {
+  border-color: var(--line);
+  background: rgba(8, 26, 45, 0.95);
+}
+
+html[data-theme="dark"] .toast {
+  background: #e8eef8;
+  color: #081a2d;
+}
+
+@media (max-width: 1080px) {
+  .global-search {
+    width: min(330px, 30vw);
+  }
+
+  .analytics-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 780px) {
+  .global-search {
+    display: none;
+  }
+
+  .analytics-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .settings-action-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .analytics-strip {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .metric-card {
+    display: grid;
+    min-height: 84px;
+  }
+}
+
+</style>
 </head>
 
 <body>
@@ -25,7 +1563,7 @@
         <div class="brand-icon">🎂</div>
         <div>
           <strong>Birthday Reminder</strong>
-          <small>Web App v1.2</small>
+          <small>Web App v1.2.1</small>
         </div>
       </div>
 
@@ -618,6 +2156,2870 @@
 
   <div id="toast" class="toast" role="status"></div>
 
-  <script src="js/app.js"></script>
+  <script>
+"use strict";
+
+const STORAGE_KEY =
+  "birthdayReminderWebAppV1";
+
+const DEFAULT_SETTINGS = {
+  apiUrl: "",
+  apiKey: "",
+  reminderDays: 7,
+  listYear: new Date().getFullYear(),
+  countryCode: "91",
+  theme: "light",
+  browserNotifications: false,
+  defaultWhatsAppMessage:
+    "🎉 Happy Birthday, {name}! Wishing you happiness, good health and success."
+};
+
+const state = {
+  settings: loadLocalSettings(),
+  dashboard: null,
+  birthdays: [],
+  yearly: [],
+  activeView: "dashboard",
+  activeFilter: "all",
+  deferredInstallPrompt: null,
+  editingRecord: null,
+  wishRecord: null,
+  wishYear: new Date().getFullYear(),
+  loading: false
+};
+
+const elements = {};
+
+document.addEventListener(
+  "DOMContentLoaded",
+  initApp
+);
+
+
+async function initApp() {
+  cacheElements();
+  bindEvents();
+  populateSettingsForm();
+  applyTheme(
+    state.settings.theme || "light"
+  );
+  updateBrowserNotificationButton();
+  updateConnectionStatus(false);
+  registerServiceWorker();
+
+  if (!isConfigured()) {
+    showConnectionBanner(
+      "Connect the app from Settings using your Apps Script Web App URL and private access key."
+    );
+
+    navigateTo("settings");
+    return;
+  }
+
+  await loadInitialData();
+}
+
+
+function cacheElements() {
+  [
+    "pageTitle",
+    "globalSearchForm",
+    "globalSearchInput",
+    "themeToggleButton",
+    "installButton",
+    "refreshButton",
+    "topAddBirthdayButton",
+    "dashboardAddButton",
+    "connectionBanner",
+    "connectionStatusNote",
+    "dashboardView",
+    "birthdaysView",
+    "yearlyView",
+    "settingsView",
+    "totalCount",
+    "todayCount",
+    "upcomingCount",
+    "upcomingLabel",
+    "thisMonthCount",
+    "upcoming30Metric",
+    "upcoming30Count",
+    "averageMonthCount",
+    "sentTodayCount",
+    "pastPendingMetric",
+    "pastPendingCount",
+    "upcomingTableCaption",
+    "nextBirthdayDays",
+    "nextBirthdayCard",
+    "upcomingTableBody",
+    "monthChart",
+    "todayBirthdayList",
+    "birthdaySearch",
+    "genderFilter",
+    "wishStatusFilter",
+    "resultCount",
+    "birthdayList",
+    "yearInput",
+    "loadYearButton",
+    "yearlyList",
+    "settingsForm",
+    "apiUrlInput",
+    "apiKeyInput",
+    "reminderDaysInput",
+    "settingsYearInput",
+    "countryCodeInput",
+    "whatsappMessageInput",
+    "testConnectionButton",
+    "browserNotificationButton",
+    "refreshCalendarButton",
+    "sendEmailDigestButton",
+    "addBirthdayButton",
+    "birthdayDialog",
+    "birthdayForm",
+    "dialogTitle",
+    "closeDialogButton",
+    "cancelBirthdayButton",
+    "deleteBirthdayButton",
+    "saveBirthdayButton",
+    "recordIdInput",
+    "nameInput",
+    "genderInput",
+    "dobInput",
+    "mobileInput",
+    "whatsappInput",
+    "relationInput",
+    "emailInput",
+    "notesInput",
+    "wishDialog",
+    "wishForm",
+    "wishPersonName",
+    "wishPersonMeta",
+    "closeWishDialogButton",
+    "wishRecordId",
+    "wishNumberInput",
+    "wishMessageInput",
+    "wishCurrentStatus",
+    "copyWishButton",
+    "skipWishButton",
+    "openWhatsAppButton",
+    "markSentButton",
+    "toast"
+  ].forEach(function (id) {
+    elements[id] =
+      document.getElementById(id);
+  });
+}
+
+
+function bindEvents() {
+  document
+    .querySelectorAll("[data-nav]")
+    .forEach(function (button) {
+      button.addEventListener(
+        "click",
+        function () {
+          navigateTo(
+            button.dataset.nav
+          );
+        }
+      );
+    });
+
+  elements.refreshButton.addEventListener(
+    "click",
+    refreshCurrentView
+  );
+
+  elements.globalSearchForm.addEventListener(
+    "submit",
+    submitGlobalSearch
+  );
+
+  elements.themeToggleButton.addEventListener(
+    "click",
+    toggleTheme
+  );
+
+  elements.pastPendingMetric.addEventListener(
+    "click",
+    openPastPendingWishes
+  );
+
+  elements.upcoming30Metric.addEventListener(
+    "click",
+    function () {
+      state.activeFilter = "all";
+      elements.birthdaySearch.value = "";
+      elements.genderFilter.value = "";
+      elements.wishStatusFilter.value = "";
+      navigateTo("birthdays");
+      renderBirthdayList();
+    }
+  );
+
+  elements.monthChart.addEventListener(
+    "click",
+    handleMonthChartClick
+  );
+
+  [
+    elements.addBirthdayButton,
+    elements.topAddBirthdayButton,
+    elements.dashboardAddButton
+  ].forEach(function (button) {
+    button.addEventListener(
+      "click",
+      function () {
+        openBirthdayDialog();
+      }
+    );
+  });
+
+  elements.birthdaySearch.addEventListener(
+    "input",
+    renderBirthdayList
+  );
+
+  elements.genderFilter.addEventListener(
+    "change",
+    renderBirthdayList
+  );
+
+  elements.wishStatusFilter.addEventListener(
+    "change",
+    renderBirthdayList
+  );
+
+  document
+    .querySelectorAll("[data-filter]")
+    .forEach(function (button) {
+      button.addEventListener(
+        "click",
+        function () {
+          state.activeFilter =
+            button.dataset.filter;
+
+          document
+            .querySelectorAll(
+              "[data-filter]"
+            )
+            .forEach(function (item) {
+              item.classList.toggle(
+                "is-active",
+                item === button
+              );
+            });
+
+          renderBirthdayList();
+        }
+      );
+    });
+
+  elements.loadYearButton.addEventListener(
+    "click",
+    function () {
+      const year = Number(
+        elements.yearInput.value
+      );
+
+      if (
+        !Number.isInteger(year) ||
+        year < 1900 ||
+        year > 2200
+      ) {
+        showToast(
+          "Enter a valid year.",
+          true
+        );
+        return;
+      }
+
+      state.settings.listYear = year;
+      saveLocalSettings();
+      loadYearlyBirthdays(year);
+    }
+  );
+
+  elements.settingsForm.addEventListener(
+    "submit",
+    saveSettings
+  );
+
+  elements.testConnectionButton.addEventListener(
+    "click",
+    testConnection
+  );
+
+  elements.browserNotificationButton.addEventListener(
+    "click",
+    enableBrowserNotifications
+  );
+
+  elements.refreshCalendarButton.addEventListener(
+    "click",
+    refreshGoogleCalendar
+  );
+
+  elements.sendEmailDigestButton.addEventListener(
+    "click",
+    sendEmailDigestNow
+  );
+
+  elements.birthdayForm.addEventListener(
+    "submit",
+    saveBirthday
+  );
+
+  elements.closeDialogButton.addEventListener(
+    "click",
+    closeBirthdayDialog
+  );
+
+  elements.cancelBirthdayButton.addEventListener(
+    "click",
+    closeBirthdayDialog
+  );
+
+  elements.deleteBirthdayButton.addEventListener(
+    "click",
+    deleteBirthday
+  );
+
+  elements.closeWishDialogButton.addEventListener(
+    "click",
+    closeWishDialog
+  );
+
+  elements.copyWishButton.addEventListener(
+    "click",
+    copyWishMessage
+  );
+
+  elements.openWhatsAppButton.addEventListener(
+    "click",
+    openWhatsAppMessage
+  );
+
+  elements.markSentButton.addEventListener(
+    "click",
+    function () {
+      markWishStatus(
+        "Sent",
+        "WhatsApp"
+      );
+    }
+  );
+
+  elements.skipWishButton.addEventListener(
+    "click",
+    function () {
+      markWishStatus(
+        "Skipped",
+        "Manual"
+      );
+    }
+  );
+
+  document.addEventListener(
+    "click",
+    handleActionClick
+  );
+
+  window.addEventListener(
+    "beforeinstallprompt",
+    function (event) {
+      event.preventDefault();
+      state.deferredInstallPrompt =
+        event;
+
+      elements.installButton.hidden =
+        false;
+    }
+  );
+
+  elements.installButton.addEventListener(
+    "click",
+    installApp
+  );
+}
+
+
+function handleActionClick(event) {
+  const trigger = event.target.closest(
+    "[data-action]"
+  );
+
+  if (!trigger) {
+    return;
+  }
+
+  const id = trigger.dataset.id;
+  const action =
+    trigger.dataset.action;
+
+  const record = findRecordById(id);
+
+  if (!record) {
+    return;
+  }
+
+  if (action === "edit") {
+    openBirthdayDialog(record);
+  }
+
+  if (action === "wish") {
+    openWishDialog(record);
+  }
+}
+
+
+function submitGlobalSearch(event) {
+  event.preventDefault();
+
+  const query =
+    elements.globalSearchInput.value
+      .trim();
+
+  elements.birthdaySearch.value =
+    query;
+
+  state.activeFilter = "all";
+
+  document
+    .querySelectorAll("[data-filter]")
+    .forEach(function (button) {
+      button.classList.toggle(
+        "is-active",
+        button.dataset.filter === "all"
+      );
+    });
+
+  navigateTo("birthdays");
+  renderBirthdayList();
+}
+
+
+function openPastPendingWishes() {
+  state.activeFilter = "missed";
+
+  elements.birthdaySearch.value = "";
+  elements.wishStatusFilter.value = "";
+  elements.genderFilter.value = "";
+
+  document
+    .querySelectorAll("[data-filter]")
+    .forEach(function (button) {
+      button.classList.toggle(
+        "is-active",
+        button.dataset.filter === "missed"
+      );
+    });
+
+  navigateTo("birthdays");
+  renderBirthdayList();
+}
+
+
+function handleMonthChartClick(event) {
+  const column =
+    event.target.closest(
+      "[data-chart-month]"
+    );
+
+  if (!column) {
+    return;
+  }
+
+  const month =
+    column.dataset.chartMonth || "";
+
+  elements.globalSearchInput.value =
+    month;
+
+  elements.birthdaySearch.value =
+    month;
+
+  state.activeFilter = "all";
+
+  document
+    .querySelectorAll("[data-filter]")
+    .forEach(function (button) {
+      button.classList.toggle(
+        "is-active",
+        button.dataset.filter === "all"
+      );
+    });
+
+  navigateTo("birthdays");
+  renderBirthdayList();
+}
+
+
+function relationBadgeHtml(relation) {
+  const value =
+    String(relation || "").trim();
+
+  if (!value) {
+    return "";
+  }
+
+  const lower =
+    value.toLowerCase();
+
+  let icon = "👤";
+
+  if (
+    /friend|dost/.test(lower)
+  ) {
+    icon = "👥";
+  } else if (
+    /office|colleague|work|staff|employee/.test(lower)
+  ) {
+    icon = "🏢";
+  } else if (
+    /family|mother|father|brother|sister|son|daughter|wife|husband|uncle|aunt|cousin/.test(lower)
+  ) {
+    icon = "👪";
+  }
+
+  return `
+    <span class="relation-badge">
+      ${icon} ${escapeHtml(value)}
+    </span>
+  `;
+}
+
+
+function toggleTheme() {
+  const nextTheme =
+    document.documentElement.dataset.theme ===
+      "dark"
+      ? "light"
+      : "dark";
+
+  state.settings.theme =
+    nextTheme;
+
+  saveLocalSettings();
+  applyTheme(nextTheme);
+}
+
+
+function applyTheme(theme) {
+  const normalized =
+    theme === "dark"
+      ? "dark"
+      : "light";
+
+  document.documentElement.dataset.theme =
+    normalized;
+
+  elements.themeToggleButton.textContent =
+    normalized === "dark"
+      ? "☀"
+      : "☾";
+
+  elements.themeToggleButton.title =
+    normalized === "dark"
+      ? "Switch to light mode"
+      : "Switch to dark mode";
+
+  const themeMeta =
+    document.querySelector(
+      'meta[name="theme-color"]'
+    );
+
+  if (themeMeta) {
+    themeMeta.setAttribute(
+      "content",
+      normalized === "dark"
+        ? "#081a31"
+        : "#123B70"
+    );
+  }
+}
+
+
+function updateConnectionStatus(connected) {
+  if (!elements.connectionStatusNote) {
+    return;
+  }
+
+  elements.connectionStatusNote
+    .classList.toggle(
+      "is-disconnected",
+      !connected
+    );
+
+  const label =
+    elements.connectionStatusNote
+      .querySelector("span:last-child");
+
+  if (label) {
+    label.textContent =
+      connected
+        ? "Google Sheets connected"
+        : "Not connected";
+  }
+}
+
+
+async function enableBrowserNotifications() {
+  if (!("Notification" in window)) {
+    showToast(
+      "Browser notifications are not supported.",
+      true
+    );
+    return;
+  }
+
+  const permission =
+    await Notification.requestPermission();
+
+  state.settings.browserNotifications =
+    permission === "granted";
+
+  saveLocalSettings();
+  updateBrowserNotificationButton();
+
+  if (permission === "granted") {
+    showToast(
+      "Browser alerts enabled."
+    );
+
+    maybeNotifyTodayBirthdays(true);
+  } else {
+    showToast(
+      "Browser notification permission was not granted.",
+      true
+    );
+  }
+}
+
+
+function updateBrowserNotificationButton() {
+  if (!elements.browserNotificationButton) {
+    return;
+  }
+
+  const enabled =
+    state.settings.browserNotifications === true &&
+    "Notification" in window &&
+    Notification.permission === "granted";
+
+  elements.browserNotificationButton.textContent =
+    enabled
+      ? "Browser Alerts Enabled"
+      : "Enable Browser Alerts";
+}
+
+
+async function maybeNotifyTodayBirthdays(force) {
+  if (
+    state.settings.browserNotifications !== true ||
+    !("Notification" in window) ||
+    Notification.permission !== "granted" ||
+    !state.dashboard ||
+    !Array.isArray(
+      state.dashboard.todayBirthdays
+    ) ||
+    !state.dashboard.todayBirthdays.length
+  ) {
+    return;
+  }
+
+  const todayKey =
+    new Date().toISOString().slice(0, 10);
+
+  const storageKey =
+    "birthdayReminderNotificationDate";
+
+  if (
+    !force &&
+    localStorage.getItem(storageKey) === todayKey
+  ) {
+    return;
+  }
+
+  const names =
+    state.dashboard.todayBirthdays
+      .slice(0, 3)
+      .map(function (record) {
+        return record.name;
+      })
+      .join(", ");
+
+  const extra =
+    state.dashboard.todayBirthdays.length > 3
+      ? " and " +
+        (
+          state.dashboard.todayBirthdays.length - 3
+        ) +
+        " more"
+      : "";
+
+  const title =
+    "🎉 Birthday reminder";
+
+  const options = {
+    body:
+      names +
+      extra +
+      " celebrating today.",
+    icon: "icons/icon-192.png",
+    badge: "icons/icon-192.png"
+  };
+
+  try {
+    if (
+      "serviceWorker" in navigator
+    ) {
+      const registration =
+        await navigator.serviceWorker.ready;
+
+      await registration.showNotification(
+        title,
+        options
+      );
+    } else {
+      new Notification(
+        title,
+        options
+      );
+    }
+
+    localStorage.setItem(
+      storageKey,
+      todayKey
+    );
+  } catch (error) {
+    // Notification errors do not block the app.
+  }
+}
+
+
+async function refreshGoogleCalendar() {
+  if (!isConfigured()) {
+    showToast(
+      "Configure the API first.",
+      true
+    );
+    return;
+  }
+
+  setButtonLoading(
+    elements.refreshCalendarButton,
+    true,
+    "Syncing..."
+  );
+
+  try {
+    const response =
+      await apiPost(
+        "refreshCalendar",
+        {}
+      );
+
+    await reloadBirthdayData();
+
+    showToast(
+      "Calendar synced. " +
+      (
+        response.data.count || 0
+      ) +
+      " record(s) refreshed."
+    );
+  } catch (error) {
+    handleApiError(error);
+  } finally {
+    setButtonLoading(
+      elements.refreshCalendarButton,
+      false,
+      "Sync Google Calendar"
+    );
+  }
+}
+
+
+async function sendEmailDigestNow() {
+  if (!isConfigured()) {
+    showToast(
+      "Configure the API first.",
+      true
+    );
+    return;
+  }
+
+  setButtonLoading(
+    elements.sendEmailDigestButton,
+    true,
+    "Sending..."
+  );
+
+  try {
+    const response =
+      await apiPost(
+        "sendEmailDigest",
+        {}
+      );
+
+    if (response.data.sent) {
+      showToast(
+        "Email digest sent."
+      );
+    } else {
+      showToast(
+        "No email was sent. Check the recipient setting and upcoming birthdays.",
+        true
+      );
+    }
+  } catch (error) {
+    handleApiError(error);
+  } finally {
+    setButtonLoading(
+      elements.sendEmailDigestButton,
+      false,
+      "Send Email Digest Now"
+    );
+  }
+}
+
+
+function findRecordById(id) {
+  return (
+    state.birthdays.find(
+      function (record) {
+        return record.id === id;
+      }
+    ) ||
+    state.yearly.find(
+      function (record) {
+        return record.id === id;
+      }
+    ) ||
+    null
+  );
+}
+
+
+async function loadInitialData() {
+  setLoading(true);
+
+  try {
+    await Promise.all([
+      loadDashboard(),
+      loadBirthdays(),
+      loadRemoteSettings()
+    ]);
+
+    renderDashboard();
+    renderBirthdayList();
+    clearConnectionBanner();
+    maybeNotifyTodayBirthdays();
+
+  } catch (error) {
+    handleApiError(error);
+  } finally {
+    setLoading(false);
+  }
+}
+
+
+async function loadDashboard() {
+  const response =
+    await apiGet("dashboard");
+
+  state.dashboard =
+    response.data || null;
+}
+
+
+async function loadBirthdays() {
+  const response =
+    await apiGet("birthdays");
+
+  state.birthdays =
+    Array.isArray(response.data)
+      ? response.data
+      : [];
+}
+
+
+async function loadYearlyBirthdays(year) {
+  setLoading(true);
+
+  try {
+    const response = await apiGet(
+      "yearly",
+      { year: year }
+    );
+
+    state.yearly =
+      Array.isArray(response.data)
+        ? response.data
+        : [];
+
+    state.wishYear = Number(year);
+    renderYearlyList();
+    clearConnectionBanner();
+
+  } catch (error) {
+    handleApiError(error);
+  } finally {
+    setLoading(false);
+  }
+}
+
+
+async function loadRemoteSettings() {
+  const response =
+    await apiGet("settings");
+
+  const remote =
+    response.data || {};
+
+  state.settings.reminderDays =
+    Number(remote.reminderDays) || 7;
+
+  state.settings.listYear =
+    Number(remote.listYear) ||
+    new Date().getFullYear();
+
+  state.settings.defaultWhatsAppMessage =
+    remote.defaultWhatsAppMessage ||
+    DEFAULT_SETTINGS
+      .defaultWhatsAppMessage;
+
+  saveLocalSettings();
+  populateSettingsForm();
+}
+
+
+function renderDashboard() {
+  const data = state.dashboard || {
+    total: 0,
+    today: 0,
+    upcoming: 0,
+    upcoming30: 0,
+    thisMonth: 0,
+    averagePerMonth: 0,
+    sentToday: 0,
+    pastPending: 0,
+    reminderDays:
+      state.settings.reminderDays,
+    dashboardUpcomingDays: 30,
+    nextBirthday: null,
+    upcomingBirthdays: [],
+    todayBirthdays: [],
+    monthCounts: []
+  };
+
+  elements.totalCount.textContent =
+    data.total || 0;
+
+  elements.todayCount.textContent =
+    data.today || 0;
+
+  elements.upcomingCount.textContent =
+    data.upcoming || 0;
+
+  elements.thisMonthCount.textContent =
+    data.thisMonth || 0;
+
+  elements.upcoming30Count.textContent =
+    data.upcoming30 || 0;
+
+  elements.averageMonthCount.textContent =
+    Number(data.averagePerMonth || 0)
+      .toFixed(1)
+      .replace(/\.0$/, "");
+
+  elements.sentTodayCount.textContent =
+    data.sentToday || 0;
+
+  elements.pastPendingCount.textContent =
+    data.pastPending || 0;
+
+  elements.upcomingLabel.textContent =
+    "Next " +
+    (
+      data.reminderDays ||
+      state.settings.reminderDays
+    ) +
+    " Days";
+
+  elements.upcomingTableCaption.textContent =
+    "Next " +
+    (
+      data.dashboardUpcomingDays || 30
+    ) +
+    " days";
+
+  renderNextBirthday(
+    data.nextBirthday
+  );
+
+  renderDashboardTable(
+    data.upcomingBirthdays || [],
+    data.dashboardUpcomingDays || 30
+  );
+
+  renderTodayList(
+    data.todayBirthdays || []
+  );
+
+  renderMonthChart(
+    data.monthCounts || []
+  );
+}
+
+
+
+function renderNextBirthday(record) {
+  if (!record) {
+    elements.nextBirthdayDays.textContent =
+      "—";
+
+    elements.nextBirthdayCard.innerHTML = `
+      <div class="empty-state engaging">
+        <strong>🎂 No birthday records yet</strong>
+        <span>Add a birthday to start planning celebrations.</span>
+      </div>
+    `;
+
+    return;
+  }
+
+  elements.nextBirthdayDays.textContent =
+    daysText(record.daysLeft);
+
+  const ageText =
+    record.age !== "" &&
+    record.age !== null &&
+    record.age !== undefined
+      ? "Age: " + record.age
+      : "Age: —";
+
+  const relationBadge =
+    relationBadgeHtml(
+      record.relation
+    );
+
+  elements.nextBirthdayCard.innerHTML = `
+    <div class="next-person-content">
+      <div class="large-avatar">
+        ${initial(record.name)}
+      </div>
+
+      <div>
+        <h3>${escapeHtml(record.name)}</h3>
+
+        <p class="meta-line">
+          ${formatDate(record.nextBirthday)}
+          · ${escapeHtml(record.day || "")}
+          · ${escapeHtml(ageText)}
+        </p>
+
+        <div class="meta-badges">
+          ${relationBadge}
+          ${wishBadgeHtml(record)}
+        </div>
+      </div>
+
+      <div class="quick-actions">
+        <button
+          class="secondary-button"
+          type="button"
+          data-action="edit"
+          data-id="${escapeAttribute(record.id)}"
+        >Edit</button>
+
+        <button
+          class="primary-button whatsapp-button"
+          type="button"
+          data-action="wish"
+          data-id="${escapeAttribute(record.id)}"
+        >Create Wish</button>
+      </div>
+    </div>
+  `;
+}
+
+
+
+function renderDashboardTable(
+  records,
+  upcomingDays
+) {
+  const days =
+    Number(upcomingDays) || 30;
+
+  if (!records.length) {
+    elements.upcomingTableBody.innerHTML = `
+      <tr>
+        <td colspan="6">
+          <div class="empty-state engaging">
+            <strong>🎉 You're all caught up!</strong>
+            <span>
+              No birthdays in the next ${days} days.
+            </span>
+          </div>
+        </td>
+      </tr>
+    `;
+
+    return;
+  }
+
+  elements.upcomingTableBody.innerHTML =
+    records
+      .slice(0, 10)
+      .map(function (record) {
+        const relation =
+          record.relation
+            ? relationBadgeHtml(
+                record.relation
+              )
+            : "";
+
+        return `
+          <tr>
+            <td>
+              <div class="table-person">
+                <span class="mini-avatar">
+                  ${initial(record.name)}
+                </span>
+                <strong>
+                  ${escapeHtml(record.name)}
+                </strong>
+              </div>
+            </td>
+
+            <td>
+              ${formatDate(record.nextBirthday)}
+            </td>
+
+            <td>
+              ${daysText(record.daysLeft)}
+            </td>
+
+            <td>
+              ${relation}
+            </td>
+
+            <td>
+              ${wishBadgeHtml(record)}
+            </td>
+
+            <td>
+              <button
+                class="action-icon"
+                type="button"
+                data-action="wish"
+                data-id="${escapeAttribute(record.id)}"
+                title="Generate WhatsApp wish"
+              >✦</button>
+            </td>
+          </tr>
+        `;
+      })
+      .join("");
+}
+
+
+
+function renderTodayList(records) {
+  if (!records.length) {
+    elements.todayBirthdayList.innerHTML = `
+      <div class="empty-state engaging compact-empty">
+        <strong>✓ Nothing due today</strong>
+        <span>Check the upcoming list for the next celebration.</span>
+      </div>
+    `;
+
+    return;
+  }
+
+  elements.todayBirthdayList.innerHTML =
+    records
+      .slice(0, 8)
+      .map(function (record) {
+        return `
+          <article class="compact-person">
+            <span class="mini-avatar">
+              ${initial(record.name)}
+            </span>
+
+            <div>
+              <h3>${escapeHtml(record.name)}</h3>
+              <div class="meta-badges">
+                ${relationBadgeHtml(record.relation)}
+                ${wishBadgeHtml(record)}
+              </div>
+            </div>
+
+            <button
+              class="action-icon"
+              type="button"
+              data-action="wish"
+              data-id="${escapeAttribute(record.id)}"
+              title="Generate wish"
+            >✦</button>
+          </article>
+        `;
+      })
+      .join("");
+}
+
+
+
+function renderMonthChart(monthCounts) {
+  if (!monthCounts.length) {
+    elements.monthChart.innerHTML = `
+      <div class="empty-state engaging">
+        <strong>No chart data yet</strong>
+        <span>Add birthdays to see the monthly trend.</span>
+      </div>
+    `;
+
+    return;
+  }
+
+  const maximum = Math.max(
+    1,
+    ...monthCounts.map(
+      function (item) {
+        return Number(item.count) || 0;
+      }
+    )
+  );
+
+  elements.monthChart.innerHTML =
+    monthCounts
+      .map(function (item) {
+        const count =
+          Number(item.count) || 0;
+
+        const height = Math.max(
+          5,
+          Math.round(
+            (count / maximum) * 100
+          )
+        );
+
+        const birthdayWord =
+          count === 1
+            ? "birthday"
+            : "birthdays";
+
+        return `
+          <button
+            class="chart-column"
+            type="button"
+            data-chart-month="${escapeAttribute(item.month)}"
+            data-chart-label="${escapeAttribute(item.label)}"
+            aria-label="Show ${escapeAttribute(item.label)} birthdays"
+          >
+            <span class="chart-tooltip">
+              ${escapeHtml(item.label)}:
+              ${count} ${birthdayWord}
+            </span>
+
+            <span class="chart-track">
+              <span
+                class="chart-bar"
+                style="height:${height}%"
+              ></span>
+            </span>
+
+            <strong class="chart-count">
+              ${count}
+            </strong>
+
+            <span class="chart-label">
+              ${escapeHtml(item.month)}
+            </span>
+          </button>
+        `;
+      })
+      .join("");
+}
+
+
+
+function renderBirthdayList() {
+  const query =
+    elements.birthdaySearch.value
+      .trim()
+      .toLowerCase();
+
+  const gender =
+    elements.genderFilter.value;
+
+  const wishStatus =
+    elements.wishStatusFilter.value;
+
+  const filtered =
+    state.birthdays.filter(
+      function (record) {
+        return (
+          matchesSearch(record, query) &&
+          matchesGender(record, gender) &&
+          matchesWishStatus(
+            record,
+            wishStatus
+          ) &&
+          matchesTimeFilter(
+            record,
+            state.activeFilter
+          )
+        );
+      }
+    );
+
+  elements.resultCount.textContent =
+    filtered.length +
+    " record" +
+    (filtered.length === 1 ? "" : "s");
+
+  if (!filtered.length) {
+    elements.birthdayList.innerHTML =
+      '<div class="empty-state">No birthday records match these filters.</div>';
+    return;
+  }
+
+  elements.birthdayList.innerHTML =
+    filtered
+      .map(birthdayCardHtml)
+      .join("");
+}
+
+
+function matchesSearch(record, query) {
+  if (!query) {
+    return true;
+  }
+
+  const monthName =
+    record.monthName ||
+    monthNameFromDate(
+      record.birthdayThisYear ||
+      record.nextBirthday ||
+      record.dob
+    );
+
+  const text = [
+    record.name,
+    record.relation,
+    record.mobile,
+    record.whatsapp,
+    record.email,
+    record.gender,
+    monthName,
+    record.day,
+    record.wishStatus
+  ]
+    .join(" ")
+    .toLowerCase();
+
+  return text.includes(query);
+}
+
+
+function matchesGender(record, gender) {
+  return (
+    !gender ||
+    record.gender === gender
+  );
+}
+
+
+function matchesWishStatus(
+  record,
+  wishStatus
+) {
+  return (
+    !wishStatus ||
+    record.wishStatus === wishStatus
+  );
+}
+
+
+function matchesTimeFilter(
+  record,
+  filter
+) {
+  if (filter === "all") {
+    return true;
+  }
+
+  const today = startOfToday();
+
+  const thisYearDate =
+    parseIsoDate(
+      record.birthdayThisYear
+    );
+
+  const nextDate =
+    parseIsoDate(
+      record.nextBirthday
+    );
+
+  if (filter === "today") {
+    return (
+      thisYearDate &&
+      sameDay(thisYearDate, today)
+    );
+  }
+
+  if (filter === "upcoming") {
+    return (
+      Number(record.daysLeft) > 0 &&
+      Number(record.daysLeft) <=
+        Number(
+          state.settings.reminderDays
+        )
+    );
+  }
+
+  if (filter === "thisMonth") {
+    return (
+      thisYearDate &&
+      thisYearDate.getMonth() ===
+        today.getMonth()
+    );
+  }
+
+  if (filter === "nextMonth") {
+    const nextMonthDate = new Date(
+      today.getFullYear(),
+      today.getMonth() + 1,
+      1
+    );
+
+    return (
+      nextDate &&
+      nextDate.getFullYear() ===
+        nextMonthDate.getFullYear() &&
+      nextDate.getMonth() ===
+        nextMonthDate.getMonth()
+    );
+  }
+
+  if (filter === "missed") {
+    return record.missed === true;
+  }
+
+  return true;
+}
+
+
+function birthdayCardHtml(record) {
+  const contact =
+    record.whatsapp ||
+    record.mobile ||
+    "";
+
+  const ageText =
+    record.age !== "" &&
+    record.age !== null &&
+    record.age !== undefined
+      ? "Age: " + record.age
+      : "Age: —";
+
+  return `
+    <article class="birthday-card">
+      <div class="avatar">
+        ${initial(record.name)}
+      </div>
+
+      <div class="card-main">
+        <div class="card-heading">
+          <h3>${escapeHtml(record.name)}</h3>
+          ${wishBadgeHtml(record)}
+        </div>
+
+        <p class="card-meta">
+          ${formatDate(record.nextBirthday)}
+          · ${escapeHtml(record.day || "")}
+          · ${daysText(record.daysLeft)}
+          · ${escapeHtml(ageText)}
+        </p>
+
+        <div class="meta-badges">
+          ${relationBadgeHtml(record.relation)}
+          ${
+            record.gender
+              ? `<span class="info-badge">${escapeHtml(record.gender)}</span>`
+              : ""
+          }
+          ${
+            contact
+              ? `<span class="info-badge contact">${escapeHtml(contact)}</span>`
+              : ""
+          }
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <span class="days-badge ${record.daysLeft === 0 ? "today" : ""}">
+          ${daysText(record.daysLeft)}
+        </span>
+
+        <span class="spacer"></span>
+
+        <button
+          class="small-button"
+          type="button"
+          data-action="edit"
+          data-id="${escapeAttribute(record.id)}"
+        >Edit</button>
+
+        <button
+          class="small-button message"
+          type="button"
+          data-action="wish"
+          data-id="${escapeAttribute(record.id)}"
+        >WhatsApp Wish</button>
+      </div>
+    </article>
+  `;
+}
+
+
+
+function wishBadgeHtml(record) {
+  const status =
+    record.missed
+      ? "Missed"
+      : record.wishStatus ||
+        "Pending";
+
+  return `
+    <span class="wish-badge ${status.toLowerCase()}">
+      ${escapeHtml(status)}
+    </span>
+  `;
+}
+
+
+function wishStatusText(record) {
+  return record.missed
+    ? "Wish missed"
+    : "Wish " +
+      (
+        record.wishStatus ||
+        "Pending"
+      ).toLowerCase();
+}
+
+
+function renderYearlyList() {
+  const groups = new Map();
+
+  state.yearly.forEach(
+    function (record) {
+      if (!groups.has(record.month)) {
+        groups.set(
+          record.month,
+          []
+        );
+      }
+
+      groups
+        .get(record.month)
+        .push(record);
+    }
+  );
+
+  if (!state.yearly.length) {
+    elements.yearlyList.innerHTML =
+      '<div class="empty-state">No birthday records are available for this year.</div>';
+    return;
+  }
+
+  elements.yearlyList.innerHTML =
+    Array.from(groups.entries())
+      .map(function (entry) {
+        const month = entry[0];
+        const records = entry[1];
+
+        return `
+          <section class="month-group">
+            <h2 class="month-title">
+              <span>${escapeHtml(month)}</span>
+              <small>${records.length} birthdays</small>
+            </h2>
+
+            <div class="month-list">
+              ${records
+                .map(yearlyCardHtml)
+                .join("")}
+            </div>
+          </section>
+        `;
+      })
+      .join("");
+}
+
+
+function yearlyCardHtml(record) {
+  return `
+    <article class="birthday-card">
+      <div class="avatar">
+        ${initial(record.name)}
+      </div>
+
+      <div class="card-main">
+        <div class="card-heading">
+          <h3>${escapeHtml(record.name)}</h3>
+          ${wishBadgeHtml(record)}
+        </div>
+
+        <p class="card-meta">
+          ${formatDate(record.date)}
+          · ${escapeHtml(record.day || "")}
+          ${
+            record.ageTurning !== ""
+              ? " · Turning " +
+                escapeHtml(
+                  record.ageTurning
+                )
+              : ""
+          }
+        </p>
+
+        <p class="card-meta">
+          ${escapeHtml(record.relation || "No relation")}
+          · ${escapeHtml(record.gender || "Gender not specified")}
+        </p>
+      </div>
+
+      <div class="card-footer">
+        <span class="days-badge">
+          ${escapeHtml(record.month || "")}
+        </span>
+
+        <span class="spacer"></span>
+
+        <button
+          class="small-button message"
+          type="button"
+          data-action="wish"
+          data-id="${escapeAttribute(record.id)}"
+        >Create Wish</button>
+      </div>
+    </article>
+  `;
+}
+
+
+function openBirthdayDialog(
+  record = null
+) {
+  state.editingRecord = record;
+  elements.birthdayForm.reset();
+  elements.recordIdInput.value = "";
+
+  if (record) {
+    elements.dialogTitle.textContent =
+      "Edit Birthday";
+
+    elements.recordIdInput.value =
+      record.id || "";
+
+    elements.nameInput.value =
+      record.name || "";
+
+    elements.genderInput.value =
+      record.gender || "";
+
+    elements.dobInput.value =
+      record.dob || "";
+
+    elements.mobileInput.value =
+      record.mobile || "";
+
+    elements.whatsappInput.value =
+      record.whatsapp || "";
+
+    elements.relationInput.value =
+      record.relation || "";
+
+    elements.emailInput.value =
+      record.email || "";
+
+    elements.notesInput.value =
+      record.notes || "";
+
+    elements.deleteBirthdayButton.hidden =
+      record.source === "calendar";
+
+  } else {
+    elements.dialogTitle.textContent =
+      "Add Birthday";
+
+    elements.deleteBirthdayButton.hidden =
+      true;
+  }
+
+  elements.birthdayDialog.showModal();
+}
+
+
+function closeBirthdayDialog() {
+  state.editingRecord = null;
+  elements.birthdayDialog.close();
+}
+
+
+async function saveBirthday(event) {
+  event.preventDefault();
+
+  if (!isConfigured()) {
+    showToast(
+      "Configure the API first.",
+      true
+    );
+    return;
+  }
+
+  const id =
+    elements.recordIdInput.value.trim();
+
+  const data = {
+    id: id,
+    name:
+      elements.nameInput.value.trim(),
+    gender:
+      elements.genderInput.value,
+    dob:
+      elements.dobInput.value,
+    mobile:
+      elements.mobileInput.value.trim(),
+    whatsapp:
+      elements.whatsappInput.value.trim(),
+    relation:
+      elements.relationInput.value.trim(),
+    email:
+      elements.emailInput.value.trim(),
+    notes:
+      elements.notesInput.value.trim()
+  };
+
+  const action = id
+    ? "updateBirthday"
+    : "addBirthday";
+
+  setButtonLoading(
+    elements.saveBirthdayButton,
+    true,
+    "Saving..."
+  );
+
+  try {
+    await apiPost(action, data);
+
+    closeBirthdayDialog();
+
+    showToast(
+      id
+        ? "Birthday updated."
+        : "Birthday added."
+    );
+
+    await reloadBirthdayData();
+
+  } catch (error) {
+    handleApiError(error);
+  } finally {
+    setButtonLoading(
+      elements.saveBirthdayButton,
+      false,
+      "Save"
+    );
+  }
+}
+
+
+async function deleteBirthday() {
+  const record =
+    state.editingRecord;
+
+  if (!record) {
+    return;
+  }
+
+  if (
+    !window.confirm(
+      "Delete " +
+      record.name +
+      "'s birthday record?"
+    )
+  ) {
+    return;
+  }
+
+  setButtonLoading(
+    elements.deleteBirthdayButton,
+    true,
+    "Deleting..."
+  );
+
+  try {
+    await apiPost(
+      "deleteBirthday",
+      { id: record.id }
+    );
+
+    closeBirthdayDialog();
+    showToast("Birthday deleted.");
+    await reloadBirthdayData();
+
+  } catch (error) {
+    handleApiError(error);
+  } finally {
+    setButtonLoading(
+      elements.deleteBirthdayButton,
+      false,
+      "Delete"
+    );
+  }
+}
+
+
+function openWishDialog(record) {
+  state.wishRecord = record;
+
+  state.wishYear =
+    state.activeView === "yearly"
+      ? Number(
+          elements.yearInput.value
+        ) ||
+        state.settings.listYear
+      : new Date().getFullYear();
+
+  const date =
+    record.date ||
+    record.nextBirthday ||
+    record.birthdayThisYear;
+
+  elements.wishRecordId.value =
+    record.id || "";
+
+  elements.wishPersonName.textContent =
+    record.name || "Birthday Wish";
+
+  elements.wishPersonMeta.textContent =
+    formatDate(date) +
+    (
+      record.relation
+        ? " · " + record.relation
+        : ""
+    );
+
+  elements.wishNumberInput.value =
+    record.whatsapp ||
+    record.mobile ||
+    "";
+
+  elements.wishMessageInput.value =
+    buildWishMessage(record);
+
+  setWishStatusBadge(
+    record.missed
+      ? "Missed"
+      : record.wishStatus ||
+        "Pending"
+  );
+
+  elements.wishDialog.showModal();
+}
+
+
+function closeWishDialog() {
+  state.wishRecord = null;
+  elements.wishDialog.close();
+}
+
+
+function buildWishMessage(record) {
+  const date =
+    record.date ||
+    record.nextBirthday ||
+    record.birthdayThisYear;
+
+  return String(
+    state.settings
+      .defaultWhatsAppMessage ||
+    DEFAULT_SETTINGS
+      .defaultWhatsAppMessage
+  )
+    .replaceAll(
+      "{name}",
+      record.name || ""
+    )
+    .replaceAll(
+      "{date}",
+      formatDate(date)
+    )
+    .replaceAll(
+      "{age}",
+      record.ageTurning !== undefined &&
+      record.ageTurning !== ""
+        ? String(record.ageTurning)
+        : record.age !== undefined &&
+          record.age !== ""
+          ? String(record.age)
+          : ""
+    )
+    .replaceAll(
+      "{relation}",
+      record.relation || ""
+    );
+}
+
+
+async function copyWishMessage() {
+  const message =
+    elements.wishMessageInput.value;
+
+  try {
+    await navigator.clipboard
+      .writeText(message);
+
+    showToast("Message copied.");
+  } catch (error) {
+    elements.wishMessageInput.select();
+    document.execCommand("copy");
+    showToast("Message copied.");
+  }
+}
+
+
+function openWhatsAppMessage() {
+  const number =
+    normalizeWhatsAppNumber(
+      elements.wishNumberInput.value
+    );
+
+  if (!number) {
+    showToast(
+      "Enter a WhatsApp number.",
+      true
+    );
+    return;
+  }
+
+  const message =
+    elements.wishMessageInput.value.trim();
+
+  const link =
+    "https://wa.me/" +
+    number +
+    "?text=" +
+    encodeURIComponent(message);
+
+  window.open(
+    link,
+    "_blank",
+    "noopener"
+  );
+}
+
+
+async function markWishStatus(
+  status,
+  channel
+) {
+  const record =
+    state.wishRecord;
+
+  if (!record) {
+    return;
+  }
+
+  const button =
+    status === "Sent"
+      ? elements.markSentButton
+      : elements.skipWishButton;
+
+  setButtonLoading(
+    button,
+    true,
+    "Saving..."
+  );
+
+  try {
+    const response = await apiPost(
+      "setWishStatus",
+      {
+        id: record.id,
+        year: state.wishYear,
+        status: status,
+        channel: channel,
+        message:
+          elements.wishMessageInput.value.trim()
+      }
+    );
+
+    applyWishStatusLocally(
+      record.id,
+      response.data
+    );
+
+    setWishStatusBadge(status);
+    showToast(
+      "Wish marked " +
+      status.toLowerCase() +
+      "."
+    );
+
+    await loadDashboard();
+    renderDashboard();
+    renderBirthdayList();
+
+    if (
+      state.activeView === "yearly"
+    ) {
+      await loadYearlyBirthdays(
+        state.wishYear
+      );
+    }
+
+  } catch (error) {
+    handleApiError(error);
+  } finally {
+    setButtonLoading(
+      button,
+      false,
+      status === "Sent"
+        ? "Mark Sent"
+        : "Mark Skipped"
+    );
+  }
+}
+
+
+function applyWishStatusLocally(
+  id,
+  wish
+) {
+  [state.birthdays, state.yearly]
+    .forEach(function (collection) {
+      collection.forEach(
+        function (record) {
+          if (record.id === id) {
+            record.wishStatus =
+              wish.status;
+
+            record.wishChannel =
+              wish.channel;
+
+            record.wishMessage =
+              wish.message;
+
+            record.wishUpdatedAt =
+              wish.updatedAt;
+
+            record.missed = false;
+          }
+        }
+      );
+    });
+}
+
+
+function setWishStatusBadge(status) {
+  const normalized =
+    String(status || "Pending");
+
+  elements.wishCurrentStatus
+    .className =
+      "wish-badge " +
+      normalized.toLowerCase();
+
+  elements.wishCurrentStatus
+    .textContent = normalized;
+}
+
+
+function normalizeWhatsAppNumber(value) {
+  let number =
+    String(value || "")
+      .replace(/\D/g, "");
+
+  if (!number) {
+    return "";
+  }
+
+  const countryCode =
+    String(
+      state.settings.countryCode ||
+      "91"
+    ).replace(/\D/g, "");
+
+  if (
+    number.length === 10 &&
+    countryCode
+  ) {
+    number =
+      countryCode + number;
+
+  } else if (
+    number.length === 11 &&
+    number.startsWith("0") &&
+    countryCode
+  ) {
+    number =
+      countryCode +
+      number.slice(1);
+  }
+
+  return number;
+}
+
+
+async function reloadBirthdayData() {
+  await Promise.all([
+    loadBirthdays(),
+    loadDashboard()
+  ]);
+
+  renderBirthdayList();
+  renderDashboard();
+
+  if (
+    state.activeView === "yearly"
+  ) {
+    await loadYearlyBirthdays(
+      Number(
+        elements.yearInput.value
+      ) ||
+      state.settings.listYear
+    );
+  }
+}
+
+
+async function saveSettings(event) {
+  event.preventDefault();
+
+  const apiUrl =
+    normalizeApiUrl(
+      elements.apiUrlInput.value
+    );
+
+  const apiKey =
+    elements.apiKeyInput.value.trim();
+
+  const reminderDays = Number(
+    elements.reminderDaysInput.value
+  );
+
+  const listYear = Number(
+    elements.settingsYearInput.value
+  );
+
+  const countryCode =
+    elements.countryCodeInput.value
+      .replace(/\D/g, "");
+
+  const message =
+    elements.whatsappMessageInput.value
+      .trim();
+
+  if (!apiUrl || !apiKey) {
+    showToast(
+      "Apps Script URL and access key are required.",
+      true
+    );
+    return;
+  }
+
+  state.settings = {
+    ...state.settings,
+    apiUrl: apiUrl,
+    apiKey: apiKey,
+    reminderDays: reminderDays,
+    listYear: listYear,
+    countryCode: countryCode,
+    defaultWhatsAppMessage: message
+  };
+
+  saveLocalSettings();
+
+  const saveButton =
+    elements.settingsForm
+      .querySelector(
+        'button[type="submit"]'
+      );
+
+  setButtonLoading(
+    saveButton,
+    true,
+    "Saving..."
+  );
+
+  try {
+    await apiPost(
+      "saveSettings",
+      {
+        reminderDays: reminderDays,
+        listYear: listYear,
+        defaultWhatsAppMessage:
+          message
+      }
+    );
+
+    showToast("Settings saved.");
+    clearConnectionBanner();
+    await loadInitialData();
+    navigateTo("dashboard");
+
+  } catch (error) {
+    handleApiError(error);
+  } finally {
+    setButtonLoading(
+      saveButton,
+      false,
+      "Save Settings"
+    );
+  }
+}
+
+
+async function testConnection() {
+  const draftUrl =
+    normalizeApiUrl(
+      elements.apiUrlInput.value
+    );
+
+  const draftKey =
+    elements.apiKeyInput.value.trim();
+
+  if (!draftUrl || !draftKey) {
+    showToast(
+      "Enter the Apps Script URL and access key.",
+      true
+    );
+    return;
+  }
+
+  const previous = {
+    ...state.settings
+  };
+
+  state.settings.apiUrl =
+    draftUrl;
+
+  state.settings.apiKey =
+    draftKey;
+
+  setButtonLoading(
+    elements.testConnectionButton,
+    true,
+    "Testing..."
+  );
+
+  try {
+    const response =
+      await apiGet("dashboard");
+
+    showToast(
+      "Connected successfully. " +
+      response.data.total +
+      " birthday record(s) found."
+    );
+
+  } catch (error) {
+    state.settings = previous;
+    handleApiError(error);
+  } finally {
+    setButtonLoading(
+      elements.testConnectionButton,
+      false,
+      "Test Connection"
+    );
+  }
+}
+
+
+async function refreshCurrentView() {
+  if (!isConfigured()) {
+    navigateTo("settings");
+
+    showToast(
+      "Configure the API first.",
+      true
+    );
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    if (
+      state.activeView ===
+      "dashboard"
+    ) {
+      await Promise.all([
+        loadDashboard(),
+        loadBirthdays()
+      ]);
+
+      renderDashboard();
+      renderBirthdayList();
+
+    } else if (
+      state.activeView ===
+      "birthdays"
+    ) {
+      await loadBirthdays();
+      renderBirthdayList();
+
+    } else if (
+      state.activeView ===
+      "yearly"
+    ) {
+      await loadYearlyBirthdays(
+        Number(
+          elements.yearInput.value
+        ) ||
+        state.settings.listYear
+      );
+
+    } else {
+      await loadRemoteSettings();
+    }
+
+    showToast("Refreshed.");
+    clearConnectionBanner();
+
+  } catch (error) {
+    handleApiError(error);
+  } finally {
+    setLoading(false);
+  }
+}
+
+
+function navigateTo(view) {
+  const validViews = [
+    "dashboard",
+    "birthdays",
+    "yearly",
+    "settings"
+  ];
+
+  if (!validViews.includes(view)) {
+    view = "dashboard";
+  }
+
+  state.activeView = view;
+
+  document
+    .querySelectorAll(".view")
+    .forEach(function (section) {
+      section.classList.remove(
+        "is-active"
+      );
+    });
+
+  document
+    .getElementById(
+      view + "View"
+    )
+    .classList.add("is-active");
+
+  document
+    .querySelectorAll(
+      ".nav-link, .mobile-nav"
+    )
+    .forEach(function (button) {
+      button.classList.toggle(
+        "is-active",
+        button.dataset.nav === view
+      );
+    });
+
+  const titleMap = {
+    dashboard: "Dashboard",
+    birthdays: "All Birthdays",
+    yearly: "Yearly Birthday List",
+    settings: "Settings"
+  };
+
+  elements.pageTitle.textContent =
+    titleMap[view];
+
+  elements.addBirthdayButton.hidden =
+    view === "settings";
+
+  elements.topAddBirthdayButton.hidden =
+    view === "settings";
+
+  if (
+    view === "yearly" &&
+    isConfigured() &&
+    !state.yearly.length
+  ) {
+    elements.yearInput.value =
+      state.settings.listYear;
+
+    loadYearlyBirthdays(
+      state.settings.listYear
+    );
+  }
+}
+
+
+function populateSettingsForm() {
+  elements.apiUrlInput.value =
+    state.settings.apiUrl || "";
+
+  elements.apiKeyInput.value =
+    state.settings.apiKey || "";
+
+  elements.reminderDaysInput.value =
+    state.settings.reminderDays;
+
+  elements.settingsYearInput.value =
+    state.settings.listYear;
+
+  elements.yearInput.value =
+    state.settings.listYear;
+
+  elements.countryCodeInput.value =
+    state.settings.countryCode;
+
+  elements.whatsappMessageInput.value =
+    state.settings
+      .defaultWhatsAppMessage;
+
+  updateBrowserNotificationButton();
+}
+
+
+async function apiGet(
+  action,
+  params = {}
+) {
+  const url = new URL(
+    state.settings.apiUrl
+  );
+
+  url.searchParams.set(
+    "action",
+    action
+  );
+
+  url.searchParams.set(
+    "key",
+    state.settings.apiKey
+  );
+
+  Object
+    .entries(params)
+    .forEach(function (entry) {
+      url.searchParams.set(
+        entry[0],
+        String(entry[1])
+      );
+    });
+
+  const response = await fetch(
+    url.toString(),
+    {
+      method: "GET",
+      redirect: "follow",
+      cache: "no-store"
+    }
+  );
+
+  return parseApiResponse(
+    response
+  );
+}
+
+
+async function apiPost(
+  action,
+  data = {}
+) {
+  const response = await fetch(
+    state.settings.apiUrl,
+    {
+      method: "POST",
+      redirect: "follow",
+      headers: {
+        "Content-Type":
+          "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify({
+        action: action,
+        key: state.settings.apiKey,
+        data: data
+      })
+    }
+  );
+
+  return parseApiResponse(
+    response
+  );
+}
+
+
+async function parseApiResponse(
+  response
+) {
+  const text =
+    await response.text();
+
+  let payload;
+
+  try {
+    payload = JSON.parse(text);
+  } catch (error) {
+    throw new Error(
+      "The Apps Script response was not valid JSON. " +
+      "Replace 09_WebAppApi.gs and redeploy a new Web App version."
+    );
+  }
+
+  if (
+    !response.ok ||
+    !payload.success
+  ) {
+    throw new Error(
+      payload.error ||
+      "Request failed with status " +
+      response.status +
+      "."
+    );
+  }
+
+  return payload;
+}
+
+
+function formatDate(value) {
+  const date = parseIsoDate(value);
+
+  if (!date) {
+    return value || "";
+  }
+
+  return new Intl.DateTimeFormat(
+    "en-IN",
+    {
+      day: "2-digit",
+      month: "short",
+      year: "numeric"
+    }
+  ).format(date);
+}
+
+
+function monthNameFromDate(value) {
+  const date = parseIsoDate(value);
+
+  if (!date) {
+    return "";
+  }
+
+  return new Intl.DateTimeFormat(
+    "en-IN",
+    { month: "long" }
+  ).format(date);
+}
+
+
+function parseIsoDate(value) {
+  const match = String(
+    value || ""
+  ).match(
+    /^(\d{4})-(\d{2})-(\d{2})/
+  );
+
+  if (!match) {
+    return null;
+  }
+
+  const date = new Date(
+    Number(match[1]),
+    Number(match[2]) - 1,
+    Number(match[3]),
+    0,
+    0,
+    0,
+    0
+  );
+
+  return Number.isNaN(
+    date.getTime()
+  )
+    ? null
+    : date;
+}
+
+
+function startOfToday() {
+  const date = new Date();
+  date.setHours(0, 0, 0, 0);
+  return date;
+}
+
+
+function sameDay(first, second) {
+  return (
+    first.getFullYear() ===
+      second.getFullYear() &&
+    first.getMonth() ===
+      second.getMonth() &&
+    first.getDate() ===
+      second.getDate()
+  );
+}
+
+
+function daysText(days) {
+  const value = Number(days);
+
+  if (value === 0) {
+    return "Today";
+  }
+
+  return (
+    value +
+    " day" +
+    (value === 1 ? "" : "s")
+  );
+}
+
+
+function initial(name) {
+  return escapeHtml(
+    String(name || "?")
+      .charAt(0)
+      .toUpperCase()
+  );
+}
+
+
+function loadLocalSettings() {
+  try {
+    const stored = JSON.parse(
+      localStorage.getItem(
+        STORAGE_KEY
+      ) || "{}"
+    );
+
+    return {
+      ...DEFAULT_SETTINGS,
+      ...stored
+    };
+
+  } catch (error) {
+    return {
+      ...DEFAULT_SETTINGS
+    };
+  }
+}
+
+
+function saveLocalSettings() {
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(
+      state.settings
+    )
+  );
+}
+
+
+function isConfigured() {
+  return Boolean(
+    state.settings.apiUrl &&
+    state.settings.apiKey
+  );
+}
+
+
+function normalizeApiUrl(value) {
+  const trimmed =
+    String(value || "").trim();
+
+  if (!trimmed) {
+    return "";
+  }
+
+  try {
+    const url =
+      new URL(trimmed);
+
+    return url
+      .toString()
+      .replace(/\/$/, "");
+
+  } catch (error) {
+    return "";
+  }
+}
+
+
+function setLoading(loading) {
+  state.loading = loading;
+  elements.refreshButton.disabled =
+    loading;
+
+  elements.refreshButton.textContent =
+    loading ? "…" : "↻";
+}
+
+
+function setButtonLoading(
+  button,
+  loading,
+  label
+) {
+  if (!button) {
+    return;
+  }
+
+  button.disabled = loading;
+  button.textContent = label;
+}
+
+
+function showConnectionBanner(
+  message
+) {
+  elements.connectionBanner.hidden =
+    false;
+
+  elements.connectionBanner.textContent =
+    message;
+
+  updateConnectionStatus(false);
+}
+
+
+
+function clearConnectionBanner() {
+  elements.connectionBanner.hidden =
+    true;
+
+  elements.connectionBanner.textContent =
+    "";
+
+  updateConnectionStatus(true);
+}
+
+
+
+function handleApiError(error) {
+  const message =
+    error && error.message
+      ? error.message
+      : "Something went wrong.";
+
+  showToast(message, true);
+  showConnectionBanner(message);
+
+  if (
+    /access key|not configured|deployment|URL|valid JSON/i
+      .test(message)
+  ) {
+    navigateTo("settings");
+  }
+}
+
+
+let toastTimer;
+
+
+function showToast(
+  message,
+  isError = false
+) {
+  clearTimeout(toastTimer);
+
+  elements.toast.textContent =
+    message;
+
+  elements.toast.style.background =
+    isError
+      ? "#b3261e"
+      : "#1f2937";
+
+  elements.toast.classList.add(
+    "is-visible"
+  );
+
+  toastTimer = setTimeout(
+    function () {
+      elements.toast.classList.remove(
+        "is-visible"
+      );
+    },
+    3400
+  );
+}
+
+
+async function installApp() {
+  if (
+    !state.deferredInstallPrompt
+  ) {
+    return;
+  }
+
+  state.deferredInstallPrompt
+    .prompt();
+
+  await state.deferredInstallPrompt
+    .userChoice;
+
+  state.deferredInstallPrompt =
+    null;
+
+  elements.installButton.hidden =
+    true;
+}
+
+
+function registerServiceWorker() {
+  if (
+    "serviceWorker" in navigator
+  ) {
+    window.addEventListener(
+      "load",
+      function () {
+        navigator.serviceWorker
+          .register("sw.js")
+          .catch(function () {
+            // The app remains usable without offline caching.
+          });
+      }
+    );
+  }
+}
+
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+
+function escapeAttribute(value) {
+  return escapeHtml(value);
+}
+
+</script>
 </body>
 </html>
