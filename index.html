@@ -16,7 +16,7 @@
   >
   <meta
     name="app-build"
-    content="privacy-first-local-only-v3.0.4-compact-mobile-cards"
+    content="privacy-first-local-only-v3.1.0-smart-contact-ux"
   >
   <title>Birthday Reminder — Privacy First</title>
 
@@ -1090,6 +1090,132 @@
       }
     }
 
+
+    .top-sync-status {
+      max-width: 180px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 750;
+      line-height: 1.25;
+      text-align: right;
+    }
+
+    .clickable-stat {
+      position: relative;
+      cursor: pointer;
+      transition:
+        transform .16s ease,
+        border-color .16s ease,
+        box-shadow .16s ease;
+    }
+
+    .clickable-stat:hover,
+    .clickable-stat:focus-visible {
+      transform: translateY(-2px);
+      border-color: #b8cae2;
+      box-shadow: 0 10px 28px rgba(18, 58, 107, .09);
+      outline: none;
+    }
+
+    .clickable-stat small {
+      display: block;
+      margin-top: 8px;
+      color: var(--blue);
+      font-size: 10px;
+      font-weight: 850;
+    }
+
+    .attention-stat {
+      border-color: #f0d3a4;
+      background:
+        linear-gradient(180deg, #fffaf1, #fff);
+    }
+
+    .avatar {
+      background: var(--avatar-bg, var(--navy));
+    }
+
+    .avatar-tone-0 { --avatar-bg: #174f86; }
+    .avatar-tone-1 { --avatar-bg: #8054a6; }
+    .avatar-tone-2 { --avatar-bg: #167a68; }
+    .avatar-tone-3 { --avatar-bg: #b2612b; }
+    .avatar-tone-4 { --avatar-bg: #9b3f63; }
+    .avatar-tone-5 { --avatar-bg: #4569a8; }
+    .avatar-tone-6 { --avatar-bg: #5e7633; }
+    .avatar-tone-7 { --avatar-bg: #8b5340; }
+
+    .quick-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding-top: 2px;
+    }
+
+    .quick-action {
+      display: inline-flex;
+      min-height: 30px;
+      align-items: center;
+      gap: 5px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0 10px;
+      background: #fff;
+      color: var(--navy);
+      font-size: 10px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .quick-action:hover {
+      border-color: #b9cbe2;
+      background: var(--blue-soft);
+    }
+
+    .quick-action.whatsapp {
+      border-color: #bfe6d5;
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .quick-action.ask {
+      border-color: #efd7ac;
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+
+    .contact-result-count {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 750;
+    }
+
+    @media (max-width: 650px) {
+      .top-sync-status {
+        display: none;
+      }
+
+      .clickable-stat small {
+        margin-top: 5px;
+        font-size: 9px;
+      }
+
+      .quick-actions {
+        gap: 5px;
+      }
+
+      .quick-action {
+        min-height: 28px;
+        padding: 0 8px;
+        font-size: 9px;
+      }
+
+      #contactList .contact-row {
+        padding-bottom: 10px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -1136,7 +1262,7 @@
         <div class="brand-mark">🎂</div>
         <div>
           <strong>Birthday Reminder</strong>
-          <small>Local-Only v3.0.4</small>
+          <small>Local-Only v3.1.0</small>
         </div>
       </div>
 
@@ -1204,6 +1330,10 @@
         </div>
 
         <div class="topbar-actions">
+          <span id="lastSyncTop" class="top-sync-status">
+            Not synced
+          </span>
+
           <button
             id="syncButton"
             class="secondary-button sync-button"
@@ -1237,24 +1367,52 @@
           </div>
 
           <div class="cards">
-            <article class="stat-card">
+            <article
+              class="stat-card clickable-stat"
+              data-dashboard-action="allContacts"
+              role="button"
+              tabindex="0"
+              title="View all contacts"
+            >
               <span>Contacts With Mobile</span>
               <strong id="totalContacts">0</strong>
+              <small>View contacts →</small>
             </article>
 
-            <article class="stat-card">
+            <article
+              class="stat-card clickable-stat"
+              data-dashboard-action="birthdays"
+              role="button"
+              tabindex="0"
+              title="View birthday contacts"
+            >
               <span>Contacts With Birthday</span>
               <strong id="totalBirthdays">0</strong>
+              <small>View birthdays →</small>
             </article>
 
-            <article class="stat-card">
+            <article
+              class="stat-card clickable-stat"
+              data-dashboard-action="currentMonth"
+              role="button"
+              tabindex="0"
+              title="View current month birthdays"
+            >
               <span>Current Month</span>
               <strong id="currentMonthCount">0</strong>
+              <small>View this month →</small>
             </article>
 
-            <article class="stat-card">
+            <article
+              class="stat-card clickable-stat attention-stat"
+              data-dashboard-action="missingBirthday"
+              role="button"
+              tabindex="0"
+              title="Complete missing birthday profiles"
+            >
               <span>Birthday Missing</span>
               <strong id="missingBirthdayCount">0</strong>
+              <small>Complete Profiles →</small>
             </article>
           </div>
 
@@ -1284,17 +1442,21 @@
                 <input
                   id="contactSearch"
                   type="search"
-                  placeholder="Search name or mobile"
+                  placeholder="🔎 Search contacts..."
+                  autocomplete="off"
                 >
 
                 <select id="birthdayFilter">
-                  <option value="">All contacts</option>
-                  <option value="with">With birthday</option>
-                  <option value="without">Without birthday</option>
+                  <option value="">All</option>
+                  <option value="with">Birthday Available</option>
+                  <option value="without">Birthday Missing</option>
+                  <option value="currentMonth">Current Month</option>
+                  <option value="next30">Next 30 Days</option>
                 </select>
               </div>
             </div>
 
+            <div id="contactResultCount" class="contact-result-count"></div>
             <div id="contactList" class="contact-list"></div>
           </div>
         </section>
@@ -1458,9 +1620,11 @@
         "currentMonthCount",
         "missingBirthdayCount",
         "lastSyncText",
+        "lastSyncTop",
         "upcomingList",
         "contactSearch",
         "birthdayFilter",
+        "contactResultCount",
         "contactList",
         "birthdaySearch",
         "birthdayList",
@@ -1551,6 +1715,37 @@
                 navigate(
                   button.dataset.view
                 )
+            );
+          }
+        );
+
+      document
+        .querySelectorAll(
+          "[data-dashboard-action]"
+        )
+        .forEach(
+          (card) => {
+            const run = () =>
+              handleDashboardAction(
+                card.dataset.dashboardAction
+              );
+
+            card.addEventListener(
+              "click",
+              run
+            );
+
+            card.addEventListener(
+              "keydown",
+              (event) => {
+                if (
+                  event.key === "Enter" ||
+                  event.key === " "
+                ) {
+                  event.preventDefault();
+                  run();
+                }
+              }
             );
           }
         );
@@ -2255,9 +2450,17 @@
         state.contacts.length -
         birthdays.length;
 
-      el.lastSyncText.textContent =
+      const syncLabel =
         state.syncedAt
           ? `Synced ${state.syncedAt.toLocaleString("en-IN")}`
+          : "Not synced";
+
+      el.lastSyncText.textContent =
+        syncLabel;
+
+      el.lastSyncTop.textContent =
+        state.syncedAt
+          ? `Last sync · ${state.syncedAt.toLocaleDateString("en-IN")} ${state.syncedAt.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}`
           : "Not synced";
 
       const upcoming =
@@ -2301,13 +2504,21 @@
     }
 
     function renderContacts() {
-      const query =
+      const queryText =
         el.contactSearch.value
           .trim()
           .toLowerCase();
 
       const filter =
         el.birthdayFilter.value;
+
+      const today =
+        startOfDay(
+          new Date()
+        );
+
+      const currentMonth =
+        today.getMonth() + 1;
 
       const contacts =
         state.contacts.filter(
@@ -2318,7 +2529,7 @@
               );
 
             const matchesSearch =
-              !query ||
+              !queryText ||
               [
                 contact.name,
                 contact.gender,
@@ -2327,18 +2538,54 @@
               ]
                 .join(" ")
                 .toLowerCase()
-                .includes(query);
+                .includes(
+                  queryText
+                );
 
-            const matchesFilter =
-              !filter ||
-              (
-                filter === "with" &&
-                hasBirthday
-              ) ||
-              (
-                filter === "without" &&
-                !hasBirthday
-              );
+            let matchesFilter =
+              true;
+
+            if (
+              filter === "with"
+            ) {
+              matchesFilter =
+                hasBirthday;
+            } else if (
+              filter === "without"
+            ) {
+              matchesFilter =
+                !hasBirthday;
+            } else if (
+              filter ===
+                "currentMonth"
+            ) {
+              matchesFilter =
+                hasBirthday &&
+                contact.birthday.month ===
+                  currentMonth;
+            } else if (
+              filter === "next30"
+            ) {
+              if (!hasBirthday) {
+                matchesFilter =
+                  false;
+              } else {
+                const next =
+                  nextBirthdayDate(
+                    contact.birthday
+                  );
+
+                const days =
+                  dayDifference(
+                    today,
+                    next
+                  );
+
+                matchesFilter =
+                  days >= 0 &&
+                  days <= 30;
+              }
+            }
 
             return (
               matchesSearch &&
@@ -2346,6 +2593,9 @@
             );
           }
         );
+
+      el.contactResultCount.textContent =
+        `${contacts.length} of ${state.contacts.length} contact(s)`;
 
       el.contactList.innerHTML =
         contacts.length
@@ -2497,7 +2747,7 @@
                               return `
                                 <div class="month-row">
                                   <div class="person">
-                                    <span class="avatar">
+                                    <span class="avatar ${avatarToneClass(contact.name)}">
                                       ${initial(
                                         contact.name
                                       )}
@@ -2577,16 +2827,20 @@
             )
           : "Not saved";
 
-      const wa =
-        whatsappUrl(
-          contact.whatsapp ||
-          contact.mobile
-        );
+      const number =
+        contact.whatsapp ||
+        contact.mobile;
+
+      const wishText =
+        `Happy Birthday ${contact.name}! 🎂 Wishing you a wonderful year ahead.`;
+
+      const askText =
+        `Hi ${contact.name}, I'm updating my birthday reminder. Could you please share your birthday (DD/MM)?`;
 
       return `
         <article class="contact-row">
           <div class="person">
-            <span class="avatar">
+            <span class="avatar ${avatarToneClass(contact.name)}">
               ${initial(contact.name)}
             </span>
 
@@ -2624,13 +2878,62 @@
 
           <a
             class="wa-link"
-            href="${wa}"
+            href="${whatsappUrl(number)}"
             target="_blank"
             rel="noopener noreferrer"
             title="Open WhatsApp"
           >
             WA
           </a>
+
+          <div class="quick-actions">
+            <a
+              class="quick-action"
+              href="${callUrl(contact.mobile)}"
+            >
+              ☎ Call
+            </a>
+
+            <a
+              class="quick-action whatsapp"
+              href="${whatsappMessageUrl(number, contact.birthday ? "" : askText)}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              WhatsApp
+            </a>
+
+            <a
+              class="quick-action"
+              href="${smsUrl(contact.mobile, contact.birthday ? "" : askText)}"
+            >
+              SMS
+            </a>
+
+            ${
+              contact.birthday
+                ? `
+                  <a
+                    class="quick-action whatsapp"
+                    href="${whatsappMessageUrl(number, wishText)}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    🎂 Wish
+                  </a>
+                `
+                : `
+                  <a
+                    class="quick-action ask"
+                    href="${whatsappMessageUrl(number, askText)}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Ask Birthday
+                  </a>
+                `
+            }
+          </div>
         </article>
       `;
     }
@@ -2639,10 +2942,17 @@
       contact,
       date
     ) {
+      const number =
+        contact.whatsapp ||
+        contact.mobile;
+
+      const wishText =
+        `Happy Birthday ${contact.name}! 🎂 Wishing you a wonderful year ahead.`;
+
       return `
         <article class="contact-row">
           <div class="person">
-            <span class="avatar">
+            <span class="avatar ${avatarToneClass(contact.name)}">
               ${initial(contact.name)}
             </span>
 
@@ -2687,15 +2997,46 @@
 
           <a
             class="wa-link"
-            href="${whatsappUrl(
-              contact.whatsapp ||
-              contact.mobile
-            )}"
+            href="${whatsappUrl(number)}"
             target="_blank"
             rel="noopener noreferrer"
           >
             WA
           </a>
+
+          <div class="quick-actions">
+            <a
+              class="quick-action"
+              href="${callUrl(contact.mobile)}"
+            >
+              ☎ Call
+            </a>
+
+            <a
+              class="quick-action whatsapp"
+              href="${whatsappUrl(number)}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              WhatsApp
+            </a>
+
+            <a
+              class="quick-action"
+              href="${smsUrl(contact.mobile, "")}"
+            >
+              SMS
+            </a>
+
+            <a
+              class="quick-action whatsapp"
+              href="${whatsappMessageUrl(number, wishText)}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              🎂 Wish
+            </a>
+          </div>
         </article>
       `;
     }
@@ -3002,7 +3343,66 @@
         .format(date);
     }
 
-    function whatsappUrl(
+
+    function handleDashboardAction(
+      action
+    ) {
+      if (
+        action === "birthdays"
+      ) {
+        navigate("birthdays");
+        return;
+      }
+
+      navigate("contacts");
+
+      el.contactSearch.value =
+        "";
+
+      if (
+        action === "missingBirthday"
+      ) {
+        el.birthdayFilter.value =
+          "without";
+      } else if (
+        action === "currentMonth"
+      ) {
+        el.birthdayFilter.value =
+          "currentMonth";
+      } else {
+        el.birthdayFilter.value =
+          "";
+      }
+
+      renderContacts();
+    }
+
+
+    function avatarToneClass(
+      name
+    ) {
+      const value =
+        String(name || "");
+
+      let hash = 0;
+
+      for (
+        let index = 0;
+        index < value.length;
+        index++
+      ) {
+        hash =
+          (
+            hash * 31 +
+            value.charCodeAt(index)
+          ) >>> 0;
+      }
+
+      return `avatar-tone-${hash % 8}`;
+    }
+
+
+    function normalizePhoneForAction(
       value
     ) {
       let number =
@@ -3022,6 +3422,70 @@
           "91" +
           number.slice(1);
       }
+
+      return number;
+    }
+
+
+    function callUrl(
+      value
+    ) {
+      const number =
+        normalizePhoneForAction(
+          value
+        );
+
+      return number
+        ? `tel:+${number}`
+        : "#";
+    }
+
+
+    function smsUrl(
+      value,
+      message
+    ) {
+      const number =
+        normalizePhoneForAction(
+          value
+        );
+
+      if (!number) {
+        return "#";
+      }
+
+      return message
+        ? `sms:+${number}?body=${encodeURIComponent(message)}`
+        : `sms:+${number}`;
+    }
+
+
+    function whatsappMessageUrl(
+      value,
+      message
+    ) {
+      const number =
+        normalizePhoneForAction(
+          value
+        );
+
+      if (!number) {
+        return "#";
+      }
+
+      return message
+        ? `https://wa.me/${number}?text=${encodeURIComponent(message)}`
+        : `https://wa.me/${number}`;
+    }
+
+
+    function whatsappUrl(
+      value
+    ) {
+      const number =
+        normalizePhoneForAction(
+          value
+        );
 
       return number
         ? `https://wa.me/${number}`
