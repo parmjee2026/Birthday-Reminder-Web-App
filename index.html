@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#123b70">
   <meta name="description" content="Free multi-user Birthday Reminder with Google Login and Google Contacts sync">
-  <meta name="app-build" content="firebase-free-v2.0-configured">
+  <meta name="app-build" content="firebase-free-v2.0.1-startup-fix">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <title>Birthday Reminder v2.0 Configured</title>
+  <title>Birthday Reminder v2.0.1</title>
 
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
@@ -569,6 +569,9 @@
       <button id="googleLoginButton" class="google-button" type="button">
         Continue with Google & Sync Contacts
       </button>
+      <div id="startupStatus" class="login-note" aria-live="polite">
+        Loading secure Google sign-in…
+      </div>
       <p class="login-note">
         The app requests read-only Google Contacts permission. It cannot edit
         or delete your Google Contacts.
@@ -582,7 +585,7 @@
         <div class="brand-icon">🎂</div>
         <div>
           <strong>Birthday Reminder</strong>
-          <small>Firebase Free v2.0 Configured</small>
+          <small>Firebase Free v2.0.1</small>
         </div>
       </div>
 
@@ -893,11 +896,32 @@
     const el = {};
     let toastTimer;
 
-    document.addEventListener("DOMContentLoaded", initializeUi);
+    if (document.readyState === "loading") {
+      document.addEventListener(
+        "DOMContentLoaded",
+        initializeUi,
+        { once: true }
+      );
+    } else {
+      initializeUi();
+    }
+
+    let uiInitialized = false;
 
     async function initializeUi() {
+      if (uiInitialized) {
+        return;
+      }
+
+      uiInitialized = true;
+
       cacheElements();
       bindEvents();
+
+      if (el.startupStatus) {
+        el.startupStatus.textContent =
+          "Google sign-in is ready.";
+      }
 
       if (!firebaseReady) {
         showToast(
@@ -907,6 +931,12 @@
         el.googleLoginButton.disabled = true;
         el.googleLoginButton.textContent =
           "Complete Firebase setup first";
+
+        if (el.startupStatus) {
+          el.startupStatus.textContent =
+            "Firebase configuration is missing.";
+        }
+
         return;
       }
 
@@ -951,7 +981,7 @@
 
     function cacheElements() {
       [
-        "loginPage", "googleLoginButton", "appShell",
+        "loginPage", "googleLoginButton", "startupStatus", "appShell",
         "profileName", "profileEmail", "pageTitle",
         "syncContactsButton", "addBirthdayButton",
         "logoutButton", "welcomeName", "syncSummary",
@@ -1064,6 +1094,14 @@
     }
 
     async function loginWithGoogle() {
+      if (!auth) {
+        showToast(
+          "Firebase Authentication is not initialized.",
+          true
+        );
+        return;
+      }
+
       const provider =
         createGoogleProvider();
 

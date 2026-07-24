@@ -1,8 +1,8 @@
 {
-  "name": "Birthday Reminder Firebase Free v2.0",
+  "name": "Birthday Reminder Firebase Free v2.0.1",
   "short_name": "Birthdays",
   "description": "Free multi-user Birthday Reminder with Google Login and Google Contacts sync",
-  "start_url": "./?v=2.0-configured",
+  "start_url": "./?v=2.0.1",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f7fc",
