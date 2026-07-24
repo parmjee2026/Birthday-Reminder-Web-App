@@ -1,30 +1,38 @@
-BIRTHDAY REMINDER FIREBASE FREE v2.0.1 — LOGIN BUTTON FIX
+BIRTHDAY REMINDER FIREBASE FREE v2.0.2 — SDK LOADER FIX
 
-FIXED
------
-Firebase modules loaded after DOMContentLoaded had already fired, so the UI
-initialization function did not run and the Google login button had no click
-event.
+PROBLEM
+-------
+The login page remained on:
+"Loading secure Google sign-in..."
 
-v2.0.1 initializes immediately when the page is already loaded and uses the
-DOMContentLoaded event only when it is still needed.
+This meant Firebase SDK loading did not finish, so the login button was not
+initialized.
+
+FIX
+---
+- Firebase SDK loading now has a timeout.
+- Firebase 12.16.0 is tried first.
+- Firebase 10.13.2 is used as a fallback.
+- Startup errors are shown on the login card.
+- The login button becomes a Retry button if SDK loading fails.
+- The page no longer remains silently stuck.
 
 UPLOAD
 ------
 1. Extract this ZIP.
-2. Delete the old frontend files from the GitHub repository root.
-3. Upload every extracted file directly to the repository root.
-4. Commit changes.
-5. Wait for GitHub Pages deployment.
-6. Open:
-   https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=2.0.1
-7. Press Ctrl + Shift + R.
+2. Replace all frontend files in the GitHub repository root.
+3. Commit changes.
+4. Wait for GitHub Pages deployment.
+5. Open:
+   https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=2.0.2
+6. Press Ctrl + Shift + R.
 
-EXPECTED
---------
-The login card should show:
+SUCCESS MESSAGE
+---------------
+Google sign-in is ready · Firebase 12.16.0
 
-Google sign-in is ready.
+or:
 
-Clicking Continue with Google & Sync Contacts should then open the Google
-account selection popup.
+Google sign-in is ready · Firebase 10.13.2
+
+Then click Continue with Google & Sync Contacts.

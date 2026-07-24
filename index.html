@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#123b70">
   <meta name="description" content="Free multi-user Birthday Reminder with Google Login and Google Contacts sync">
-  <meta name="app-build" content="firebase-free-v2.0.1-startup-fix">
+  <meta name="app-build" content="firebase-free-v2.0.2-sdk-loader-fix">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <title>Birthday Reminder v2.0.1</title>
+  <title>Birthday Reminder v2.0.2</title>
 
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
@@ -585,7 +585,7 @@
         <div class="brand-icon">🎂</div>
         <div>
           <strong>Birthday Reminder</strong>
-          <small>Firebase Free v2.0.1</small>
+          <small>Firebase Free v2.0.2</small>
         </div>
       </div>
 
@@ -821,62 +821,295 @@
       measurementId: "G-QJMXCFMJNJ"
     };
 
-    const FIREBASE_VERSION = "12.16.0";
+    const FIREBASE_VERSIONS = [
+      "12.16.0",
+      "10.13.2"
+    ];
+
     const CONTACTS_SCOPE =
       "https://www.googleapis.com/auth/contacts.readonly";
 
-    const {
-      initializeApp
-    } = await import(
-      `https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}/firebase-app.js`
-    );
-
-    const {
-      getAuth,
-      GoogleAuthProvider,
-      signInWithPopup,
-      signInWithRedirect,
-      getRedirectResult,
-      reauthenticateWithPopup,
-      reauthenticateWithRedirect,
-      onAuthStateChanged,
-      signOut
-    } = await import(
-      `https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}/firebase-auth.js`
-    );
-
-    const {
-      getFirestore,
-      collection,
-      doc,
-      setDoc,
-      addDoc,
-      updateDoc,
-      deleteDoc,
-      getDoc,
-      onSnapshot,
-      query,
-      orderBy,
-      serverTimestamp,
-      writeBatch,
-      Timestamp
-    } = await import(
-      `https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}/firebase-firestore.js`
-    );
-
     const firebaseReady =
       !Object.values(FIREBASE_CONFIG).some(
-        (value) => String(value).startsWith("PASTE_")
+        (value) =>
+          String(value).startsWith("PASTE_")
       );
+
+    let initializeApp;
+    let getAuth;
+    let GoogleAuthProvider;
+    let signInWithPopup;
+    let signInWithRedirect;
+    let getRedirectResult;
+    let reauthenticateWithPopup;
+    let reauthenticateWithRedirect;
+    let onAuthStateChanged;
+    let signOut;
+
+    let getFirestore;
+    let collection;
+    let doc;
+    let setDoc;
+    let addDoc;
+    let updateDoc;
+    let deleteDoc;
+    let getDoc;
+    let onSnapshot;
+    let query;
+    let orderBy;
+    let serverTimestamp;
+    let writeBatch;
+    let Timestamp;
 
     let firebaseApp;
     let auth;
     let db;
+    let loadedFirebaseVersion = "";
 
-    if (firebaseReady) {
-      firebaseApp = initializeApp(FIREBASE_CONFIG);
-      auth = getAuth(firebaseApp);
-      db = getFirestore(firebaseApp);
+    function importWithTimeout(
+      url,
+      timeoutMs = 12000
+    ) {
+      return Promise.race([
+        import(url),
+
+        new Promise(
+          (_, reject) => {
+            window.setTimeout(
+              () => {
+                reject(
+                  new Error(
+                    `Timed out loading ${url}`
+                  )
+                );
+              },
+              timeoutMs
+            );
+          }
+        )
+      ]);
+    }
+
+    async function loadFirebaseSdk() {
+      const errors = [];
+
+      for (
+        const version of FIREBASE_VERSIONS
+      ) {
+        try {
+          const base =
+            `https://www.gstatic.com/firebasejs/${version}`;
+
+          const [
+            appModule,
+            authModule,
+            firestoreModule
+          ] = await Promise.all([
+            importWithTimeout(
+              `${base}/firebase-app.js`
+            ),
+            importWithTimeout(
+              `${base}/firebase-auth.js`
+            ),
+            importWithTimeout(
+              `${base}/firebase-firestore.js`
+            )
+          ]);
+
+          initializeApp =
+            appModule.initializeApp;
+
+          getAuth =
+            authModule.getAuth;
+
+          GoogleAuthProvider =
+            authModule.GoogleAuthProvider;
+
+          signInWithPopup =
+            authModule.signInWithPopup;
+
+          signInWithRedirect =
+            authModule.signInWithRedirect;
+
+          getRedirectResult =
+            authModule.getRedirectResult;
+
+          reauthenticateWithPopup =
+            authModule.reauthenticateWithPopup;
+
+          reauthenticateWithRedirect =
+            authModule.reauthenticateWithRedirect;
+
+          onAuthStateChanged =
+            authModule.onAuthStateChanged;
+
+          signOut =
+            authModule.signOut;
+
+          getFirestore =
+            firestoreModule.getFirestore;
+
+          collection =
+            firestoreModule.collection;
+
+          doc =
+            firestoreModule.doc;
+
+          setDoc =
+            firestoreModule.setDoc;
+
+          addDoc =
+            firestoreModule.addDoc;
+
+          updateDoc =
+            firestoreModule.updateDoc;
+
+          deleteDoc =
+            firestoreModule.deleteDoc;
+
+          getDoc =
+            firestoreModule.getDoc;
+
+          onSnapshot =
+            firestoreModule.onSnapshot;
+
+          query =
+            firestoreModule.query;
+
+          orderBy =
+            firestoreModule.orderBy;
+
+          serverTimestamp =
+            firestoreModule.serverTimestamp;
+
+          writeBatch =
+            firestoreModule.writeBatch;
+
+          Timestamp =
+            firestoreModule.Timestamp;
+
+          const requiredFunctions = [
+            initializeApp,
+            getAuth,
+            GoogleAuthProvider,
+            signInWithPopup,
+            getRedirectResult,
+            getFirestore,
+            collection,
+            doc,
+            setDoc,
+            onSnapshot
+          ];
+
+          if (
+            requiredFunctions.some(
+              (item) =>
+                typeof item !== "function"
+            )
+          ) {
+            throw new Error(
+              `Firebase ${version} loaded with missing exports.`
+            );
+          }
+
+          loadedFirebaseVersion =
+            version;
+
+          return version;
+        } catch (error) {
+          errors.push(
+            `${version}: ${
+              error &&
+              error.message
+                ? error.message
+                : String(error)
+            }`
+          );
+        }
+      }
+
+      throw new Error(
+        "Firebase SDK could not load. " +
+        errors.join(" | ")
+      );
+    }
+
+    async function bootstrapApplication() {
+      const status =
+        document.getElementById(
+          "startupStatus"
+        );
+
+      const button =
+        document.getElementById(
+          "googleLoginButton"
+        );
+
+      try {
+        if (!firebaseReady) {
+          throw new Error(
+            "Firebase configuration is missing."
+          );
+        }
+
+        if (status) {
+          status.textContent =
+            "Loading secure Google sign-in…";
+        }
+
+        if (button) {
+          button.disabled = true;
+        }
+
+        const version =
+          await loadFirebaseSdk();
+
+        firebaseApp =
+          initializeApp(
+            FIREBASE_CONFIG
+          );
+
+        auth =
+          getAuth(firebaseApp);
+
+        db =
+          getFirestore(firebaseApp);
+
+        await initializeUi();
+
+        if (status) {
+          status.textContent =
+            `Google sign-in is ready · Firebase ${version}`;
+        }
+
+        if (button) {
+          button.disabled = false;
+        }
+      } catch (error) {
+        console.error(
+          "Birthday Reminder startup failed:",
+          error
+        );
+
+        if (status) {
+          status.textContent =
+            "Google sign-in could not load. Check internet access, disable blocking extensions for this site, then retry.";
+        }
+
+        if (button) {
+          button.disabled = false;
+          button.textContent =
+            "Retry Google Sign-in";
+
+          button.addEventListener(
+            "click",
+            () => {
+              window.location.reload();
+            },
+            { once: true }
+          );
+        }
+      }
     }
 
     const state = {
@@ -896,16 +1129,6 @@
     const el = {};
     let toastTimer;
 
-    if (document.readyState === "loading") {
-      document.addEventListener(
-        "DOMContentLoaded",
-        initializeUi,
-        { once: true }
-      );
-    } else {
-      initializeUi();
-    }
-
     let uiInitialized = false;
 
     async function initializeUi() {
@@ -917,28 +1140,6 @@
 
       cacheElements();
       bindEvents();
-
-      if (el.startupStatus) {
-        el.startupStatus.textContent =
-          "Google sign-in is ready.";
-      }
-
-      if (!firebaseReady) {
-        showToast(
-          "Firebase configuration is not filled in index.html.",
-          true
-        );
-        el.googleLoginButton.disabled = true;
-        el.googleLoginButton.textContent =
-          "Complete Firebase setup first";
-
-        if (el.startupStatus) {
-          el.startupStatus.textContent =
-            "Firebase configuration is missing.";
-        }
-
-        return;
-      }
 
       try {
         const redirectResult = await getRedirectResult(auth);
@@ -2570,6 +2771,8 @@
     function escapeAttribute(value) {
       return escapeHtml(value);
     }
+
+    bootstrapApplication();
 
     if ("serviceWorker" in navigator) {
       window.addEventListener(
