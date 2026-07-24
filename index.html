@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#123b70">
   <meta name="description" content="Free multi-user Birthday Reminder with Google Login and Google Contacts sync">
-  <meta name="app-build" content="firebase-free-v2.0.3-auto-sync-fix">
+  <meta name="app-build" content="firebase-free-v2.0.4-account-mismatch-fix">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <title>Birthday Reminder v2.0.3</title>
+  <title>Birthday Reminder v2.0.4</title>
 
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
@@ -561,7 +561,7 @@
     <div class="login-card">
       <div class="login-logo">🎂</div>
       <p class="eyebrow">Free multi-user version</p>
-      <h1>Birthday Reminder v2.0</h1>
+      <h1>Birthday Reminder v2.0.4</h1>
       <p>
         Login with Google. Your birthdays and synced contacts remain separate
         from every other user's data.
@@ -585,7 +585,7 @@
         <div class="brand-icon">🎂</div>
         <div>
           <strong>Birthday Reminder</strong>
-          <small>Firebase Free v2.0.3</small>
+          <small>Firebase Free v2.0.4</small>
         </div>
       </div>
 
@@ -708,6 +708,9 @@
               press <strong>Sync Contacts</strong>. Background sync while the
               browser is closed is intentionally not included because this
               version uses no paid backend services.
+              <br><br>
+              Contact sync must use the same Gmail account currently logged
+              into the dashboard. To use another Gmail account, logout first.
             </div>
 
             <label>
@@ -1279,7 +1282,9 @@
       );
     }
 
-    function createGoogleProvider() {
+    function createGoogleProvider(
+      options = {}
+    ) {
       const provider =
         new GoogleAuthProvider();
 
@@ -1287,9 +1292,20 @@
         CONTACTS_SCOPE
       );
 
-      provider.setCustomParameters({
-        prompt: "select_account"
-      });
+      const parameters = {
+        prompt:
+          options.prompt ||
+          "select_account"
+      };
+
+      if (options.loginHint) {
+        parameters.login_hint =
+          options.loginHint;
+      }
+
+      provider.setCustomParameters(
+        parameters
+      );
 
       return provider;
     }
@@ -1304,7 +1320,9 @@
       }
 
       const provider =
-        createGoogleProvider();
+        createGoogleProvider({
+          prompt: "select_account"
+        });
 
       setButtonLoading(
         el.googleLoginButton,
@@ -1574,13 +1592,25 @@
         return;
       }
 
+      const currentEmail =
+        state.user.email || "";
+
       const provider =
-        createGoogleProvider();
+        createGoogleProvider({
+          loginHint: currentEmail,
+          prompt: "consent"
+        });
 
       setButtonLoading(
         el.syncContactsButton,
         true,
         "Authorizing..."
+      );
+
+      showToast(
+        currentEmail
+          ? `Continue with ${currentEmail}`
+          : "Continue with the currently logged-in Google account."
       );
 
       try {
@@ -1609,10 +1639,13 @@
         );
       } catch (error) {
         if (
-          error.code ===
-            "auth/popup-blocked" ||
-          error.code ===
-            "auth/operation-not-supported-in-this-environment"
+          error &&
+          (
+            error.code ===
+              "auth/popup-blocked" ||
+            error.code ===
+              "auth/operation-not-supported-in-this-environment"
+          )
         ) {
           sessionStorage.setItem(
             "syncAfterLogin",
@@ -1622,6 +1655,19 @@
           await reauthenticateWithRedirect(
             state.user,
             provider
+          );
+
+          return;
+        }
+
+        if (
+          error &&
+          error.code ===
+            "auth/user-mismatch"
+        ) {
+          showToast(
+            `Wrong Google account selected. Choose ${currentEmail || "the same account used to log in"}, or logout first to use another account.`,
+            true
           );
 
           return;
