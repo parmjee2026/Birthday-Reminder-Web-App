@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#123b70">
   <meta name="description" content="Free multi-user Birthday Reminder with Google Login and Google Contacts sync">
-  <meta name="app-build" content="firebase-free-v2.0.2-sdk-loader-fix">
+  <meta name="app-build" content="firebase-free-v2.0.3-auto-sync-fix">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <title>Birthday Reminder v2.0.2</title>
+  <title>Birthday Reminder v2.0.3</title>
 
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
@@ -585,7 +585,7 @@
         <div class="brand-icon">🎂</div>
         <div>
           <strong>Birthday Reminder</strong>
-          <small>Firebase Free v2.0.2</small>
+          <small>Firebase Free v2.0.3</small>
         </div>
       </div>
 
@@ -1334,6 +1334,24 @@
             "syncAfterLogin",
             "1"
           );
+
+          await waitForAuthenticatedUser();
+
+          if (
+            state.user &&
+            sessionStorage.getItem(
+              "syncAfterLogin"
+            ) === "1"
+          ) {
+            sessionStorage.removeItem(
+              "syncAfterLogin"
+            );
+
+            await syncContactsWithToken(
+              credential.accessToken,
+              true
+            );
+          }
         }
       } catch (error) {
         if (
@@ -1363,6 +1381,30 @@
           "Continue with Google & Sync Contacts"
         );
       }
+    }
+
+
+    async function waitForAuthenticatedUser(
+      timeoutMs = 8000
+    ) {
+      const startedAt =
+        Date.now();
+
+      while (
+        !state.user &&
+        Date.now() - startedAt <
+          timeoutMs
+      ) {
+        await new Promise(
+          (resolve) =>
+            window.setTimeout(
+              resolve,
+              100
+            )
+        );
+      }
+
+      return state.user;
     }
 
     async function startUserSession(user) {
@@ -1602,7 +1644,9 @@
       setButtonLoading(
         el.syncContactsButton,
         true,
-        "Syncing..."
+        automatic
+          ? "Importing Contacts..."
+          : "Syncing..."
       );
 
       try {
@@ -1644,11 +1688,10 @@
         );
 
         if (
-          automatic &&
           birthdayContacts.length === 0
         ) {
           showToast(
-            "No birthdays were found in Google Contacts.",
+            "Sync complete: no contacts with a saved birthday were found. Add a birthday in Google Contacts, then sync again.",
             true
           );
         }
@@ -1936,27 +1979,33 @@
           data.lastContactSyncCount || 0
         );
 
-      el.syncSummary.textContent =
-        count
-          ? `${count} Google Contact birthday(s)`
-          : "Contacts not synced yet";
-
       const timestamp =
         data.lastContactSyncAt;
 
-      if (
+      const hasSynced =
         timestamp &&
         typeof timestamp.toDate ===
-          "function"
-      ) {
+          "function";
+
+      if (hasSynced) {
+        el.syncSummary.textContent =
+          count
+            ? `${count} Google Contact birthday(s)`
+            : "Sync complete · 0 birthdays found";
+
         el.lastSyncText.textContent =
-          "Last synced: " +
-          timestamp
-            .toDate()
-            .toLocaleString(
-              "en-IN"
-            );
+          count
+            ? "Last synced: " +
+              timestamp
+                .toDate()
+                .toLocaleString(
+                  "en-IN"
+                )
+            : "Add birthdays to Google Contacts, then press Sync Contacts.";
       } else {
+        el.syncSummary.textContent =
+          "Contacts not synced yet";
+
         el.lastSyncText.textContent =
           "Use Sync Contacts to import birthdays.";
       }

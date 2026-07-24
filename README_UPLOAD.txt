@@ -1,21 +1,15 @@
-BIRTHDAY REMINDER FIREBASE FREE v2.0.2 — SDK LOADER FIX
+BIRTHDAY REMINDER FIREBASE FREE v2.0.3 — AUTO CONTACT SYNC FIX
 
-PROBLEM
--------
-The login page remained on:
-"Loading secure Google sign-in..."
-
-This meant Firebase SDK loading did not finish, so the login button was not
-initialized.
-
-FIX
----
-- Firebase SDK loading now has a timeout.
-- Firebase 12.16.0 is tried first.
-- Firebase 10.13.2 is used as a fallback.
-- Startup errors are shown on the login card.
-- The login button becomes a Retry button if SDK loading fails.
-- The page no longer remains silently stuck.
+FIXED
+-----
+- Google Contacts sync now starts automatically after popup login completes.
+- The app waits for the Firebase authenticated user session before importing.
+- A completed sync with no birthday fields now says:
+  "Sync complete · 0 birthdays found"
+  instead of:
+  "Contacts not synced yet"
+- The user receives instructions to add birthdays in Google Contacts and sync
+  again when no birthdays are available.
 
 UPLOAD
 ------
@@ -24,15 +18,24 @@ UPLOAD
 3. Commit changes.
 4. Wait for GitHub Pages deployment.
 5. Open:
-   https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=2.0.2
+   https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=2.0.3
 6. Press Ctrl + Shift + R.
 
-SUCCESS MESSAGE
----------------
-Google sign-in is ready · Firebase 12.16.0
+TEST
+----
+1. Logout from the current dashboard.
+2. Open the v2.0.3 URL.
+3. Login with an OAuth Test User Gmail account.
+4. Approve read-only Contacts permission.
+5. The top button should temporarily show:
+   Importing Contacts...
+6. Contacts with saved birthdays should appear automatically.
 
-or:
+ZERO RESULT
+-----------
+If the dashboard shows:
+"Sync complete · 0 birthdays found"
 
-Google sign-in is ready · Firebase 10.13.2
-
-Then click Continue with Google & Sync Contacts.
+then Google login and People API sync succeeded, but the selected Google
+account has no contacts with a birthday saved. Add a birthday to one Google
+Contact, wait briefly, and press Sync Contacts again.
