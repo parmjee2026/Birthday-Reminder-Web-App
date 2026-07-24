@@ -144,3 +144,28 @@ https://people.googleapis.com/v1/people/me?personFields=names
 
 Open after upload:
 https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=3.0.2
+
+
+V3.0.3 COMPACT MOBILE MENU
+--------------------------
+Added:
+- Hamburger menu on mobile/tablet.
+- Off-canvas sidebar.
+- Tap-outside overlay to close.
+- Escape key closes menu.
+- Menu closes automatically after selecting a page.
+- Compact mobile topbar, cards and spacing.
+- Desktop layout unchanged.
+
+Privacy architecture remains unchanged:
+- No Firebase
+- No Firestore
+- No Google Sheet
+- No Apps Script
+- No localStorage
+- No sessionStorage
+- No IndexedDB
+- Contact data remains in browser memory only
+
+Open after upload:
+https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=3.0.3
