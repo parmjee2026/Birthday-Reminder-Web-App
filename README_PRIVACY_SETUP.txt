@@ -124,3 +124,23 @@ After saving the origin in Google Cloud, open:
 https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=3.0.1
 
 Then press Ctrl + Shift + R.
+
+
+V3.0.2 USER NAME
+----------------
+Added basic Google profile scope:
+
+https://www.googleapis.com/auth/userinfo.profile
+
+Purpose:
+- Read the signed-in user's display name only.
+- Show it on the Dashboard and sidebar.
+- The display name remains in browser memory only.
+- It is not written to Firebase, Firestore, Sheets, Apps Script, localStorage,
+  IndexedDB or any application database.
+
+People API request:
+https://people.googleapis.com/v1/people/me?personFields=names
+
+Open after upload:
+https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=3.0.2

@@ -16,7 +16,7 @@
   >
   <meta
     name="app-build"
-    content="privacy-first-local-only-v3.0.1-oauth-fixed"
+    content="privacy-first-local-only-v3.0.2-user-name"
   >
   <title>Birthday Reminder — Privacy First</title>
 
@@ -777,7 +777,7 @@
         <div class="brand-mark">🎂</div>
         <div>
           <strong>Birthday Reminder</strong>
-          <small>Local-Only v3.0.1</small>
+          <small>Local-Only v3.0.2</small>
         </div>
       </div>
 
@@ -800,8 +800,12 @@
       </nav>
 
       <div class="sidebar-footer">
-        <div class="privacy-badge">
-          <strong>Temporary session</strong>
+        <div
+          id="userProfileBadge"
+          class="privacy-badge"
+        >
+          <strong id="sidebarUserName">Google User</strong>
+          <span>Temporary session</span><br>
           No contact data is stored by the app.
         </div>
 
@@ -839,6 +843,18 @@
         </div>
 
         <section id="dashboardView" class="view active">
+          <div class="panel">
+            <div class="panel-heading">
+              <div>
+                <span class="field-label">Google account connected</span>
+                <h3 id="dashboardWelcome">Welcome</h3>
+              </div>
+              <span class="field-label">
+                Name is kept in browser memory only.
+              </span>
+            </div>
+          </div>
+
           <div class="cards">
             <article class="stat-card">
               <span>Contacts With Mobile</span>
@@ -981,10 +997,12 @@
             <article class="privacy-card">
               <h3>Requested permission</h3>
               <p>
-                The app asks only for read-only access to Google Contacts.
+                The app asks for read-only Google Contacts access and basic
+                Google profile access only to show your display name.
               </p>
               <p>
-                It cannot edit or delete contacts.
+                It cannot edit or delete contacts. Your display name is kept
+                only in this browser tab memory.
               </p>
             </article>
 
@@ -1012,9 +1030,16 @@
     const CONTACTS_SCOPE =
       "https://www.googleapis.com/auth/contacts.readonly";
 
+    const PROFILE_SCOPE =
+      "https://www.googleapis.com/auth/userinfo.profile";
+
+    const GOOGLE_SCOPES =
+      `${CONTACTS_SCOPE} ${PROFILE_SCOPE}`;
+
     const state = {
       accessToken: "",
       contacts: [],
+      userName: "",
       activeView: "dashboard",
       syncedAt: null
     };
@@ -1043,6 +1068,8 @@
         "disconnectButton",
         "syncButton",
         "pageTitle",
+        "sidebarUserName",
+        "dashboardWelcome",
         "totalContacts",
         "totalBirthdays",
         "currentMonthCount",
@@ -1190,7 +1217,7 @@
           client_id:
             GOOGLE_CLIENT_ID,
           scope:
-            CONTACTS_SCOPE,
+            GOOGLE_SCOPES,
           include_granted_scopes:
             true,
           callback,
@@ -1242,6 +1269,11 @@
                 }
 
                 showApp();
+
+                await loadCurrentUserName(
+                  state.accessToken
+                );
+
                 await syncContacts();
               } catch (error) {
                 handleError(error);
@@ -1268,6 +1300,82 @@
 
       authorizeAndSync();
     }
+
+
+    async function loadCurrentUserName(
+      accessToken
+    ) {
+      try {
+        const url = new URL(
+          "https://people.googleapis.com/v1/people/me"
+        );
+
+        url.searchParams.set(
+          "personFields",
+          "names"
+        );
+
+        const response =
+          await fetch(
+            url.toString(),
+            {
+              headers: {
+                Authorization:
+                  `Bearer ${accessToken}`
+              },
+              cache: "no-store"
+            }
+          );
+
+        const payload =
+          await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            payload.error &&
+            payload.error.message
+              ? payload.error.message
+              : "Google profile name could not be read."
+          );
+        }
+
+        const name =
+          primaryField(
+            payload.names,
+            "displayName"
+          ) ||
+          "Google User";
+
+        state.userName =
+          name;
+
+        renderUserName();
+      } catch (error) {
+        console.warn(
+          "User name unavailable:",
+          error
+        );
+
+        state.userName =
+          "Google User";
+
+        renderUserName();
+      }
+    }
+
+
+    function renderUserName() {
+      const name =
+        state.userName ||
+        "Google User";
+
+      el.sidebarUserName.textContent =
+        name;
+
+      el.dashboardWelcome.textContent =
+        `Welcome, ${name}`;
+    }
+
 
     async function syncContacts() {
       if (!state.accessToken) {
@@ -2265,7 +2373,10 @@
       const finish = () => {
         state.accessToken = "";
         state.contacts = [];
+        state.userName = "";
         state.syncedAt = null;
+
+        renderUserName();
 
         renderEverything();
 
