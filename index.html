@@ -16,7 +16,7 @@
   >
   <meta
     name="app-build"
-    content="privacy-first-local-only-v3.0.3-compact-mobile-menu"
+    content="privacy-first-local-only-v3.0.4-compact-mobile-cards"
   >
   <title>Birthday Reminder — Privacy First</title>
 
@@ -926,6 +926,170 @@
         width: 100%;
       }
     }
+
+    .sync-label-mobile {
+      display: none;
+    }
+
+    @media (max-width: 650px) {
+      .topbar {
+        flex-direction: row;
+        align-items: center;
+        min-height: 56px;
+        padding: 7px 10px;
+      }
+
+      .topbar-title-group {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+
+      .topbar-actions {
+        display: flex;
+        flex: 0 0 auto;
+        margin-left: 6px;
+      }
+
+      .sync-button {
+        width: auto;
+        min-height: 38px !important;
+        padding: 0 10px !important;
+        border-radius: 10px;
+      }
+
+      .sync-label-desktop {
+        display: none;
+      }
+
+      .sync-label-mobile {
+        display: inline;
+      }
+
+      .mobile-menu-button {
+        width: 38px;
+        height: 38px;
+      }
+
+      .topbar h2 {
+        max-width: 42vw;
+        font-size: 17px;
+      }
+
+      #dashboardView > .panel:first-child {
+        padding: 12px 14px;
+      }
+
+      #dashboardView > .panel:first-child .panel-heading {
+        margin-bottom: 0;
+      }
+
+      #dashboardView > .panel:first-child .field-label:last-child {
+        display: none;
+      }
+
+      #dashboardWelcome {
+        margin-top: 2px;
+        font-size: 18px;
+      }
+
+      #dashboardView .panel:last-child {
+        padding: 12px;
+      }
+
+      #dashboardView .panel:last-child .panel-heading {
+        margin-bottom: 9px;
+      }
+
+      #dashboardView .panel:last-child .panel-heading h3 {
+        font-size: 18px;
+      }
+
+      #lastSyncText {
+        font-size: 9px;
+      }
+
+      #upcomingList {
+        gap: 7px;
+      }
+
+      #upcomingList .contact-row {
+        grid-template-columns: 42px minmax(0, 1fr) auto;
+        grid-template-areas:
+          "avatar person action"
+          "avatar meta action";
+        align-items: center;
+        gap: 4px 10px;
+        padding: 10px 11px;
+        border-radius: 13px;
+      }
+
+      #upcomingList .contact-row .person {
+        display: contents;
+      }
+
+      #upcomingList .contact-row .avatar {
+        grid-area: avatar;
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        align-self: center;
+      }
+
+      #upcomingList .contact-row .person-text {
+        grid-area: person;
+      }
+
+      #upcomingList .contact-row .person-text strong {
+        font-size: 13px;
+      }
+
+      #upcomingList .contact-row .person-text small {
+        margin-top: 1px;
+        font-size: 10px;
+      }
+
+      #upcomingList .contact-row > div:nth-of-type(2) {
+        display: none;
+      }
+
+      #upcomingList .contact-row > div:nth-of-type(3) {
+        grid-area: meta;
+        justify-self: start;
+      }
+
+      #upcomingList .contact-row > div:nth-of-type(3) .field-value {
+        display: inline;
+        margin: 0;
+        font-size: 11px;
+      }
+
+      #upcomingList .contact-row > div:nth-of-type(3) .field-label {
+        display: none;
+      }
+
+      #upcomingList .contact-row > div:nth-of-type(4) {
+        display: none;
+      }
+
+      #upcomingList .contact-row .wa-link {
+        grid-area: action;
+        width: 36px;
+        height: 36px;
+        align-self: center;
+        justify-self: end;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .topbar h2 {
+        max-width: 34vw;
+      }
+
+      .sync-button {
+        padding: 0 8px !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -972,7 +1136,7 @@
         <div class="brand-mark">🎂</div>
         <div>
           <strong>Birthday Reminder</strong>
-          <small>Local-Only v3.0.3</small>
+          <small>Local-Only v3.0.4</small>
         </div>
       </div>
 
@@ -1042,10 +1206,13 @@
         <div class="topbar-actions">
           <button
             id="syncButton"
-            class="secondary-button"
+            class="secondary-button sync-button"
             type="button"
+            aria-label="Sync All Contacts"
+            title="Sync All Contacts"
           >
-            ↻ Sync All Contacts
+            <span class="sync-label-desktop">↻ Sync All Contacts</span>
+            <span class="sync-label-mobile">↻ Sync</span>
           </button>
         </div>
       </header>
@@ -1612,6 +1779,33 @@
     }
 
 
+
+    function setSyncButtonLabel(
+      mobileText,
+      desktopText
+    ) {
+      const desktop =
+        el.syncButton.querySelector(
+          ".sync-label-desktop"
+        );
+
+      const mobile =
+        el.syncButton.querySelector(
+          ".sync-label-mobile"
+        );
+
+      if (desktop) {
+        desktop.textContent =
+          desktopText;
+      }
+
+      if (mobile) {
+        mobile.textContent =
+          mobileText;
+      }
+    }
+
+
     async function syncContacts() {
       if (!state.accessToken) {
         authorizeAndSync();
@@ -1619,8 +1813,10 @@
       }
 
       setLoading(true);
-      el.syncButton.textContent =
-        "Scanning all contacts…";
+      setSyncButtonLabel(
+        "Scanning…",
+        "Scanning all contacts…"
+      );
 
       try {
         const people =
@@ -1667,8 +1863,10 @@
         }
       } finally {
         setLoading(false);
-        el.syncButton.textContent =
-          "↻ Sync All Contacts";
+        setSyncButtonLabel(
+          "↻ Sync",
+          "↻ Sync All Contacts"
+        );
       }
     }
 
