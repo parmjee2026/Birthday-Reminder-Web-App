@@ -16,7 +16,7 @@
   >
   <meta
     name="app-build"
-    content="privacy-first-local-only-v3.1.0-smart-contact-ux"
+    content="privacy-first-local-only-v3.1.2-sync-status-onboarding"
   >
   <title>Birthday Reminder — Privacy First</title>
 
@@ -1216,6 +1216,121 @@
       }
     }
 
+
+    .sync-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+    }
+
+    .sync-spinner {
+      display: none;
+      width: 14px;
+      height: 14px;
+      flex: 0 0 auto;
+      border: 2px solid currentColor;
+      border-right-color: transparent;
+      border-radius: 50%;
+      animation: sync-spin .7s linear infinite;
+    }
+
+    .sync-button.is-loading .sync-spinner {
+      display: inline-block;
+    }
+
+    @keyframes sync-spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .top-sync-status {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+    }
+
+    .sync-status-dot {
+      width: 9px;
+      height: 9px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      box-shadow: 0 0 0 2px rgba(0, 0, 0, .035);
+    }
+
+    .sync-status-dot.never {
+      background: #df2b2b;
+    }
+
+    .sync-status-dot.synced {
+      background: #1aaa55;
+    }
+
+    .onboarding-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 13px;
+      padding: 15px 17px;
+      border: 1px solid #c8d9ee;
+      border-radius: 16px;
+      background:
+        linear-gradient(
+          135deg,
+          #f7fbff,
+          #eef5ff
+        );
+      box-shadow: 0 6px 18px rgba(18, 58, 107, .035);
+    }
+
+    .onboarding-card.hidden {
+      display: none;
+    }
+
+    .onboarding-card strong,
+    .onboarding-card span {
+      display: block;
+    }
+
+    .onboarding-card strong {
+      margin-bottom: 4px;
+      color: var(--navy);
+      font-size: 14px;
+    }
+
+    .onboarding-card span {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .onboarding-card .secondary-button {
+      flex: 0 0 auto;
+      min-width: 105px;
+    }
+
+    @media (max-width: 650px) {
+      .onboarding-card {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 10px;
+        padding: 13px;
+      }
+
+      .onboarding-card .secondary-button {
+        width: 100%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .sync-spinner {
+        animation-duration: 1.6s;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -1262,7 +1377,7 @@
         <div class="brand-mark">🎂</div>
         <div>
           <strong>Birthday Reminder</strong>
-          <small>Local-Only v3.1.0</small>
+          <small>Local-Only v3.1.2</small>
         </div>
       </div>
 
@@ -1341,6 +1456,10 @@
             aria-label="Sync All Contacts"
             title="Sync All Contacts"
           >
+            <span
+              class="sync-spinner"
+              aria-hidden="true"
+            ></span>
             <span class="sync-label-desktop">↻ Sync All Contacts</span>
             <span class="sync-label-mobile">↻ Sync</span>
           </button>
@@ -1354,6 +1473,27 @@
         </div>
 
         <section id="dashboardView" class="view active">
+          <div
+            id="onboardingMessage"
+            class="onboarding-card"
+          >
+            <div>
+              <strong>Ready to import your contacts?</strong>
+              <span>
+                Click Sync All Contacts to securely load them into this
+                temporary browser session.
+              </span>
+            </div>
+
+            <button
+              id="onboardingSyncButton"
+              class="secondary-button"
+              type="button"
+            >
+              ↻ Sync Now
+            </button>
+          </div>
+
           <div class="panel">
             <div class="panel-heading">
               <div>
@@ -1540,12 +1680,12 @@
             <article class="privacy-card">
               <h3>Requested permission</h3>
               <p>
-                The app asks for read-only Google Contacts access and basic
-                Google profile access only to show your display name.
+                The app asks only for read-only Google Contacts access.
               </p>
               <p>
-                It cannot edit or delete contacts. Your display name is kept
-                only in this browser tab memory.
+                The same read-only permission is used to show your display
+                name through Google People API. No separate profile scope is
+                requested. The app cannot edit or delete contacts.
               </p>
             </article>
 
@@ -1573,12 +1713,6 @@
     const CONTACTS_SCOPE =
       "https://www.googleapis.com/auth/contacts.readonly";
 
-    const PROFILE_SCOPE =
-      "https://www.googleapis.com/auth/userinfo.profile";
-
-    const GOOGLE_SCOPES =
-      `${CONTACTS_SCOPE} ${PROFILE_SCOPE}`;
-
     const state = {
       accessToken: "",
       contacts: [],
@@ -1600,6 +1734,11 @@
       bindEvents();
       setupYearOptions();
       waitForGoogleLibrary();
+
+      window.setInterval(
+        refreshSyncStatus,
+        30000
+      );
     }
 
     function cacheElements() {
@@ -1621,6 +1760,8 @@
         "missingBirthdayCount",
         "lastSyncText",
         "lastSyncTop",
+        "onboardingMessage",
+        "onboardingSyncButton",
         "upcomingList",
         "contactSearch",
         "birthdayFilter",
@@ -1647,6 +1788,11 @@
       );
 
       el.syncButton.addEventListener(
+        "click",
+        syncOrAuthorize
+      );
+
+      el.onboardingSyncButton.addEventListener(
         "click",
         syncOrAuthorize
       );
@@ -1814,7 +1960,7 @@
           client_id:
             GOOGLE_CLIENT_ID,
           scope:
-            GOOGLE_SCOPES,
+            CONTACTS_SCOPE,
           include_granted_scopes:
             true,
           callback,
@@ -1862,6 +2008,27 @@
                 ) {
                   throw new Error(
                     "Google access token was not returned."
+                  );
+                }
+
+                const grantedScopes =
+                  String(
+                    tokenResponse.scope ||
+                    ""
+                  )
+                    .split(/\s+/)
+                    .filter(Boolean);
+
+                if (
+                  !grantedScopes.includes(
+                    CONTACTS_SCOPE
+                  )
+                ) {
+                  state.accessToken =
+                    "";
+
+                  throw new Error(
+                    "Google Contacts permission was not granted. Disconnect & Clear, then connect again and allow Contacts access."
                   );
                 }
 
@@ -2426,6 +2593,173 @@
       renderYearly();
     }
 
+
+    function refreshSyncStatus() {
+      if (
+        !el.lastSyncTop ||
+        !el.lastSyncText
+      ) {
+        return;
+      }
+
+      if (!state.syncedAt) {
+        el.lastSyncText.textContent =
+          "Never synced";
+
+        el.lastSyncTop.innerHTML = `
+          <span
+            class="sync-status-dot never"
+            aria-hidden="true"
+          ></span>
+          <span>Never synced</span>
+        `;
+
+        el.lastSyncTop.title =
+          "Contacts have not been synced in this browser session.";
+
+        return;
+      }
+
+      const relative =
+        formatRelativeSyncTime(
+          state.syncedAt
+        );
+
+      const exact =
+        state.syncedAt
+          .toLocaleString(
+            "en-IN"
+          );
+
+      el.lastSyncText.textContent =
+        relative;
+
+      el.lastSyncTop.innerHTML = `
+        <span
+          class="sync-status-dot synced"
+          aria-hidden="true"
+        ></span>
+        <span>${escapeHtml(relative)}</span>
+      `;
+
+      el.lastSyncTop.title =
+        `Last sync: ${exact}`;
+    }
+
+
+    function formatRelativeSyncTime(
+      date
+    ) {
+      const elapsedMs =
+        Math.max(
+          0,
+          Date.now() -
+          date.getTime()
+        );
+
+      const seconds =
+        Math.floor(
+          elapsedMs / 1000
+        );
+
+      if (seconds < 45) {
+        return "Synced just now";
+      }
+
+      const minutes =
+        Math.floor(
+          seconds / 60
+        );
+
+      if (minutes < 60) {
+        return minutes === 1
+          ? "Synced 1 minute ago"
+          : `Synced ${minutes} minutes ago`;
+      }
+
+      const hours =
+        Math.floor(
+          minutes / 60
+        );
+
+      if (hours < 24) {
+        return hours === 1
+          ? "Synced 1 hour ago"
+          : `Synced ${hours} hours ago`;
+      }
+
+      const days =
+        Math.floor(
+          hours / 24
+        );
+
+      if (days < 7) {
+        return days === 1
+          ? "Synced 1 day ago"
+          : `Synced ${days} days ago`;
+      }
+
+      return (
+        "Synced " +
+        date.toLocaleDateString(
+          "en-IN",
+          {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+          }
+        )
+      );
+    }
+
+
+    function renderOnboardingMessage() {
+      if (!el.onboardingMessage) {
+        return;
+      }
+
+      if (
+        state.contacts.length > 0
+      ) {
+        el.onboardingMessage
+          .classList.add(
+            "hidden"
+          );
+
+        return;
+      }
+
+      el.onboardingMessage
+        .classList.remove(
+          "hidden"
+        );
+
+      const text =
+        el.onboardingMessage
+          .querySelector("span");
+
+      const title =
+        el.onboardingMessage
+          .querySelector("strong");
+
+      if (
+        state.syncedAt
+      ) {
+        title.textContent =
+          "Sync completed";
+
+        text.textContent =
+          "No Google Contacts with a mobile number were found in this session.";
+      } else {
+        title.textContent =
+          "Ready to import your contacts?";
+
+        text.textContent =
+          "Click Sync All Contacts to securely load them into this temporary browser session.";
+      }
+    }
+
+
     function renderDashboard() {
       const birthdays =
         contactsWithBirthday();
@@ -2450,18 +2784,9 @@
         state.contacts.length -
         birthdays.length;
 
-      const syncLabel =
-        state.syncedAt
-          ? `Synced ${state.syncedAt.toLocaleString("en-IN")}`
-          : "Not synced";
+      refreshSyncStatus();
 
-      el.lastSyncText.textContent =
-        syncLabel;
-
-      el.lastSyncTop.textContent =
-        state.syncedAt
-          ? `Last sync · ${state.syncedAt.toLocaleDateString("en-IN")} ${state.syncedAt.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}`
-          : "Not synced";
+      renderOnboardingMessage();
 
       const upcoming =
         birthdays
@@ -3237,6 +3562,19 @@
       el.syncButton.disabled =
         loading;
 
+      el.onboardingSyncButton.disabled =
+        loading;
+
+      el.syncButton.classList.toggle(
+        "is-loading",
+        loading
+      );
+
+      el.syncButton.setAttribute(
+        "aria-busy",
+        String(loading)
+      );
+
       if (loading) {
         el.connectButton.textContent =
           "Connecting privately…";
@@ -3568,11 +3906,30 @@
     function handleError(error) {
       console.error(error);
 
-      showToast(
+      const message =
         error &&
         error.message
           ? error.message
-          : "Something went wrong.",
+          : "Something went wrong.";
+
+      if (
+        /insufficient authentication scopes/i.test(
+          message
+        )
+      ) {
+        state.accessToken =
+          "";
+
+        showToast(
+          "Google Contacts permission is missing. Press Disconnect & Clear, reconnect, and allow read-only Contacts access.",
+          true
+        );
+
+        return;
+      }
+
+      showToast(
+        message,
         true
       );
     }

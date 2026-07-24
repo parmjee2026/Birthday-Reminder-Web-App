@@ -46,3 +46,66 @@ No new storage or backend was added:
 
 Open:
 https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=3.1.0
+
+
+V3.1.1 MINIMUM OAUTH SCOPE FIX
+------------------------------
+Fixed:
+"Request had insufficient authentication scopes."
+
+The app now requests ONLY:
+
+https://www.googleapis.com/auth/contacts.readonly
+
+The separate userinfo.profile scope has been removed.
+
+The same contacts.readonly token is used for:
+- reading Google Contacts
+- reading the signed-in user's display name through People API people/me
+
+The returned OAuth token is checked before sync. If contacts.readonly was not
+actually granted, the app shows a clear reconnect message instead of a raw API
+error.
+
+AFTER UPLOAD
+------------
+1. Open:
+   https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=3.1.1
+2. Press Ctrl + Shift + R.
+3. Press Disconnect & Clear once.
+4. Connect again.
+5. Allow read-only Google Contacts permission.
+
+GOOGLE AUTH PLATFORM
+--------------------
+Data Access must include:
+
+https://www.googleapis.com/auth/contacts.readonly
+
+No userinfo.profile scope is required by this app.
+
+Privacy-first local-only architecture remains unchanged.
+
+
+V3.1.2 SYNC STATUS + ONBOARDING
+-------------------------------
+Added:
+- Animated loading spinner while Sync All Contacts runs.
+- Sync status indicator:
+  - red dot + Never synced
+  - green dot + Synced just now / X minutes ago / X hours ago
+- Relative sync status refreshes automatically every 30 seconds.
+- Exact sync date/time remains available as a tooltip.
+- Friendly onboarding card when contact counts are zero.
+- If a completed sync finds zero mobile contacts, onboarding shows a distinct
+  "Sync completed" message.
+- KPI cards remain clickable from v3.1.0.
+
+Privacy model remains unchanged:
+- No Firebase / Firestore
+- No Google Sheets / Apps Script
+- No localStorage / sessionStorage / IndexedDB
+- Contact records remain only in current browser-tab memory
+
+Open:
+https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=3.1.2
