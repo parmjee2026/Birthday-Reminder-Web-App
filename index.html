@@ -2,289 +2,346 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#123b70">
-  <meta name="description" content="Free multi-user Birthday Reminder with Google Login and Google Contacts sync">
-  <meta name="app-build" content="firebase-free-v2.0.7-contact-fields-sync">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <title>Birthday Reminder v2.0.7</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+  <meta
+    name="referrer"
+    content="no-referrer"
+  >
+  <meta
+    http-equiv="Permissions-Policy"
+    content="camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+  >
+  <meta
+    name="app-build"
+    content="privacy-first-local-only-v3.0"
+  >
+  <title>Birthday Reminder — Privacy First</title>
 
-  <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="icon" href="./icon-192.png">
-  <link rel="apple-touch-icon" href="./icon-192.png">
+  <script
+    src="https://accounts.google.com/gsi/client"
+    async
+    defer
+  ></script>
 
   <style>
     :root {
-      --navy: #123b70;
-      --navy-2: #0c2d55;
-      --blue: #2f80ed;
-      --blue-soft: #eaf3ff;
-      --green: #169b53;
-      --green-soft: #e8f7ef;
-      --amber: #b66b00;
-      --amber-soft: #fff3d6;
+      color-scheme: light;
+      --navy: #123a6b;
+      --navy-2: #0b2b54;
+      --blue: #2d6cdf;
+      --blue-soft: #eaf2ff;
+      --green: #147a52;
+      --green-soft: #e8f8f1;
+      --amber: #a85c00;
+      --amber-soft: #fff4df;
       --red: #b42318;
-      --red-soft: #feeceb;
-      --page: #f3f7fc;
+      --red-soft: #fff0ee;
+      --text: #15243a;
+      --muted: #6d7d91;
+      --line: #dbe4ef;
       --surface: #ffffff;
-      --text: #172033;
-      --muted: #66758a;
-      --line: #d9e3ef;
-      --shadow: 0 14px 36px rgba(28, 43, 64, 0.1);
+      --page: #f4f7fb;
+      --shadow: 0 14px 38px rgba(18, 58, 107, .10);
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
-    html { background: var(--page); }
+    html {
+      min-height: 100%;
+      background: var(--page);
+    }
 
     body {
-      margin: 0;
       min-height: 100vh;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--text);
+      margin: 0;
       background:
-        radial-gradient(circle at 90% 0%, rgba(47, 128, 237, 0.12), transparent 32%),
+        radial-gradient(circle at top right, #eaf2ff 0, transparent 34%),
         var(--page);
+      color: var(--text);
+      font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
     }
 
-    button, input, select, textarea { font: inherit; }
-    button { cursor: pointer; }
-    button:disabled { cursor: wait; opacity: .65; }
+    button,
+    input,
+    select {
+      font: inherit;
+    }
 
-    .hidden { display: none !important; }
+    button {
+      cursor: pointer;
+    }
+
+    .hidden {
+      display: none !important;
+    }
 
     .login-page {
-      min-height: 100vh;
       display: grid;
+      min-height: 100vh;
       place-items: center;
-      padding: 22px;
+      padding: 24px;
     }
 
     .login-card {
-      width: min(460px, 100%);
+      width: min(620px, 100%);
       padding: 32px;
       border: 1px solid var(--line);
       border-radius: 26px;
-      background: var(--surface);
+      background: rgba(255, 255, 255, .96);
       box-shadow: var(--shadow);
-      text-align: center;
-    }
-
-    .login-logo {
-      display: grid;
-      width: 82px;
-      height: 82px;
-      margin: 0 auto 16px;
-      place-items: center;
-      border-radius: 25px;
-      background: linear-gradient(135deg, var(--navy), var(--blue));
-      font-size: 44px;
-    }
-
-    .login-card h1 { margin: 0 0 8px; font-size: 30px; }
-    .login-card p { margin: 0 0 24px; color: var(--muted); line-height: 1.55; }
-
-    .google-button,
-    .primary-button,
-    .secondary-button,
-    .danger-button {
-      min-height: 44px;
-      padding: 10px 17px;
-      border-radius: 12px;
-      font-weight: 800;
-    }
-
-    .google-button,
-    .primary-button {
-      border: 1px solid var(--blue);
-      background: var(--blue);
-      color: white;
-    }
-
-    .google-button {
-      width: 100%;
-      font-size: 15px;
-    }
-
-    .secondary-button {
-      border: 1px solid var(--line);
-      background: var(--surface);
-      color: var(--text);
-    }
-
-    .danger-button {
-      border: 1px solid #f1b5af;
-      background: var(--red-soft);
-      color: var(--red);
-    }
-
-    .login-note {
-      margin-top: 18px !important;
-      font-size: 12px;
-    }
-
-    .app-shell {
-      min-height: 100vh;
-      display: grid;
-      grid-template-columns: 220px 1fr;
-    }
-
-    .sidebar {
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      padding: 20px 14px;
-      background: var(--navy-2);
-      color: white;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 11px;
-      margin-bottom: 24px;
-      padding: 4px 8px;
+      gap: 14px;
     }
 
-    .brand-icon {
+    .brand-mark {
       display: grid;
-      width: 40px;
-      height: 40px;
+      width: 58px;
+      height: 58px;
       place-items: center;
-      border-radius: 13px;
-      background: rgba(255, 255, 255, .12);
-      font-size: 23px;
+      border-radius: 18px;
+      background: var(--navy);
+      color: white;
+      font-size: 27px;
     }
 
-    .brand strong { display: block; font-size: 14px; }
-    .brand small { color: #b9cbe1; }
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(25px, 4vw, 38px);
+    }
 
-    .nav-list { display: grid; gap: 7px; }
+    .brand p {
+      margin: 4px 0 0;
+      color: var(--muted);
+    }
 
-    .nav-button {
-      display: flex;
-      min-height: 43px;
-      align-items: center;
-      gap: 11px;
-      padding: 0 13px;
+    .privacy-box {
+      margin: 24px 0;
+      padding: 18px;
+      border: 1px solid #bce8d5;
+      border-radius: 18px;
+      background: var(--green-soft);
+    }
+
+    .privacy-box strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--green);
+    }
+
+    .privacy-box p {
+      margin: 6px 0;
+      color: #365a4b;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .primary-button,
+    .secondary-button,
+    .danger-button {
+      min-height: 44px;
       border: 0;
       border-radius: 12px;
+      padding: 0 16px;
+      font-weight: 800;
+    }
+
+    .primary-button {
+      width: 100%;
+      background: var(--navy);
+      color: white;
+    }
+
+    .primary-button:hover {
+      background: var(--navy-2);
+    }
+
+    .secondary-button {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--navy);
+    }
+
+    .danger-button {
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .status-line {
+      min-height: 22px;
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .app-shell {
+      display: grid;
+      min-height: 100vh;
+      grid-template-columns: 250px 1fr;
+    }
+
+    .sidebar {
+      display: flex;
+      min-height: 100vh;
+      flex-direction: column;
+      padding: 22px 16px;
+      background: var(--navy);
+      color: white;
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 8px 22px;
+    }
+
+    .sidebar-brand .brand-mark {
+      width: 43px;
+      height: 43px;
+      border: 1px solid rgba(255, 255, 255, .2);
+      background: rgba(255, 255, 255, .12);
+      font-size: 20px;
+    }
+
+    .sidebar-brand strong,
+    .sidebar-brand small {
+      display: block;
+    }
+
+    .sidebar-brand small {
+      margin-top: 2px;
+      color: rgba(255, 255, 255, .68);
+      font-size: 10px;
+    }
+
+    .nav {
+      display: grid;
+      gap: 7px;
+    }
+
+    .nav-button {
+      min-height: 44px;
+      border: 0;
+      border-radius: 12px;
+      padding: 0 13px;
       background: transparent;
-      color: #dce8f7;
+      color: rgba(255, 255, 255, .75);
+      font-weight: 750;
       text-align: left;
     }
 
+    .nav-button:hover,
     .nav-button.active {
       background: rgba(255, 255, 255, .13);
       color: white;
     }
 
-    .profile-mini {
+    .sidebar-footer {
       margin-top: auto;
+      padding: 18px 8px 0;
+    }
+
+    .privacy-badge {
+      margin-bottom: 12px;
       padding: 12px;
-      border: 1px solid rgba(255, 255, 255, .13);
-      border-radius: 14px;
-      background: rgba(255, 255, 255, .06);
-    }
-
-    .profile-mini strong,
-    .profile-mini small {
-      display: block;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .profile-mini small {
-      margin-top: 3px;
-      color: #b9cbe1;
+      border: 1px solid rgba(255, 255, 255, .18);
+      border-radius: 13px;
+      background: rgba(255, 255, 255, .08);
       font-size: 11px;
+      line-height: 1.5;
     }
 
-    .main-area { min-width: 0; }
+    .privacy-badge strong {
+      display: block;
+      color: #a8f0ce;
+    }
+
+    .sidebar .danger-button {
+      width: 100%;
+    }
+
+    .main-area {
+      min-width: 0;
+    }
 
     .topbar {
       position: sticky;
+      z-index: 5;
       top: 0;
-      z-index: 20;
       display: flex;
+      min-height: 72px;
       align-items: center;
       justify-content: space-between;
       gap: 14px;
-      padding: 16px 22px;
+      padding: 12px 24px;
       border-bottom: 1px solid var(--line);
-      background: rgba(243, 247, 252, .91);
-      backdrop-filter: blur(16px);
+      background: rgba(244, 247, 251, .92);
+      backdrop-filter: blur(10px);
     }
 
-    .eyebrow {
+    .topbar h2 {
       margin: 0;
-      color: var(--blue);
-      font-size: 10px;
-      font-weight: 850;
-      letter-spacing: .13em;
-      text-transform: uppercase;
+      font-size: 22px;
     }
 
-    .topbar h1 { margin: 3px 0 0; font-size: 24px; }
-
-    .top-actions {
+    .topbar-actions {
       display: flex;
-      align-items: center;
       gap: 9px;
     }
 
     .content {
-      width: min(1180px, calc(100% - 34px));
-      margin: 0 auto;
-      padding: 22px 0 42px;
+      padding: 24px;
     }
 
-    .view { display: none; }
-    .view.active { display: block; }
-
-    .hero {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-      margin-bottom: 15px;
-      padding: 23px;
-      border-radius: 22px;
-      background: linear-gradient(135deg, var(--navy), #265f9f);
-      box-shadow: var(--shadow);
-      color: white;
+    .view {
+      display: none;
     }
 
-    .hero h2 { margin: 3px 0 6px; font-size: 28px; }
-    .hero p { margin: 0; color: rgba(255, 255, 255, .78); }
+    .view.active {
+      display: block;
+    }
 
-    .sync-status {
-      display: grid;
-      gap: 5px;
-      min-width: 220px;
-      padding: 13px 15px;
+    .notice {
+      margin-bottom: 14px;
+      padding: 12px 15px;
+      border: 1px solid #bce8d5;
       border-radius: 14px;
-      background: rgba(255, 255, 255, .1);
+      background: var(--green-soft);
+      color: #315d4b;
+      font-size: 12px;
+      line-height: 1.5;
     }
 
-    .sync-status small { color: rgba(255, 255, 255, .72); }
-
-    .stats {
+    .cards {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 12px;
-      margin-bottom: 17px;
+      gap: 13px;
+      margin-bottom: 16px;
     }
 
     .stat-card {
-      padding: 17px;
+      padding: 18px;
       border: 1px solid var(--line);
-      border-radius: 16px;
+      border-radius: 17px;
       background: var(--surface);
-      box-shadow: 0 5px 16px rgba(28, 43, 64, .035);
+      box-shadow: 0 7px 22px rgba(18, 58, 107, .045);
     }
 
     .stat-card span {
@@ -295,2216 +352,994 @@
       font-weight: 800;
     }
 
-    .stat-card strong { font-size: 29px; }
-
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.55fr) minmax(310px, .85fr);
-      gap: 14px;
+    .stat-card strong {
+      font-size: 27px;
     }
 
     .panel {
-      overflow: hidden;
+      margin-bottom: 14px;
+      padding: 18px;
       border: 1px solid var(--line);
       border-radius: 18px;
       background: var(--surface);
-      box-shadow: 0 6px 20px rgba(28, 43, 64, .045);
     }
 
-    .panel-header {
+    .panel-heading,
+    .toolbar {
       display: flex;
-      align-items: end;
+      align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      padding: 17px 18px 11px;
+      gap: 14px;
+      margin-bottom: 14px;
     }
 
-    .panel-header h2 { margin: 3px 0 0; font-size: 17px; }
+    .panel-heading h3,
+    .toolbar h3 {
+      margin: 0;
+    }
 
-    .next-card {
+    .toolbar-controls {
+      display: flex;
+      gap: 9px;
+    }
+
+    input,
+    select {
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      padding: 0 12px;
+      outline: none;
+      background: white;
+      color: var(--text);
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(45, 108, 223, .12);
+    }
+
+    .contact-list,
+    .birthday-list {
       display: grid;
-      grid-template-columns: auto 1fr auto;
+      gap: 9px;
+    }
+
+    .contact-row {
+      display: grid;
+      grid-template-columns:
+        minmax(185px, 1.25fr)
+        minmax(110px, .6fr)
+        minmax(210px, 1.1fr)
+        minmax(145px, .75fr)
+        auto;
       align-items: center;
       gap: 14px;
-      margin: 0 16px 16px;
-      padding: 17px;
-      border-radius: 15px;
-      background: var(--blue-soft);
+      padding: 13px 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+    }
+
+    .person {
+      display: flex;
+      min-width: 0;
+      align-items: center;
+      gap: 10px;
     }
 
     .avatar {
       display: grid;
-      width: 52px;
-      height: 52px;
+      width: 39px;
+      height: 39px;
+      flex: 0 0 auto;
       place-items: center;
-      border-radius: 17px;
+      border-radius: 13px;
       background: var(--navy);
       color: white;
-      font-size: 21px;
       font-weight: 850;
     }
 
-    .next-card h3,
-    .birthday-card h3 { margin: 0 0 4px; }
+    .person-text {
+      min-width: 0;
+    }
 
-    .meta {
+    .person-text strong,
+    .person-text small {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .person-text small,
+    .field-label {
       color: var(--muted);
+      font-size: 10px;
+    }
+
+    .field-value {
+      display: block;
+      overflow: hidden;
+      margin-bottom: 2px;
       font-size: 12px;
-      line-height: 1.5;
+      font-weight: 800;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
-    .birthday-list {
+    .phone-stack {
       display: grid;
-      gap: 10px;
-      padding: 0 16px 16px;
+      gap: 5px;
     }
 
-    .birthday-card {
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      align-items: center;
-      gap: 13px;
-      padding: 13px;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      background: var(--surface);
+    .phone-pill {
+      display: inline-flex;
+      width: fit-content;
+      max-width: 100%;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: var(--blue-soft);
+      color: var(--navy);
+      font-size: 10px;
+      font-weight: 800;
     }
 
-    .birthday-card .avatar {
-      width: 43px;
-      height: 43px;
-      border-radius: 14px;
-      font-size: 17px;
+    .phone-pill.wa {
+      background: var(--green-soft);
+      color: var(--green);
     }
 
-    .card-actions { display: flex; gap: 7px; }
-
-    .icon-button {
+    .wa-link {
       display: grid;
       width: 38px;
       height: 38px;
       place-items: center;
-      border: 1px solid var(--line);
       border-radius: 11px;
-      background: var(--surface);
-      color: var(--text);
-    }
-
-    .whatsapp {
-      border-color: #b8e2c7;
       background: var(--green-soft);
       color: var(--green);
-      text-decoration: none;
       font-size: 11px;
-      font-weight: 850;
-    }
-
-    .toolbar {
-      display: grid;
-      grid-template-columns: 1fr 190px;
-      gap: 11px;
-      margin-bottom: 14px;
-    }
-
-    input, select, textarea {
-      width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 11px 12px;
-      outline: 0;
-      background: var(--surface);
-      color: var(--text);
-    }
-
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--blue);
-      box-shadow: 0 0 0 3px rgba(47, 128, 237, .12);
-    }
-
-    .settings-card {
-      display: grid;
-      max-width: 760px;
-      gap: 15px;
-      padding: 22px;
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      background: var(--surface);
-      box-shadow: var(--shadow);
-    }
-
-    .settings-card h2 { margin: 4px 0; }
-
-    .info-box {
-      padding: 13px 15px;
-      border-radius: 13px;
-      background: var(--amber-soft);
-      color: #7c5100;
-      font-size: 13px;
-      line-height: 1.55;
+      font-weight: 900;
+      text-decoration: none;
     }
 
     .empty {
-      padding: 28px 16px;
+      padding: 28px 15px;
       border: 1px dashed var(--line);
       border-radius: 14px;
       color: var(--muted);
       text-align: center;
     }
 
-    dialog {
-      width: min(620px, calc(100vw - 24px));
-      max-height: calc(100vh - 24px);
-      padding: 0;
-      overflow: auto;
-      border: 0;
-      border-radius: 21px;
-      box-shadow: 0 24px 70px rgba(0, 0, 0, .23);
-    }
-
-    dialog::backdrop {
-      background: rgba(7, 19, 35, .52);
-      backdrop-filter: blur(4px);
-    }
-
-    .dialog-card { padding: 21px; background: var(--surface); }
-
-    .dialog-header {
-      display: flex;
-      align-items: start;
-      justify-content: space-between;
-      margin-bottom: 17px;
-    }
-
-    .dialog-header h2 { margin: 3px 0 0; }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 13px;
-    }
-
-    .full { grid-column: 1 / -1; }
-
-    label span {
-      display: block;
-      margin-bottom: 5px;
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 800;
-    }
-
-    .form-actions {
-      display: flex;
-      gap: 9px;
-      margin-top: 17px;
-    }
-
-    .spacer { flex: 1; }
-
-    .toast {
-      position: fixed;
-      z-index: 80;
-      right: 22px;
-      bottom: 22px;
-      max-width: 420px;
-      padding: 13px 17px;
-      transform: translateY(15px);
-      border-radius: 13px;
-      background: var(--text);
-      color: white;
-      opacity: 0;
-      pointer-events: none;
-      transition: 170ms ease;
-    }
-
-    .toast.visible {
-      transform: translateY(0);
-      opacity: 1;
-    }
-
-    @media (max-width: 920px) {
-      .app-shell { grid-template-columns: 1fr; }
-      .sidebar {
-        position: static;
-        height: auto;
-        display: block;
-      }
-      .nav-list {
-        grid-template-columns: repeat(3, 1fr);
-      }
-      .profile-mini { margin-top: 14px; }
-      .dashboard-grid { grid-template-columns: 1fr; }
-    }
-
-    @media (max-width: 650px) {
-      .topbar {
-        align-items: flex-start;
-        padding: 13px 14px;
-      }
-      .top-actions { flex-wrap: wrap; justify-content: flex-end; }
-      .content { width: min(100% - 24px, 1180px); padding-top: 14px; }
-      .hero { display: grid; }
-      .sync-status { min-width: 0; }
-      .stats { grid-template-columns: repeat(2, 1fr); }
-      .toolbar { grid-template-columns: 1fr; }
-      .birthday-card,
-      .next-card { grid-template-columns: auto 1fr; }
-      .card-actions { grid-column: 1 / -1; justify-content: flex-end; }
-      .form-grid { grid-template-columns: 1fr; }
-      .full { grid-column: auto; }
-    }
-
-
-    .yearly-toolbar {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 18px;
-      margin-bottom: 14px;
-      padding: 20px;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: var(--surface);
-      box-shadow: 0 6px 20px rgba(28, 43, 64, .045);
-    }
-
-    .yearly-toolbar h2 {
-      margin: 4px 0 5px;
-      font-size: 24px;
-    }
-
-    .yearly-description {
-      margin: 0;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .yearly-controls {
-      display: flex;
-      align-items: flex-end;
-      gap: 10px;
-    }
-
-    .year-select-label {
-      min-width: 125px;
-    }
-
-    .year-select-label span {
-      display: block;
-      margin-bottom: 5px;
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 800;
-    }
-
-    .yearly-summary {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-
-    .yearly-summary-card {
-      padding: 15px 17px;
-      border: 1px solid var(--line);
-      border-radius: 15px;
-      background: var(--surface);
-    }
-
-    .yearly-summary-card span {
-      display: block;
-      margin-bottom: 5px;
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 800;
-    }
-
-    .yearly-summary-card strong {
-      font-size: 24px;
-    }
-
     .yearly-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .month-card {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: white;
+    }
+
+    .month-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: var(--blue-soft);
+    }
+
+    .month-heading h3 {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .month-count {
+      display: grid;
+      min-width: 28px;
+      height: 28px;
+      place-items: center;
+      border-radius: 999px;
+      padding: 0 7px;
+      background: var(--navy);
+      color: white;
+      font-size: 10px;
+      font-weight: 850;
+    }
+
+    .month-row {
+      display: grid;
+      grid-template-columns: minmax(145px, 1fr) 115px 80px;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 13px;
+      border-top: 1px solid var(--line);
+    }
+
+    .privacy-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 13px;
     }
 
-    .yearly-month {
-      overflow: hidden;
+    .privacy-card {
+      padding: 18px;
       border: 1px solid var(--line);
       border-radius: 17px;
-      background: var(--surface);
-      box-shadow: 0 5px 16px rgba(28, 43, 64, .035);
+      background: white;
     }
 
-    .yearly-month-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+    .privacy-card h3 {
+      margin: 0 0 9px;
+    }
+
+    .privacy-card p {
+      margin: 6px 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .toast {
+      position: fixed;
+      z-index: 20;
+      right: 18px;
+      bottom: 18px;
+      max-width: min(420px, calc(100vw - 36px));
       padding: 13px 15px;
-      border-bottom: 1px solid var(--line);
-      background: var(--blue-soft);
-    }
-
-    .yearly-month-header h3 {
-      margin: 0;
-      font-size: 16px;
-    }
-
-    .month-total {
-      display: inline-flex;
-      min-width: 28px;
-      height: 28px;
-      align-items: center;
-      justify-content: center;
-      padding: 0 8px;
-      border-radius: 999px;
+      border-radius: 13px;
       background: var(--navy);
       color: white;
-      font-size: 11px;
-      font-weight: 850;
-    }
-
-    .yearly-month-body {
-      display: grid;
-    }
-
-    .yearly-row {
-      display: grid;
-      grid-template-columns: minmax(140px, 1.25fr) 115px 90px minmax(95px, .8fr);
-      align-items: center;
-      gap: 10px;
-      padding: 11px 14px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .yearly-row:last-child {
-      border-bottom: 0;
-    }
-
-    .yearly-person {
-      display: flex;
-      min-width: 0;
-      align-items: center;
-      gap: 9px;
-    }
-
-    .yearly-avatar {
-      display: grid;
-      width: 33px;
-      height: 33px;
-      flex: 0 0 auto;
-      place-items: center;
-      border-radius: 11px;
-      background: var(--navy);
-      color: white;
-      font-size: 13px;
-      font-weight: 850;
-    }
-
-    .yearly-person-text {
-      min-width: 0;
-    }
-
-    .yearly-person-text strong,
-    .yearly-person-text small {
-      display: block;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .yearly-person-text strong {
+      box-shadow: var(--shadow);
       font-size: 12px;
     }
 
-    .yearly-person-text small,
-    .yearly-cell {
-      color: var(--muted);
-      font-size: 10px;
+    .toast.error {
+      background: var(--red);
     }
 
-    .yearly-cell strong {
-      display: block;
-      color: var(--text);
-      font-size: 11px;
-    }
-
-    .yearly-empty-month {
-      padding: 20px 14px;
-      color: var(--muted);
-      font-size: 12px;
-      text-align: center;
-    }
-
-    .yearly-print-heading {
-      display: none;
-    }
-
-    @media (max-width: 900px) {
-      .yearly-grid {
-        grid-template-columns: 1fr;
+    @media (max-width: 1050px) {
+      .cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
-      .yearly-row {
-        grid-template-columns: minmax(135px, 1.4fr) 105px 80px minmax(80px, .8fr);
-      }
-    }
-
-    @media (max-width: 650px) {
-      .yearly-toolbar {
-        align-items: stretch;
-        flex-direction: column;
+      .contact-row {
+        grid-template-columns:
+          minmax(170px, 1.2fr)
+          105px
+          minmax(180px, 1fr)
+          minmax(130px, .75fr);
       }
 
-      .yearly-controls {
-        align-items: stretch;
-      }
-
-      .yearly-controls > * {
-        flex: 1;
-      }
-
-      .yearly-summary {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .yearly-summary-card:last-child {
-        grid-column: 1 / -1;
-      }
-
-      .yearly-row {
-        grid-template-columns: minmax(120px, 1.3fr) 100px 75px;
-      }
-
-      .yearly-row .yearly-relation-cell {
-        display: none;
-      }
-    }
-
-    @media print {
-      body.print-yearly {
-        background: white;
-      }
-
-      body.print-yearly .sidebar,
-      body.print-yearly .topbar,
-      body.print-yearly .yearly-toolbar,
-      body.print-yearly .yearly-summary,
-      body.print-yearly dialog,
-      body.print-yearly .toast {
-        display: none !important;
-      }
-
-      body.print-yearly .app-shell,
-      body.print-yearly .main-area,
-      body.print-yearly .content {
-        display: block;
-        width: 100%;
-        margin: 0;
-        padding: 0;
-      }
-
-      body.print-yearly .view {
-        display: none !important;
-      }
-
-      body.print-yearly #yearlyView {
-        display: block !important;
-      }
-
-      body.print-yearly .yearly-print-heading {
-        display: block;
-        margin: 0 0 12px;
-        color: #111;
-        font-size: 20px;
-        font-weight: 800;
-        text-align: center;
-      }
-
-      body.print-yearly .yearly-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-      }
-
-      body.print-yearly .yearly-month {
-        break-inside: avoid;
-        border-color: #bbb;
-        border-radius: 8px;
-        box-shadow: none;
-      }
-
-      body.print-yearly .yearly-month-header {
-        padding: 8px 10px;
-        background: #eee;
-      }
-
-      body.print-yearly .yearly-row {
-        grid-template-columns: minmax(120px, 1.35fr) 95px 70px minmax(75px, .7fr);
-        gap: 6px;
-        padding: 7px 9px;
-      }
-
-      body.print-yearly .yearly-avatar {
-        width: 26px;
-        height: 26px;
-        border-radius: 8px;
-        background: #333;
-      }
-
-      body.print-yearly .yearly-person-text strong,
-      body.print-yearly .yearly-cell strong {
-        color: #111;
-      }
-    }
-
-
-    .contacts-toolbar {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 18px;
-      margin-bottom: 14px;
-      padding: 20px;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: var(--surface);
-      box-shadow: 0 6px 20px rgba(28, 43, 64, .045);
-    }
-
-    .contacts-toolbar h2 {
-      margin: 4px 0 5px;
-      font-size: 24px;
-    }
-
-    .contacts-description {
-      margin: 0;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .contacts-controls {
-      display: grid;
-      grid-template-columns: minmax(230px, 1fr) 170px;
-      gap: 10px;
-      min-width: min(500px, 48vw);
-    }
-
-    .contacts-summary {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-
-    .contacts-summary-card {
-      padding: 15px 17px;
-      border: 1px solid var(--line);
-      border-radius: 15px;
-      background: var(--surface);
-    }
-
-    .contacts-summary-card span {
-      display: block;
-      margin-bottom: 5px;
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 800;
-    }
-
-    .contacts-summary-card strong {
-      font-size: 24px;
-    }
-
-    .contacts-directory-list {
-      display: grid;
-      gap: 10px;
-    }
-
-    .contact-directory-card {
-      display: grid;
-      grid-template-columns: minmax(180px, 1.3fr) minmax(120px, .7fr) minmax(200px, 1.15fr) minmax(140px, .8fr) auto;
-      align-items: center;
-      gap: 14px;
-      padding: 14px 16px;
-      border: 1px solid var(--line);
-      border-radius: 15px;
-      background: var(--surface);
-      box-shadow: 0 5px 16px rgba(28, 43, 64, .035);
-    }
-
-    .contact-main {
-      display: flex;
-      min-width: 0;
-      align-items: center;
-      gap: 11px;
-    }
-
-    .contact-main .avatar {
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
-      font-size: 16px;
-    }
-
-    .contact-name {
-      min-width: 0;
-    }
-
-    .contact-name strong,
-    .contact-name small {
-      display: block;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .contact-name strong {
-      font-size: 13px;
-    }
-
-    .contact-name small,
-    .contact-field span {
-      color: var(--muted);
-      font-size: 10px;
-    }
-
-    .contact-field strong {
-      display: block;
-      margin-bottom: 2px;
-      overflow: hidden;
-      color: var(--text);
-      font-size: 12px;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .contact-number-group {
-      display: grid;
-      gap: 5px;
-    }
-
-    .number-pill {
-      display: inline-flex;
-      width: fit-content;
-      max-width: 100%;
-      align-items: center;
-      gap: 5px;
-      padding: 5px 8px;
-      border-radius: 999px;
-      background: var(--blue-soft);
-      color: var(--navy);
-      font-size: 10px;
-      font-weight: 780;
-    }
-
-    .number-pill.whatsapp-number {
-      background: var(--green-soft);
-      color: var(--green);
-    }
-
-    .birthday-available {
-      color: var(--green) !important;
-    }
-
-    .birthday-missing {
-      color: var(--amber) !important;
-    }
-
-    @media (max-width: 980px) {
-      .contact-directory-card {
-        grid-template-columns: minmax(170px, 1.2fr) 110px minmax(170px, 1fr) minmax(130px, .8fr);
-      }
-
-      .contact-directory-card .contact-whatsapp-action {
+      .contact-row .wa-link {
         grid-column: 1 / -1;
         justify-self: end;
       }
     }
 
-    @media (max-width: 720px) {
-      .contacts-toolbar {
+    @media (max-width: 820px) {
+      .app-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        min-height: auto;
+      }
+
+      .nav {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+
+      .nav-button {
+        padding: 0 7px;
+        font-size: 11px;
+        text-align: center;
+      }
+
+      .sidebar-footer {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .privacy-badge {
+        margin: 0;
+      }
+
+      .content {
+        padding: 16px;
+      }
+
+      .yearly-grid,
+      .privacy-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 650px) {
+      .topbar,
+      .toolbar,
+      .panel-heading {
         align-items: stretch;
         flex-direction: column;
       }
 
-      .contacts-controls {
-        min-width: 0;
+      .topbar-actions,
+      .toolbar-controls {
+        display: grid;
         grid-template-columns: 1fr;
       }
 
-      .contacts-summary {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .contact-directory-card {
+      .cards {
         grid-template-columns: 1fr 1fr;
       }
 
-      .contact-main {
+      .contact-row {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .contact-row .person {
         grid-column: 1 / -1;
+      }
+
+      .contact-row .wa-link {
+        grid-column: auto;
+      }
+
+      .nav {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
 
-    @media (max-width: 480px) {
-      .contact-directory-card {
-        grid-template-columns: 1fr;
+    @media print {
+      .sidebar,
+      .topbar,
+      .notice,
+      .toolbar,
+      .toast {
+        display: none !important;
       }
 
-      .contact-main,
-      .contact-directory-card .contact-whatsapp-action {
-        grid-column: auto;
+      .app-shell,
+      .main-area,
+      .content {
+        display: block;
+        margin: 0;
+        padding: 0;
+      }
+
+      .view {
+        display: none !important;
+      }
+
+      #yearlyView.active {
+        display: block !important;
+      }
+
+      .yearly-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .month-card {
+        break-inside: avoid;
+        border-color: #aaa;
       }
     }
   </style>
 </head>
-
 <body>
   <section id="loginPage" class="login-page">
     <div class="login-card">
-      <div class="login-logo">🎂</div>
-      <p class="eyebrow">Free multi-user version</p>
-      <h1>Birthday Reminder v2.0.7</h1>
-      <p>
-        Login with Google. Your birthdays and synced contacts remain separate
-        from every other user's data.
-      </p>
-      <button id="googleLoginButton" class="google-button" type="button">
-        Continue with Google & Sync Contacts
-      </button>
-      <div id="startupStatus" class="login-note" aria-live="polite">
-        Loading secure Google sign-in…
+      <div class="brand">
+        <div class="brand-mark">🎂</div>
+        <div>
+          <h1>Birthday Reminder</h1>
+          <p>Privacy-First Local Session</p>
+        </div>
       </div>
-      <p class="login-note">
-        The app requests read-only Google Contacts permission. It cannot edit
-        or delete your Google Contacts.
+
+      <div class="privacy-box">
+        <strong>🔒 No cloud database and no owner storage</strong>
+        <p>
+          Your contact details go directly from Google Contacts to this browser
+          tab. They are not sent to Firebase, Firestore, Google Sheets,
+          Apps Script, GitHub, analytics or any external database.
+        </p>
+        <p>
+          Data stays in temporary memory only and is cleared when you reload,
+          close the tab or press Disconnect & Clear.
+        </p>
+      </div>
+
+      <button
+        id="connectButton"
+        class="primary-button"
+        type="button"
+      >
+        Connect Google Contacts Privately
+      </button>
+
+      <p id="loginStatus" class="status-line">
+        Loading secure Google authorization…
       </p>
     </div>
   </section>
 
   <div id="appShell" class="app-shell hidden">
     <aside class="sidebar">
-      <div class="brand">
-        <div class="brand-icon">🎂</div>
+      <div class="sidebar-brand">
+        <div class="brand-mark">🎂</div>
         <div>
           <strong>Birthday Reminder</strong>
-          <small>Firebase Free v2.0.7</small>
+          <small>Local-Only v3.0</small>
         </div>
       </div>
 
-      <nav class="nav-list">
-        <button class="nav-button active" data-view="dashboard" type="button">⌂ Dashboard</button>
-        <button class="nav-button" data-view="contacts" type="button">☎ Contacts</button>
-        <button class="nav-button" data-view="birthdays" type="button">☷ Birthdays</button>
-        <button class="nav-button" data-view="yearly" type="button">▣ Yearly List</button>
-        <button class="nav-button" data-view="settings" type="button">⚙ Settings</button>
+      <nav class="nav">
+        <button class="nav-button active" data-view="dashboard" type="button">
+          Dashboard
+        </button>
+        <button class="nav-button" data-view="contacts" type="button">
+          Contacts
+        </button>
+        <button class="nav-button" data-view="birthdays" type="button">
+          Birthdays
+        </button>
+        <button class="nav-button" data-view="yearly" type="button">
+          Yearly List
+        </button>
+        <button class="nav-button" data-view="privacy" type="button">
+          Privacy
+        </button>
       </nav>
 
-      <div class="profile-mini">
-        <strong id="profileName">User</strong>
-        <small id="profileEmail"></small>
+      <div class="sidebar-footer">
+        <div class="privacy-badge">
+          <strong>Temporary session</strong>
+          No contact data is stored by the app.
+        </div>
+
+        <button
+          id="disconnectButton"
+          class="danger-button"
+          type="button"
+        >
+          Disconnect & Clear
+        </button>
       </div>
     </aside>
 
     <main class="main-area">
       <header class="topbar">
         <div>
-          <p class="eyebrow">Personal birthday workspace</p>
-          <h1 id="pageTitle">Dashboard</h1>
+          <h2 id="pageTitle">Dashboard</h2>
         </div>
 
-        <div class="top-actions">
-          <button id="syncContactsButton" class="secondary-button" type="button">
-            ↻ Sync Contact Details
-          </button>
-          <button id="addBirthdayButton" class="primary-button" type="button">
-            + Add Birthday
-          </button>
-          <button id="logoutButton" class="secondary-button" type="button">
-            Logout
+        <div class="topbar-actions">
+          <button
+            id="syncButton"
+            class="secondary-button"
+            type="button"
+          >
+            ↻ Sync All Contacts
           </button>
         </div>
       </header>
 
       <div class="content">
+        <div class="notice">
+          🔒 Privacy mode is active. Contact data exists only inside this
+          browser tab and is never written to a database.
+        </div>
+
         <section id="dashboardView" class="view active">
-          <div class="hero">
-            <div>
-              <p class="eyebrow" style="color:#9dccff">Google account connected</p>
-              <h2 id="welcomeName">Welcome</h2>
-              <p>Your Google Contacts birthdays and manual records are private to your account.</p>
-            </div>
+          <div class="cards">
+            <article class="stat-card">
+              <span>Contacts With Mobile</span>
+              <strong id="totalContacts">0</strong>
+            </article>
 
-            <div class="sync-status">
-              <strong id="syncSummary">Contacts not synced yet</strong>
-              <small id="lastSyncText">Use Sync Contacts to import birthdays.</small>
-            </div>
-          </div>
+            <article class="stat-card">
+              <span>Contacts With Birthday</span>
+              <strong id="totalBirthdays">0</strong>
+            </article>
 
-          <div class="stats">
             <article class="stat-card">
-              <span>Total Birthdays</span>
-              <strong id="totalCount">0</strong>
+              <span>Current Month</span>
+              <strong id="currentMonthCount">0</strong>
             </article>
+
             <article class="stat-card">
-              <span>Today</span>
-              <strong id="todayCount">0</strong>
-            </article>
-            <article class="stat-card">
-              <span>Next 30 Days</span>
-              <strong id="upcomingCount">0</strong>
-            </article>
-            <article class="stat-card">
-              <span>This Month</span>
-              <strong id="monthCount">0</strong>
+              <span>Birthday Missing</span>
+              <strong id="missingBirthdayCount">0</strong>
             </article>
           </div>
 
-          <div class="dashboard-grid">
-            <section class="panel">
-              <div class="panel-header">
-                <div>
-                  <p class="eyebrow">Next celebration</p>
-                  <h2>Next Birthday</h2>
-                </div>
-              </div>
-              <div id="nextBirthdayCard"></div>
+          <div class="panel">
+            <div class="panel-heading">
+              <h3>Upcoming 30 Days</h3>
+              <span id="lastSyncText" class="field-label">
+                Not synced
+              </span>
+            </div>
 
-              <div class="panel-header">
-                <div>
-                  <p class="eyebrow">Coming up</p>
-                  <h2>Next 30 Days</h2>
-                </div>
-              </div>
-              <div id="upcomingList" class="birthday-list"></div>
-            </section>
-
-            <section class="panel">
-              <div class="panel-header">
-                <div>
-                  <p class="eyebrow">Today</p>
-                  <h2>Today's Birthdays</h2>
-                </div>
-              </div>
-              <div id="todayList" class="birthday-list"></div>
-            </section>
+            <div id="upcomingList" class="birthday-list"></div>
           </div>
         </section>
 
-
         <section id="contactsView" class="view">
-          <div class="contacts-toolbar">
-            <div>
-              <p class="eyebrow">Google Contacts directory</p>
-              <h2>Contact Details</h2>
-              <p class="contacts-description">
-                Name, gender, mobile/WhatsApp number and birthday only.
-              </p>
+          <div class="panel">
+            <div class="toolbar">
+              <div>
+                <h3>Contact Details</h3>
+                <span class="field-label">
+                  Name, Gender, Mobile/WhatsApp and Birthday
+                </span>
+              </div>
+
+              <div class="toolbar-controls">
+                <input
+                  id="contactSearch"
+                  type="search"
+                  placeholder="Search name or mobile"
+                >
+
+                <select id="birthdayFilter">
+                  <option value="">All contacts</option>
+                  <option value="with">With birthday</option>
+                  <option value="without">Without birthday</option>
+                </select>
+              </div>
             </div>
 
-            <div class="contacts-controls">
-              <input
-                id="contactsSearchInput"
-                type="search"
-                placeholder="Search name or mobile number"
-              >
-
-              <select id="contactsBirthdayFilter">
-                <option value="">All contacts</option>
-                <option value="withBirthday">With birthday</option>
-                <option value="withoutBirthday">Without birthday</option>
-              </select>
-            </div>
+            <div id="contactList" class="contact-list"></div>
           </div>
-
-          <div class="contacts-summary">
-            <article class="contacts-summary-card">
-              <span>Synced Contacts</span>
-              <strong id="contactsTotalCount">0</strong>
-            </article>
-
-            <article class="contacts-summary-card">
-              <span>With Birthday</span>
-              <strong id="contactsBirthdayCount">0</strong>
-            </article>
-
-            <article class="contacts-summary-card">
-              <span>Gender Available</span>
-              <strong id="contactsGenderCount">0</strong>
-            </article>
-
-            <article class="contacts-summary-card">
-              <span>WhatsApp Ready</span>
-              <strong id="contactsWhatsAppCount">0</strong>
-            </article>
-          </div>
-
-          <div id="contactsDirectoryList" class="contacts-directory-list"></div>
         </section>
 
         <section id="birthdaysView" class="view">
-          <div class="toolbar">
-            <input id="searchInput" type="search" placeholder="Search name, relation, month or number">
-            <select id="sourceFilter">
-              <option value="">All sources</option>
-              <option value="manual">Manual</option>
-              <option value="googleContacts">Google Contacts</option>
-            </select>
-          </div>
-          <div id="allBirthdayList" class="birthday-list"></div>
-        </section>
+          <div class="panel">
+            <div class="toolbar">
+              <div>
+                <h3>All Birthdays</h3>
+                <span class="field-label">
+                  Only contacts with a saved birthday
+                </span>
+              </div>
 
+              <div class="toolbar-controls">
+                <input
+                  id="birthdaySearch"
+                  type="search"
+                  placeholder="Search birthday contact"
+                >
+              </div>
+            </div>
+
+            <div id="birthdayList" class="birthday-list"></div>
+          </div>
+        </section>
 
         <section id="yearlyView" class="view">
-          <div class="yearly-toolbar">
-            <div>
-              <p class="eyebrow">Annual birthday calendar</p>
-              <h2>Yearly Birthday List</h2>
-              <p class="yearly-description">
-                All birthdays arranged month by month for the selected year.
-              </p>
+          <div class="panel">
+            <div class="toolbar">
+              <div>
+                <h3>Yearly Birthday List</h3>
+                <span class="field-label">
+                  January to December
+                </span>
+              </div>
+
+              <div class="toolbar-controls">
+                <select id="yearSelect"></select>
+
+                <button
+                  id="printButton"
+                  class="secondary-button"
+                  type="button"
+                >
+                  Print
+                </button>
+              </div>
             </div>
 
-            <div class="yearly-controls">
-              <label class="year-select-label">
-                <span>Year</span>
-                <select id="yearlyYearSelect"></select>
-              </label>
-
-              <button
-                id="printYearlyButton"
-                class="secondary-button"
-                type="button"
-              >
-                🖨 Print List
-              </button>
-            </div>
+            <div id="yearlyGrid" class="yearly-grid"></div>
           </div>
-
-          <div class="yearly-summary">
-            <article class="yearly-summary-card">
-              <span>Total Birthdays</span>
-              <strong id="yearlyTotalCount">0</strong>
-            </article>
-
-            <article class="yearly-summary-card">
-              <span>Months With Birthdays</span>
-              <strong id="yearlyActiveMonthsCount">0</strong>
-            </article>
-
-            <article class="yearly-summary-card">
-              <span>Known Birth Years</span>
-              <strong id="yearlyKnownAgeCount">0</strong>
-            </article>
-          </div>
-
-          <div id="yearlyPrintHeading" class="yearly-print-heading">
-            Birthday Reminder — Yearly List
-          </div>
-
-          <div id="yearlyList" class="yearly-grid"></div>
         </section>
 
-        <section id="settingsView" class="view">
-          <div class="settings-card">
-            <p class="eyebrow">Free-only architecture</p>
-            <h2>Account & Sync Settings</h2>
+        <section id="privacyView" class="view">
+          <div class="privacy-grid">
+            <article class="privacy-card">
+              <h3>Not used</h3>
+              <p>Firebase Authentication</p>
+              <p>Cloud Firestore</p>
+              <p>Google Sheets</p>
+              <p>Apps Script</p>
+              <p>Cloud Functions or Scheduler</p>
+              <p>Analytics, tracking or advertising SDK</p>
+            </article>
 
-            <div class="info-box">
-              Google Contacts are synced when you login for the first time or
-              press <strong>Sync Contact Details</strong>. Background sync while the
-              browser is closed is intentionally not included because this
-              version uses no paid backend services.
-              <br><br>
-              Name, Gender, Mobile/WhatsApp and Birthday sync must use the same Gmail account currently logged
-              into the dashboard. To use another Gmail account, logout first.
-            </div>
+            <article class="privacy-card">
+              <h3>Temporary data flow</h3>
+              <p>
+                Google Contacts → Google People API → your browser memory.
+              </p>
+              <p>
+                No contact record is uploaded from the browser to the website
+                owner.
+              </p>
+              <p>
+                Reloading or closing this page clears the imported data.
+              </p>
+            </article>
 
-            <label>
-              <span>Default country code for WhatsApp</span>
-              <input id="countryCodeInput" type="text" value="91" maxlength="4">
-            </label>
+            <article class="privacy-card">
+              <h3>Requested permission</h3>
+              <p>
+                The app asks only for read-only access to Google Contacts.
+              </p>
+              <p>
+                It cannot edit or delete contacts.
+              </p>
+            </article>
 
-            <label>
-              <span>Default WhatsApp message</span>
-              <textarea id="messageInput" rows="4">🎉 Happy Birthday, {name}! Wishing you happiness, good health and success.</textarea>
-            </label>
-
-            <button id="saveSettingsButton" class="primary-button" type="button">
-              Save Settings
-            </button>
+            <article class="privacy-card">
+              <h3>Clear immediately</h3>
+              <p>
+                Press Disconnect & Clear to revoke the current access token and
+                erase all contact records from page memory.
+              </p>
+            </article>
           </div>
         </section>
       </div>
     </main>
   </div>
 
-  <dialog id="birthdayDialog">
-    <form id="birthdayForm" class="dialog-card">
-      <div class="dialog-header">
-        <div>
-          <p class="eyebrow">Birthday record</p>
-          <h2 id="dialogTitle">Add Birthday</h2>
-        </div>
-        <button id="closeDialogButton" class="icon-button" type="button">×</button>
-      </div>
+  <div id="toast" class="toast hidden" role="status"></div>
 
-      <input id="recordIdInput" type="hidden">
+  <script>
+    "use strict";
 
-      <div class="form-grid">
-        <label class="full">
-          <span>Name *</span>
-          <input id="nameInput" type="text" required maxlength="100">
-        </label>
-
-        <label>
-          <span>DOB *</span>
-          <input id="dobInput" type="date" required>
-        </label>
-
-        <label>
-          <span>Gender</span>
-          <select id="genderInput">
-            <option value="">Not specified</option>
-            <option>Male</option>
-            <option>Female</option>
-            <option>Other</option>
-            <option>Prefer not to say</option>
-          </select>
-        </label>
-
-        <label>
-          <span>Mobile</span>
-          <input id="mobileInput" type="tel">
-        </label>
-
-        <label>
-          <span>WhatsApp Number</span>
-          <input id="whatsappInput" type="tel">
-        </label>
-
-        <label>
-          <span>Email</span>
-          <input id="emailInput" type="email">
-        </label>
-
-        <label>
-          <span>Relation</span>
-          <input id="relationInput" type="text">
-        </label>
-
-        <label class="full">
-          <span>Notes</span>
-          <textarea id="notesInput" rows="3"></textarea>
-        </label>
-      </div>
-
-      <div class="form-actions">
-        <button id="deleteButton" class="danger-button hidden" type="button">Delete</button>
-        <span class="spacer"></span>
-        <button id="cancelButton" class="secondary-button" type="button">Cancel</button>
-        <button id="saveButton" class="primary-button" type="submit">Save</button>
-      </div>
-    </form>
-  </dialog>
-
-  <div id="toast" class="toast"></div>
-
-  <script type="module">
-    /*
-     * =============================================================
-     * REQUIRED SETUP
-     * Replace the values below with Firebase Console > Project
-     * Settings > Your apps > Web app configuration.
-     *
-     * Firebase config values are public identifiers. Data security
-     * is enforced by Firebase Authentication and Firestore Rules.
-     * =============================================================
-     */
-    const FIREBASE_CONFIG = {
-      apiKey: "AIzaSyAU5Rs6J2ZamcHa-oPYxwq4c-gAD9-37ns",
-      authDomain: "birthday-reminder-web-app.firebaseapp.com",
-      projectId: "birthday-reminder-web-app",
-      storageBucket: "birthday-reminder-web-app.firebasestorage.app",
-      messagingSenderId: "916488048354",
-      appId: "1:916488048354:web:07b54e00788a3d44d198bb",
-      measurementId: "G-QJMXCFMJNJ"
-    };
-
-    const FIREBASE_VERSIONS = [
-      "12.16.0",
-      "10.13.2"
-    ];
+    const GOOGLE_CLIENT_ID =
+      "205720505540-ncjatpfsvr91pcebl9mkd5obum3cjf62.apps.googleusercontent.com";
 
     const CONTACTS_SCOPE =
       "https://www.googleapis.com/auth/contacts.readonly";
 
-    const firebaseReady =
-      !Object.values(FIREBASE_CONFIG).some(
-        (value) =>
-          String(value).startsWith("PASTE_")
-      );
-
-    let initializeApp;
-    let getAuth;
-    let GoogleAuthProvider;
-    let signInWithPopup;
-    let signInWithRedirect;
-    let getRedirectResult;
-    let reauthenticateWithPopup;
-    let reauthenticateWithRedirect;
-    let onAuthStateChanged;
-    let signOut;
-
-    let getFirestore;
-    let collection;
-    let doc;
-    let setDoc;
-    let addDoc;
-    let updateDoc;
-    let deleteDoc;
-    let getDoc;
-    let onSnapshot;
-    let query;
-    let orderBy;
-    let serverTimestamp;
-    let writeBatch;
-    let Timestamp;
-
-    let firebaseApp;
-    let auth;
-    let db;
-    let loadedFirebaseVersion = "";
-
-    function importWithTimeout(
-      url,
-      timeoutMs = 12000
-    ) {
-      return Promise.race([
-        import(url),
-
-        new Promise(
-          (_, reject) => {
-            window.setTimeout(
-              () => {
-                reject(
-                  new Error(
-                    `Timed out loading ${url}`
-                  )
-                );
-              },
-              timeoutMs
-            );
-          }
-        )
-      ]);
-    }
-
-    async function loadFirebaseSdk() {
-      const errors = [];
-
-      for (
-        const version of FIREBASE_VERSIONS
-      ) {
-        try {
-          const base =
-            `https://www.gstatic.com/firebasejs/${version}`;
-
-          const [
-            appModule,
-            authModule,
-            firestoreModule
-          ] = await Promise.all([
-            importWithTimeout(
-              `${base}/firebase-app.js`
-            ),
-            importWithTimeout(
-              `${base}/firebase-auth.js`
-            ),
-            importWithTimeout(
-              `${base}/firebase-firestore.js`
-            )
-          ]);
-
-          initializeApp =
-            appModule.initializeApp;
-
-          getAuth =
-            authModule.getAuth;
-
-          GoogleAuthProvider =
-            authModule.GoogleAuthProvider;
-
-          signInWithPopup =
-            authModule.signInWithPopup;
-
-          signInWithRedirect =
-            authModule.signInWithRedirect;
-
-          getRedirectResult =
-            authModule.getRedirectResult;
-
-          reauthenticateWithPopup =
-            authModule.reauthenticateWithPopup;
-
-          reauthenticateWithRedirect =
-            authModule.reauthenticateWithRedirect;
-
-          onAuthStateChanged =
-            authModule.onAuthStateChanged;
-
-          signOut =
-            authModule.signOut;
-
-          getFirestore =
-            firestoreModule.getFirestore;
-
-          collection =
-            firestoreModule.collection;
-
-          doc =
-            firestoreModule.doc;
-
-          setDoc =
-            firestoreModule.setDoc;
-
-          addDoc =
-            firestoreModule.addDoc;
-
-          updateDoc =
-            firestoreModule.updateDoc;
-
-          deleteDoc =
-            firestoreModule.deleteDoc;
-
-          getDoc =
-            firestoreModule.getDoc;
-
-          onSnapshot =
-            firestoreModule.onSnapshot;
-
-          query =
-            firestoreModule.query;
-
-          orderBy =
-            firestoreModule.orderBy;
-
-          serverTimestamp =
-            firestoreModule.serverTimestamp;
-
-          writeBatch =
-            firestoreModule.writeBatch;
-
-          Timestamp =
-            firestoreModule.Timestamp;
-
-          const requiredFunctions = [
-            initializeApp,
-            getAuth,
-            GoogleAuthProvider,
-            signInWithPopup,
-            getRedirectResult,
-            getFirestore,
-            collection,
-            doc,
-            setDoc,
-            onSnapshot
-          ];
-
-          if (
-            requiredFunctions.some(
-              (item) =>
-                typeof item !== "function"
-            )
-          ) {
-            throw new Error(
-              `Firebase ${version} loaded with missing exports.`
-            );
-          }
-
-          loadedFirebaseVersion =
-            version;
-
-          return version;
-        } catch (error) {
-          errors.push(
-            `${version}: ${
-              error &&
-              error.message
-                ? error.message
-                : String(error)
-            }`
-          );
-        }
-      }
-
-      throw new Error(
-        "Firebase SDK could not load. " +
-        errors.join(" | ")
-      );
-    }
-
-    async function bootstrapApplication() {
-      const status =
-        document.getElementById(
-          "startupStatus"
-        );
-
-      const button =
-        document.getElementById(
-          "googleLoginButton"
-        );
-
-      try {
-        if (!firebaseReady) {
-          throw new Error(
-            "Firebase configuration is missing."
-          );
-        }
-
-        if (status) {
-          status.textContent =
-            "Loading secure Google sign-in…";
-        }
-
-        if (button) {
-          button.disabled = true;
-        }
-
-        const version =
-          await loadFirebaseSdk();
-
-        firebaseApp =
-          initializeApp(
-            FIREBASE_CONFIG
-          );
-
-        auth =
-          getAuth(firebaseApp);
-
-        db =
-          getFirestore(firebaseApp);
-
-        await initializeUi();
-
-        if (status) {
-          status.textContent =
-            `Google sign-in is ready · Firebase ${version}`;
-        }
-
-        if (button) {
-          button.disabled = false;
-        }
-      } catch (error) {
-        console.error(
-          "Birthday Reminder startup failed:",
-          error
-        );
-
-        if (status) {
-          status.textContent =
-            "Google sign-in could not load. Check internet access, disable blocking extensions for this site, then retry.";
-        }
-
-        if (button) {
-          button.disabled = false;
-          button.textContent =
-            "Retry Google Sign-in";
-
-          button.addEventListener(
-            "click",
-            () => {
-              window.location.reload();
-            },
-            { once: true }
-          );
-        }
-      }
-    }
-
     const state = {
-      user: null,
-      birthdays: [],
+      accessToken: "",
       contacts: [],
-      unsubscribe: null,
-      unsubscribeContacts: null,
-      settings: {
-        countryCode: "91",
-        message:
-          "🎉 Happy Birthday, {name}! Wishing you happiness, good health and success."
-      },
       activeView: "dashboard",
-      yearlyYear:
-        new Date().getFullYear(),
-      editing: null,
-      contactAccessToken: ""
+      syncedAt: null
     };
 
     const el = {};
-    let toastTimer;
 
-    let uiInitialized = false;
+    document.addEventListener(
+      "DOMContentLoaded",
+      initializeApp,
+      { once: true }
+    );
 
-    async function initializeUi() {
-      if (uiInitialized) {
-        return;
-      }
-
-      uiInitialized = true;
-
+    function initializeApp() {
       cacheElements();
       bindEvents();
-
-      try {
-        const redirectResult = await getRedirectResult(auth);
-
-        if (redirectResult) {
-          const credential =
-            GoogleAuthProvider.credentialFromResult(
-              redirectResult
-            );
-
-          if (
-            credential &&
-            credential.accessToken
-          ) {
-            state.contactAccessToken =
-              credential.accessToken;
-
-            sessionStorage.setItem(
-              "syncAfterLogin",
-              "1"
-            );
-          }
-        }
-      } catch (error) {
-        handleError(error);
-      }
-
-      onAuthStateChanged(
-        auth,
-        async (user) => {
-          if (!user) {
-            showLogin();
-            return;
-          }
-
-          await startUserSession(user);
-        }
-      );
+      setupYearOptions();
+      waitForGoogleLibrary();
     }
 
     function cacheElements() {
       [
-        "loginPage", "googleLoginButton", "startupStatus", "appShell",
-        "profileName", "profileEmail", "pageTitle",
-        "syncContactsButton", "addBirthdayButton",
-        "logoutButton", "welcomeName", "syncSummary",
-        "lastSyncText", "totalCount", "todayCount",
-        "upcomingCount", "monthCount", "nextBirthdayCard",
-        "upcomingList", "todayList", "contactsSearchInput",
-        "contactsBirthdayFilter", "contactsTotalCount",
-        "contactsBirthdayCount", "contactsGenderCount",
-        "contactsWhatsAppCount", "contactsDirectoryList",
-        "searchInput", "sourceFilter", "allBirthdayList", "yearlyYearSelect",
-        "printYearlyButton", "yearlyTotalCount",
-        "yearlyActiveMonthsCount", "yearlyKnownAgeCount",
-        "yearlyPrintHeading", "yearlyList", "countryCodeInput",
-        "messageInput", "saveSettingsButton", "birthdayDialog",
-        "birthdayForm", "dialogTitle", "closeDialogButton",
-        "recordIdInput", "nameInput", "dobInput",
-        "genderInput", "mobileInput", "whatsappInput",
-        "emailInput", "relationInput", "notesInput",
-        "deleteButton", "cancelButton", "saveButton", "toast"
-      ].forEach((id) => {
-        el[id] = document.getElementById(id);
-      });
+        "loginPage",
+        "appShell",
+        "connectButton",
+        "loginStatus",
+        "disconnectButton",
+        "syncButton",
+        "pageTitle",
+        "totalContacts",
+        "totalBirthdays",
+        "currentMonthCount",
+        "missingBirthdayCount",
+        "lastSyncText",
+        "upcomingList",
+        "contactSearch",
+        "birthdayFilter",
+        "contactList",
+        "birthdaySearch",
+        "birthdayList",
+        "yearSelect",
+        "printButton",
+        "yearlyGrid",
+        "toast"
+      ].forEach(
+        (id) => {
+          el[id] =
+            document.getElementById(id);
+        }
+      );
     }
 
     function bindEvents() {
-      el.googleLoginButton.addEventListener(
+      el.connectButton.addEventListener(
         "click",
-        loginWithGoogle
+        authorizeAndSync
       );
 
-      el.syncContactsButton.addEventListener(
+      el.syncButton.addEventListener(
         "click",
-        syncGoogleContacts
+        syncOrAuthorize
       );
 
-      el.addBirthdayButton.addEventListener(
+      el.disconnectButton.addEventListener(
         "click",
-        () => openBirthdayDialog()
+        disconnectAndClear
       );
 
-      el.logoutButton.addEventListener(
+      el.contactSearch.addEventListener(
+        "input",
+        renderContacts
+      );
+
+      el.birthdayFilter.addEventListener(
+        "change",
+        renderContacts
+      );
+
+      el.birthdaySearch.addEventListener(
+        "input",
+        renderBirthdays
+      );
+
+      el.yearSelect.addEventListener(
+        "change",
+        renderYearly
+      );
+
+      el.printButton.addEventListener(
         "click",
-        async () => {
-          if (state.unsubscribe) {
-            state.unsubscribe();
-            state.unsubscribe = null;
-          }
-
-          if (state.unsubscribeContacts) {
-            state.unsubscribeContacts();
-            state.unsubscribeContacts = null;
-          }
-
-          await signOut(auth);
+        () => {
+          navigate("yearly");
+          window.print();
         }
       );
 
       document
-        .querySelectorAll("[data-view]")
-        .forEach((button) => {
-          button.addEventListener(
-            "click",
-            () => navigate(button.dataset.view)
-          );
-        });
-
-      el.contactsSearchInput.addEventListener(
-        "input",
-        renderContactsDirectory
-      );
-
-      el.contactsBirthdayFilter.addEventListener(
-        "change",
-        renderContactsDirectory
-      );
-
-      el.searchInput.addEventListener(
-        "input",
-        renderAllBirthdays
-      );
-
-      el.sourceFilter.addEventListener(
-        "change",
-        renderAllBirthdays
-      );
-
-      el.yearlyYearSelect.addEventListener(
-        "change",
-        () => {
-          state.yearlyYear =
-            Number(
-              el.yearlyYearSelect.value
-            ) ||
-            new Date().getFullYear();
-
-          renderYearlyList();
-        }
-      );
-
-      el.printYearlyButton.addEventListener(
-        "click",
-        printYearlyList
-      );
-
-      setupYearlyYearOptions();
-
-      el.saveSettingsButton.addEventListener(
-        "click",
-        saveSettings
-      );
-
-      el.birthdayForm.addEventListener(
-        "submit",
-        saveBirthday
-      );
-
-      el.closeDialogButton.addEventListener(
-        "click",
-        closeBirthdayDialog
-      );
-
-      el.cancelButton.addEventListener(
-        "click",
-        closeBirthdayDialog
-      );
-
-      el.deleteButton.addEventListener(
-        "click",
-        deleteBirthday
-      );
-
-      document.addEventListener(
-        "click",
-        handleDynamicClick
-      );
-    }
-
-    function createGoogleProvider(
-      options = {}
-    ) {
-      const provider =
-        new GoogleAuthProvider();
-
-      provider.addScope(
-        CONTACTS_SCOPE
-      );
-
-      const parameters = {
-        prompt:
-          options.prompt ||
-          "select_account"
-      };
-
-      if (options.loginHint) {
-        parameters.login_hint =
-          options.loginHint;
-      }
-
-      provider.setCustomParameters(
-        parameters
-      );
-
-      return provider;
-    }
-
-    async function loginWithGoogle() {
-      if (!auth) {
-        showToast(
-          "Firebase Authentication is not initialized.",
-          true
-        );
-        return;
-      }
-
-      const provider =
-        createGoogleProvider({
-          prompt: "select_account"
-        });
-
-      setButtonLoading(
-        el.googleLoginButton,
-        true,
-        "Opening Google..."
-      );
-
-      try {
-        const result =
-          await signInWithPopup(
-            auth,
-            provider
-          );
-
-        const credential =
-          GoogleAuthProvider
-            .credentialFromResult(result);
-
-        if (
-          credential &&
-          credential.accessToken
-        ) {
-          state.contactAccessToken =
-            credential.accessToken;
-
-          sessionStorage.setItem(
-            "syncAfterLogin",
-            "1"
-          );
-
-          await waitForAuthenticatedUser();
-
-          if (
-            state.user &&
-            sessionStorage.getItem(
-              "syncAfterLogin"
-            ) === "1"
-          ) {
-            sessionStorage.removeItem(
-              "syncAfterLogin"
-            );
-
-            await syncContactsWithToken(
-              credential.accessToken,
-              true
+        .querySelectorAll(
+          ".nav-button"
+        )
+        .forEach(
+          (button) => {
+            button.addEventListener(
+              "click",
+              () =>
+                navigate(
+                  button.dataset.view
+                )
             );
           }
-        }
-      } catch (error) {
-        if (
-          error.code ===
-            "auth/popup-blocked" ||
-          error.code ===
-            "auth/operation-not-supported-in-this-environment"
-        ) {
-          sessionStorage.setItem(
-            "syncAfterLogin",
-            "1"
-          );
-
-          await signInWithRedirect(
-            auth,
-            provider
-          );
-
-          return;
-        }
-
-        handleError(error);
-      } finally {
-        setButtonLoading(
-          el.googleLoginButton,
-          false,
-          "Continue with Google & Sync Contacts"
         );
-      }
     }
 
-
-    async function waitForAuthenticatedUser(
-      timeoutMs = 8000
-    ) {
+    function waitForGoogleLibrary() {
       const startedAt =
         Date.now();
 
-      while (
-        !state.user &&
-        Date.now() - startedAt <
-          timeoutMs
-      ) {
-        await new Promise(
-          (resolve) =>
-            window.setTimeout(
-              resolve,
-              100
-            )
-        );
-      }
+      const timer =
+        window.setInterval(
+          () => {
+            if (
+              window.google &&
+              google.accounts &&
+              google.accounts.oauth2
+            ) {
+              window.clearInterval(
+                timer
+              );
 
-      return state.user;
+              el.loginStatus.textContent =
+                "Private Google Contacts connection is ready.";
+
+              el.connectButton.disabled =
+                false;
+
+              return;
+            }
+
+            if (
+              Date.now() -
+                startedAt >
+              15000
+            ) {
+              window.clearInterval(
+                timer
+              );
+
+              el.loginStatus.textContent =
+                "Google authorization library could not load. Check internet access and retry.";
+
+              el.connectButton.disabled =
+                false;
+            }
+          },
+          150
+        );
     }
 
-    async function startUserSession(user) {
-      state.user = user;
-
-      el.loginPage.classList.add("hidden");
-      el.appShell.classList.remove("hidden");
-
-      el.profileName.textContent =
-        user.displayName || "Google User";
-
-      el.profileEmail.textContent =
-        user.email || "";
-
-      el.welcomeName.textContent =
-        `Welcome, ${
-          user.displayName
-            ? user.displayName.split(" ")[0]
-            : "User"
-        }`;
-
-      await ensureUserProfile(user);
-      await loadSettings();
-      subscribeContactsDirectory();
-      subscribeBirthdays();
-      await updateSyncStatus();
-
+    function createTokenClient(
+      callback
+    ) {
       if (
-        sessionStorage.getItem(
-          "syncAfterLogin"
-        ) === "1" &&
-        state.contactAccessToken
+        !window.google ||
+        !google.accounts ||
+        !google.accounts.oauth2
       ) {
-        sessionStorage.removeItem(
-          "syncAfterLogin"
-        );
-
-        await syncContactsWithToken(
-          state.contactAccessToken,
-          true
+        throw new Error(
+          "Google authorization library is not ready."
         );
       }
-    }
 
-    function showLogin() {
-      state.user = null;
-      state.birthdays = [];
-      state.contacts = [];
-
-      el.appShell.classList.add("hidden");
-      el.loginPage.classList.remove("hidden");
-    }
-
-    async function ensureUserProfile(user) {
-      const reference = doc(
-        db,
-        "users",
-        user.uid
-      );
-
-      await setDoc(
-        reference,
-        {
-          displayName:
-            user.displayName || "",
-          email:
-            user.email || "",
-          photoURL:
-            user.photoURL || "",
-          updatedAt:
-            serverTimestamp()
-        },
-        { merge: true }
-      );
-    }
-
-    async function loadSettings() {
-      const reference = doc(
-        db,
-        "users",
-        state.user.uid,
-        "private",
-        "settings"
-      );
-
-      const snapshot =
-        await getDoc(reference);
-
-      if (snapshot.exists()) {
-        state.settings = {
-          ...state.settings,
-          ...snapshot.data()
-        };
-      }
-
-      el.countryCodeInput.value =
-        state.settings.countryCode || "91";
-
-      el.messageInput.value =
-        state.settings.message || "";
-    }
-
-    async function saveSettings() {
-      state.settings = {
-        countryCode:
-          el.countryCodeInput.value
-            .replace(/\D/g, "") || "91",
-
-        message:
-          el.messageInput.value.trim()
-      };
-
-      await setDoc(
-        doc(
-          db,
-          "users",
-          state.user.uid,
-          "private",
-          "settings"
-        ),
-        {
-          ...state.settings,
-          updatedAt: serverTimestamp()
-        },
-        { merge: true }
-      );
-
-      showToast("Settings saved.");
-    }
-
-
-    function subscribeContactsDirectory() {
-      if (state.unsubscribeContacts) {
-        state.unsubscribeContacts();
-      }
-
-      const contactsQuery = query(
-        collection(
-          db,
-          "users",
-          state.user.uid,
-          "contacts"
-        ),
-        orderBy(
-          "nameLower",
-          "asc"
-        )
-      );
-
-      state.unsubscribeContacts =
-        onSnapshot(
-          contactsQuery,
-          (snapshot) => {
-            state.contacts =
-              snapshot.docs.map(
-                (item) => ({
-                  id: item.id,
-                  ...item.data()
-                })
+      return google.accounts.oauth2
+        .initTokenClient({
+          client_id:
+            GOOGLE_CLIENT_ID,
+          scope:
+            CONTACTS_SCOPE,
+          include_granted_scopes:
+            true,
+          callback,
+          error_callback:
+            (error) => {
+              setLoading(false);
+              showToast(
+                error &&
+                error.message
+                  ? error.message
+                  : "Google authorization failed.",
+                true
               );
-
-            renderContactsDirectory();
-          },
-          handleError
-        );
+            }
+        });
     }
 
+    function authorizeAndSync() {
+      try {
+        setLoading(true);
 
-    function subscribeBirthdays() {
-      if (state.unsubscribe) {
-        state.unsubscribe();
+        const client =
+          createTokenClient(
+            async (
+              tokenResponse
+            ) => {
+              try {
+                if (
+                  tokenResponse.error
+                ) {
+                  throw new Error(
+                    tokenResponse
+                      .error_description ||
+                    tokenResponse.error
+                  );
+                }
+
+                state.accessToken =
+                  tokenResponse
+                    .access_token ||
+                  "";
+
+                if (
+                  !state.accessToken
+                ) {
+                  throw new Error(
+                    "Google access token was not returned."
+                  );
+                }
+
+                showApp();
+                await syncContacts();
+              } catch (error) {
+                handleError(error);
+              } finally {
+                setLoading(false);
+              }
+            }
+          );
+
+        client.requestAccessToken({
+          prompt: "consent"
+        });
+      } catch (error) {
+        setLoading(false);
+        handleError(error);
       }
-
-      const birthdaysQuery = query(
-        collection(
-          db,
-          "users",
-          state.user.uid,
-          "birthdays"
-        ),
-        orderBy(
-          "nameLower",
-          "asc"
-        )
-      );
-
-      state.unsubscribe =
-        onSnapshot(
-          birthdaysQuery,
-          (snapshot) => {
-            state.birthdays =
-              snapshot.docs.map(
-                (item) => ({
-                  id: item.id,
-                  ...item.data()
-                })
-              );
-
-            renderEverything();
-          },
-          handleError
-        );
     }
 
-    async function syncGoogleContacts() {
-      if (!state.user) {
+    function syncOrAuthorize() {
+      if (state.accessToken) {
+        syncContacts();
         return;
       }
 
-      const currentEmail =
-        state.user.email || "";
-
-      const provider =
-        createGoogleProvider({
-          loginHint: currentEmail,
-          prompt: "consent"
-        });
-
-      setButtonLoading(
-        el.syncContactsButton,
-        true,
-        "Authorizing..."
-      );
-
-      showToast(
-        currentEmail
-          ? `Continue with ${currentEmail}`
-          : "Continue with the currently logged-in Google account."
-      );
-
-      try {
-        const result =
-          await reauthenticateWithPopup(
-            state.user,
-            provider
-          );
-
-        const credential =
-          GoogleAuthProvider
-            .credentialFromResult(result);
-
-        if (
-          !credential ||
-          !credential.accessToken
-        ) {
-          throw new Error(
-            "Google Contacts access token was not returned."
-          );
-        }
-
-        await syncContactsWithToken(
-          credential.accessToken,
-          false
-        );
-      } catch (error) {
-        if (
-          error &&
-          (
-            error.code ===
-              "auth/popup-blocked" ||
-            error.code ===
-              "auth/operation-not-supported-in-this-environment"
-          )
-        ) {
-          sessionStorage.setItem(
-            "syncAfterLogin",
-            "1"
-          );
-
-          await reauthenticateWithRedirect(
-            state.user,
-            provider
-          );
-
-          return;
-        }
-
-        if (
-          error &&
-          error.code ===
-            "auth/user-mismatch"
-        ) {
-          showToast(
-            `Wrong Google account selected. Choose ${currentEmail || "the same account used to log in"}, or logout first to use another account.`,
-            true
-          );
-
-          return;
-        }
-
-        handleError(error);
-      } finally {
-        setButtonLoading(
-          el.syncContactsButton,
-          false,
-          "↻ Sync Contact Details"
-        );
-      }
+      authorizeAndSync();
     }
 
-    async function syncContactsWithToken(
-      accessToken,
-      automatic
-    ) {
-      setButtonLoading(
-        el.syncContactsButton,
-        true,
-        automatic
-          ? "Importing Contact Details..."
-          : "Scanning Name & Mobile..."
-      );
+    async function syncContacts() {
+      if (!state.accessToken) {
+        authorizeAndSync();
+        return;
+      }
+
+      setLoading(true);
+      el.syncButton.textContent =
+        "Scanning all contacts…";
 
       try {
-        const scan =
-          await fetchAllGoogleContacts(
-            accessToken
+        const people =
+          await fetchAllConnections(
+            state.accessToken
           );
 
-        const contactRecords =
-          scan.contacts
+        state.contacts =
+          people
             .map(
-              normalizeContactDirectoryRecord
+              normalizeContact
             )
-            .filter(Boolean);
-
-        const birthdayContacts =
-          contactRecords
-            .filter(
-              hasBirthdayData
-            )
-            .map(
-              contactToBirthdayRecord
+            .filter(Boolean)
+            .sort(
+              (a, b) =>
+                a.name.localeCompare(
+                  b.name
+                )
             );
 
-        const monthCounts =
-          getBirthdayMonthCounts(
-            birthdayContacts
-          );
+        state.syncedAt =
+          new Date();
 
-        await saveContactsDirectory(
-          contactRecords
-        );
-
-        await saveContactBirthdays(
-          birthdayContacts
-        );
-
-        const genderCount =
-          contactRecords.filter(
-            (contact) =>
-              Boolean(
-                contact.gender
-              )
-          ).length;
-
-        const whatsappCount =
-          contactRecords.filter(
-            (contact) =>
-              Boolean(
-                contact.whatsapp
-              )
-          ).length;
-
-        await setDoc(
-          doc(
-            db,
-            "users",
-            state.user.uid
-          ),
-          {
-            lastContactSyncAt:
-              serverTimestamp(),
-            lastContactSyncCount:
-              contactRecords.length,
-            lastBirthdaySyncCount:
-              birthdayContacts.length,
-            lastContactScanCount:
-              scan.totalContacts,
-            lastContactPageCount:
-              scan.pageCount,
-            lastContactGenderCount:
-              genderCount,
-            lastContactWhatsAppCount:
-              whatsappCount,
-            lastBirthdayMonthCounts:
-              monthCounts,
-            updatedAt:
-              serverTimestamp()
-          },
-          { merge: true }
-        );
-
-        await updateSyncStatus();
+        renderEverything();
 
         showToast(
-          `Sync complete: ${contactRecords.length} contact(s), ${birthdayContacts.length} birthday(s).`
+          `Sync complete: ${state.contacts.length} contact(s) with a mobile number.`
         );
-
+      } catch (error) {
         if (
-          contactRecords.length === 0
+          String(
+            error.message || ""
+          ).includes("401")
         ) {
+          state.accessToken =
+            "";
+
           showToast(
-            "No contacts with a mobile or WhatsApp number were found.",
+            "Google session expired. Connect again.",
             true
           );
+        } else {
+          handleError(error);
         }
-      } catch (error) {
-        handleError(error);
       } finally {
-        setButtonLoading(
-          el.syncContactsButton,
-          false,
-          "↻ Sync Contact Details"
-        );
+        setLoading(false);
+        el.syncButton.textContent =
+          "↻ Sync All Contacts";
       }
     }
 
-    async function fetchAllGoogleContacts(
+    async function fetchAllConnections(
       accessToken
     ) {
-      const connections = [];
+      const people = [];
       let pageToken = "";
-      let pageCount = 0;
-      let reportedTotal = 0;
 
       do {
-        const url = new URL(
-          "https://people.googleapis.com/v1/people/me/connections"
-        );
+        const url =
+          new URL(
+            "https://people.googleapis.com/v1/people/me/connections"
+          );
 
         url.searchParams.set(
           "pageSize",
@@ -2520,12 +1355,10 @@
           "personFields",
           [
             "names",
+            "genders",
+            "phoneNumbers",
             "birthdays",
             "events",
-            "emailAddresses",
-            "phoneNumbers",
-            "genders",
-            "relations",
             "metadata"
           ].join(",")
         );
@@ -2537,15 +1370,25 @@
           );
         }
 
-        const response = await fetch(
-          url.toString(),
-          {
-            headers: {
-              Authorization:
-                `Bearer ${accessToken}`
+        const response =
+          await fetch(
+            url.toString(),
+            {
+              headers: {
+                Authorization:
+                  `Bearer ${accessToken}`
+              },
+              cache: "no-store"
             }
-          }
-        );
+          );
+
+        if (
+          response.status === 401
+        ) {
+          throw new Error(
+            "401: access token expired"
+          );
+        }
 
         const payload =
           await response.json();
@@ -2555,232 +1398,51 @@
             payload.error &&
             payload.error.message
               ? payload.error.message
-              : "Google Contacts sync failed."
+              : "Google Contacts request failed."
           );
         }
 
-        pageCount++;
-
-        reportedTotal =
-          Math.max(
-            reportedTotal,
-            Number(
-              payload.totalItems || 0
-            )
-          );
-
-        connections.push(
+        people.push(
           ...(payload.connections || [])
         );
 
         pageToken =
-          payload.nextPageToken || "";
+          payload.nextPageToken ||
+          "";
       } while (pageToken);
-
-      const resourceNames =
-        Array.from(
-          new Set(
-            connections
-              .map(
-                (person) =>
-                  person.resourceName
-              )
-              .filter(Boolean)
-          )
-        );
-
-      const hydratedPeople =
-        await fetchContactDetailsInBatches(
-          resourceNames,
-          accessToken
-        );
-
-      const hydratedMap =
-        new Map(
-          hydratedPeople.map(
-            (person) => [
-              person.resourceName,
-              person
-            ]
-          )
-        );
-
-      const mergedContacts =
-        connections.map(
-          (person) =>
-            mergePersonRecords(
-              person,
-              hydratedMap.get(
-                person.resourceName
-              )
-            )
-        );
-
-      return {
-        contacts:
-          mergedContacts,
-        totalContacts:
-          Math.max(
-            reportedTotal,
-            mergedContacts.length
-          ),
-        pageCount
-      };
-    }
-
-
-    async function fetchContactDetailsInBatches(
-      resourceNames,
-      accessToken
-    ) {
-      const people = [];
-      const batchSize = 100;
-
-      for (
-        let index = 0;
-        index < resourceNames.length;
-        index += batchSize
-      ) {
-        const batch =
-          resourceNames.slice(
-            index,
-            index + batchSize
-          );
-
-        const url = new URL(
-          "https://people.googleapis.com/v1/people:batchGet"
-        );
-
-        batch.forEach(
-          (resourceName) => {
-            url.searchParams.append(
-              "resourceNames",
-              resourceName
-            );
-          }
-        );
-
-        url.searchParams.set(
-          "personFields",
-          [
-            "names",
-            "birthdays",
-            "events",
-            "emailAddresses",
-            "phoneNumbers",
-            "genders",
-            "relations",
-            "metadata"
-          ].join(",")
-        );
-
-        const response = await fetch(
-          url.toString(),
-          {
-            headers: {
-              Authorization:
-                `Bearer ${accessToken}`
-            }
-          }
-        );
-
-        const payload =
-          await response.json();
-
-        if (!response.ok) {
-          throw new Error(
-            payload.error &&
-            payload.error.message
-              ? payload.error.message
-              : "Google Contact detail scan failed."
-          );
-        }
-
-        (payload.responses || [])
-          .forEach(
-            (item) => {
-              if (item.person) {
-                people.push(
-                  item.person
-                );
-              }
-            }
-          );
-      }
 
       return people;
     }
 
-
-    function mergePersonRecords(
-      basePerson,
-      detailedPerson
-    ) {
-      if (!detailedPerson) {
-        return basePerson;
-      }
-
-      const merged = {
-        ...basePerson,
-        ...detailedPerson
-      };
-
-      [
-        "names",
-        "birthdays",
-        "events",
-        "emailAddresses",
-        "phoneNumbers",
-        "genders",
-        "relations"
-      ].forEach(
-        (field) => {
-          const detailedValue =
-            detailedPerson[field];
-
-          const baseValue =
-            basePerson[field];
-
-          merged[field] =
-            Array.isArray(
-              detailedValue
-            ) &&
-            detailedValue.length
-              ? detailedValue
-              : (
-                  Array.isArray(
-                    baseValue
-                  )
-                    ? baseValue
-                    : []
-                );
-        }
-      );
-
-      return merged;
-    }
-
-    function normalizeContactDirectoryRecord(
+    function normalizeContact(
       person
     ) {
       const name =
-        choosePrimaryFieldValue(
+        primaryField(
           person.names,
           "displayName"
         ) ||
         "Unnamed Contact";
 
-      const phoneData =
-        chooseContactPhoneNumbers(
+      const phones =
+        choosePhoneNumbers(
           person.phoneNumbers || []
         );
 
-      if (
-        !phoneData.mobile &&
-        !phoneData.whatsapp
-      ) {
+      if (!phones.mobile) {
         return null;
       }
+
+      const gender =
+        primaryField(
+          person.genders,
+          "formattedValue"
+        ) ||
+        primaryField(
+          person.genders,
+          "value"
+        ) ||
+        "Not specified";
 
       const birthday =
         chooseBirthday(
@@ -2788,96 +1450,59 @@
           person.events || []
         );
 
-      const gender =
-        choosePrimaryFieldValue(
-          person.genders,
-          "formattedValue"
-        ) ||
-        choosePrimaryFieldValue(
-          person.genders,
-          "value"
-        ) ||
-        "";
-
-      const resourceName =
-        person.resourceName || "";
-
-      const docId =
-        resourceName
-          .replace(
-            /[^a-zA-Z0-9_-]/g,
-            "_"
-          ) ||
-        `contact_${crypto.randomUUID()}`;
-
       return {
-        id: docId,
-        contactResourceName:
-          resourceName,
         name,
-        nameLower:
-          name.toLowerCase(),
         gender,
         mobile:
-          phoneData.mobile,
+          phones.mobile,
         whatsapp:
-          phoneData.whatsapp,
-        allPhoneNumbers:
-          phoneData.allNumbers,
-        birthYear:
-          birthday
-            ? birthday.year || null
-            : null,
-        birthMonth:
-          birthday
-            ? birthday.month
-            : null,
-        birthDay:
-          birthday
-            ? birthday.day
-            : null,
-        birthdaySource:
-          birthday
-            ? birthday.source ||
-              "birthday"
-            : "",
-        dob:
-          birthday &&
-          birthday.year
-            ? [
-                birthday.year,
-                String(
-                  birthday.month
-                ).padStart(
-                  2,
-                  "0"
-                ),
-                String(
-                  birthday.day
-                ).padStart(
-                  2,
-                  "0"
-                )
-              ].join("-")
-            : "",
-        source:
-          "googleContacts"
+          phones.whatsapp,
+        birthday
       };
     }
 
+    function primaryItem(items) {
+      if (
+        !Array.isArray(items) ||
+        !items.length
+      ) {
+        return null;
+      }
 
-    function chooseContactPhoneNumbers(
+      return (
+        items.find(
+          (item) =>
+            item &&
+            item.metadata &&
+            item.metadata.primary
+        ) ||
+        items[0]
+      );
+    }
+
+    function primaryField(
+      items,
+      key
+    ) {
+      const item =
+        primaryItem(items);
+
+      return (
+        item &&
+        item[key]
+      ) || "";
+    }
+
+    function choosePhoneNumbers(
       phoneNumbers
     ) {
-      const normalized =
-        (phoneNumbers || [])
+      const items =
+        phoneNumbers
           .map(
             (item) => {
               const value =
                 String(
-                  item &&
-                  item.value ||
-                  ""
+                  item.value || ""
                 ).trim();
 
               if (!value) {
@@ -2906,226 +1531,126 @@
           )
           .filter(Boolean);
 
-      const whatsappItem =
-        normalized.find(
+      const whatsapp =
+        items.find(
           (item) =>
             /whatsapp|what'?s?app|\bwa\b/.test(
               item.label
             )
         );
 
-      const mobileItem =
-        normalized.find(
+      const mobile =
+        items.find(
           (item) =>
             item.primary &&
             /mobile|cell|main/.test(
               item.label
             )
         ) ||
-        normalized.find(
+        items.find(
           (item) =>
             /mobile|cell|main/.test(
               item.label
             )
         ) ||
-        normalized.find(
+        items.find(
           (item) =>
             item.primary
         ) ||
-        normalized[0] ||
-        null;
-
-      const mobile =
-        mobileItem
-          ? mobileItem.value
-          : "";
-
-      const whatsapp =
-        whatsappItem
-          ? whatsappItem.value
-          : mobile;
+        items[0];
 
       return {
-        mobile,
-        whatsapp,
-        allNumbers:
-          Array.from(
-            new Set(
-              normalized.map(
-                (item) =>
-                  item.value
+        mobile:
+          mobile
+            ? mobile.value
+            : "",
+        whatsapp:
+          whatsapp
+            ? whatsapp.value
+            : (
+                mobile
+                  ? mobile.value
+                  : ""
               )
-            )
-          )
       };
     }
-
-
-    function hasBirthdayData(
-      contact
-    ) {
-      return Boolean(
-        contact &&
-        Number(
-          contact.birthMonth
-        ) >= 1 &&
-        Number(
-          contact.birthMonth
-        ) <= 12 &&
-        Number(
-          contact.birthDay
-        ) >= 1 &&
-        Number(
-          contact.birthDay
-        ) <= 31
-      );
-    }
-
-
-    function contactToBirthdayRecord(
-      contact
-    ) {
-      return {
-        ...contact,
-        relation: "",
-        notes: "",
-        email: "",
-        source:
-          "googleContacts"
-      };
-    }
-
-    function choosePrimaryItem(items) {
-      if (
-        !Array.isArray(items) ||
-        !items.length
-      ) {
-        return null;
-      }
-
-      return (
-        items.find(
-          (item) =>
-            item &&
-            item.metadata &&
-            item.metadata.primary ===
-              true
-        ) ||
-        items[0]
-      );
-    }
-
-
-    function choosePrimaryFieldValue(
-      items,
-      key
-    ) {
-      const item =
-        choosePrimaryItem(items);
-
-      return (
-        item &&
-        item[key]
-      ) || "";
-    }
-
 
     function chooseBirthday(
       birthdays,
       events
     ) {
-      const candidates = [];
+      const dates = [];
 
-      (birthdays || []).forEach(
-        (item) => {
-          const date =
-            normalizeBirthdayDate(
-              item && item.date
-            ) ||
-            parseBirthdayText(
-              item && item.text
+      birthdays.forEach(
+        (birthday) => {
+          const normalized =
+            normalizeDate(
+              birthday.date
             );
 
-          if (date) {
-            candidates.push({
-              ...date,
-              source: "birthday"
-            });
+          if (normalized) {
+            dates.push(
+              normalized
+            );
           }
         }
       );
 
-      (events || []).forEach(
-        (item) => {
-          const typeText =
+      events.forEach(
+        (event) => {
+          const label =
             [
-              item &&
-                item.type,
-              item &&
-                item.formattedType
+              event.type,
+              event.formattedType
             ]
               .filter(Boolean)
               .join(" ")
               .toLowerCase();
 
           if (
-            !typeText.includes(
-              "birthday"
-            ) &&
-            !typeText.includes(
-              "birth"
-            ) &&
-            !typeText.includes(
-              "dob"
+            !/birthday|birth|\bdob\b/.test(
+              label
             )
           ) {
             return;
           }
 
-          const date =
-            normalizeBirthdayDate(
-              item &&
-              item.date
+          const normalized =
+            normalizeDate(
+              event.date
             );
 
-          if (date) {
-            candidates.push({
-              ...date,
-              source: "event"
-            });
+          if (normalized) {
+            dates.push(
+              normalized
+            );
           }
         }
       );
 
-      if (!candidates.length) {
-        return null;
-      }
-
       return (
-        candidates.find(
+        dates.find(
           (date) =>
-            Number(date.year) > 0
+            Boolean(date.year)
         ) ||
-        candidates[0]
+        dates[0] ||
+        null
       );
     }
 
-
-    function normalizeBirthdayDate(
-      date
-    ) {
+    function normalizeDate(date) {
       if (!date) {
         return null;
       }
+
+      const year =
+        Number(date.year) || 0;
 
       const month =
         Number(date.month);
 
       const day =
         Number(date.day);
-
-      const year =
-        Number(date.year) || 0;
 
       if (
         month < 1 ||
@@ -3136,22 +1661,17 @@
         return null;
       }
 
-      const validationYear =
-        year > 0
-          ? year
-          : 2000;
-
-      const testDate =
+      const check =
         new Date(
-          validationYear,
+          year || 2000,
           month - 1,
           day
         );
 
       if (
-        testDate.getMonth() !==
+        check.getMonth() !==
           month - 1 ||
-        testDate.getDate() !== day
+        check.getDate() !== day
       ) {
         return null;
       }
@@ -3161,664 +1681,375 @@
         month,
         day
       };
-    }
-
-
-    function parseBirthdayText(
-      value
-    ) {
-      const text =
-        String(value || "")
-          .trim();
-
-      if (!text) {
-        return null;
-      }
-
-      const parsed =
-        new Date(text);
-
-      if (
-        !Number.isNaN(
-          parsed.getTime()
-        )
-      ) {
-        return {
-          year:
-            parsed.getFullYear(),
-          month:
-            parsed.getMonth() + 1,
-          day:
-            parsed.getDate()
-        };
-      }
-
-      const numericMatch =
-        text.match(
-          /^(\d{1,2})[\/\-.](\d{1,2})(?:[\/\-.](\d{2,4}))?$/
-        );
-
-      if (!numericMatch) {
-        return null;
-      }
-
-      const first =
-        Number(
-          numericMatch[1]
-        );
-
-      const second =
-        Number(
-          numericMatch[2]
-        );
-
-      let year =
-        Number(
-          numericMatch[3] || 0
-        );
-
-      if (
-        year > 0 &&
-        year < 100
-      ) {
-        year +=
-          year >= 50
-            ? 1900
-            : 2000;
-      }
-
-      const day =
-        first > 12
-          ? first
-          : second > 12
-            ? second
-            : first;
-
-      const month =
-        first > 12
-          ? second
-          : second > 12
-            ? first
-            : second;
-
-      return normalizeBirthdayDate({
-        year,
-        month,
-        day
-      });
-    }
-
-
-    function getBirthdayMonthCounts(
-      contacts
-    ) {
-      const counts = {};
-
-      for (
-        let month = 1;
-        month <= 12;
-        month++
-      ) {
-        counts[
-          String(month)
-        ] = 0;
-      }
-
-      contacts.forEach(
-        (contact) => {
-          const key =
-            String(
-              Number(
-                contact.birthMonth
-              )
-            );
-
-          if (
-            Object.prototype.hasOwnProperty.call(
-              counts,
-              key
-            )
-          ) {
-            counts[key]++;
-          }
-        }
-      );
-
-      return counts;
-    }
-
-
-    async function saveContactsDirectory(
-      contacts
-    ) {
-      const chunks = [];
-
-      for (
-        let index = 0;
-        index < contacts.length;
-        index += 400
-      ) {
-        chunks.push(
-          contacts.slice(
-            index,
-            index + 400
-          )
-        );
-      }
-
-      for (const chunk of chunks) {
-        const batch =
-          writeBatch(db);
-
-        chunk.forEach(
-          (contact) => {
-            const reference = doc(
-              db,
-              "users",
-              state.user.uid,
-              "contacts",
-              contact.id
-            );
-
-            batch.set(
-              reference,
-              {
-                ...contact,
-                syncedAt:
-                  serverTimestamp(),
-                updatedAt:
-                  serverTimestamp()
-              },
-              { merge: true }
-            );
-          }
-        );
-
-        await batch.commit();
-      }
-    }
-
-
-    async function saveContactBirthdays(
-      contacts
-    ) {
-      const chunks = [];
-
-      for (
-        let index = 0;
-        index < contacts.length;
-        index += 400
-      ) {
-        chunks.push(
-          contacts.slice(
-            index,
-            index + 400
-          )
-        );
-      }
-
-      for (const chunk of chunks) {
-        const batch =
-          writeBatch(db);
-
-        chunk.forEach(
-          (contact) => {
-            const reference = doc(
-              db,
-              "users",
-              state.user.uid,
-              "birthdays",
-              contact.id
-            );
-
-            batch.set(
-              reference,
-              {
-                ...contact,
-                syncedAt:
-                  serverTimestamp(),
-                updatedAt:
-                  serverTimestamp()
-              },
-              { merge: true }
-            );
-          }
-        );
-
-        await batch.commit();
-      }
-    }
-
-    async function updateSyncStatus() {
-      const snapshot =
-        await getDoc(
-          doc(
-            db,
-            "users",
-            state.user.uid
-          )
-        );
-
-      if (!snapshot.exists()) {
-        return;
-      }
-
-      const data =
-        snapshot.data();
-
-      const contactCount =
-        Number(
-          data.lastContactSyncCount || 0
-        );
-
-      const birthdayCount =
-        Number(
-          data.lastBirthdaySyncCount ||
-          0
-        );
-
-      const scanned =
-        Number(
-          data.lastContactScanCount || 0
-        );
-
-      const timestamp =
-        data.lastContactSyncAt;
-
-      const hasSynced =
-        timestamp &&
-        typeof timestamp.toDate ===
-          "function";
-
-      if (hasSynced) {
-        el.syncSummary.textContent =
-          `${contactCount} contact(s) · ${birthdayCount} birthday(s)`;
-
-        el.lastSyncText.textContent =
-          `${scanned} Google contact(s) scanned · ` +
-          timestamp
-            .toDate()
-            .toLocaleString(
-              "en-IN"
-            );
-      } else {
-        el.syncSummary.textContent =
-          "Contacts not synced yet";
-
-        el.lastSyncText.textContent =
-          "Sync Name, Gender, Mobile/WhatsApp and Birthday.";
-      }
     }
 
     function renderEverything() {
-      const records =
-        state.birthdays
-          .map(enrichBirthday)
+      renderDashboard();
+      renderContacts();
+      renderBirthdays();
+      renderYearly();
+    }
+
+    function renderDashboard() {
+      const birthdays =
+        contactsWithBirthday();
+
+      const currentMonth =
+        new Date().getMonth() + 1;
+
+      el.totalContacts.textContent =
+        state.contacts.length;
+
+      el.totalBirthdays.textContent =
+        birthdays.length;
+
+      el.currentMonthCount.textContent =
+        birthdays.filter(
+          (contact) =>
+            contact.birthday.month ===
+              currentMonth
+        ).length;
+
+      el.missingBirthdayCount.textContent =
+        state.contacts.length -
+        birthdays.length;
+
+      el.lastSyncText.textContent =
+        state.syncedAt
+          ? `Synced ${state.syncedAt.toLocaleString("en-IN")}`
+          : "Not synced";
+
+      const upcoming =
+        birthdays
+          .map(
+            (contact) => ({
+              ...contact,
+              nextBirthday:
+                nextBirthdayDate(
+                  contact.birthday
+                )
+            })
+          )
+          .filter(
+            (contact) =>
+              dayDifference(
+                new Date(),
+                contact.nextBirthday
+              ) <= 30
+          )
           .sort(
             (a, b) =>
-              a.daysLeft -
-              b.daysLeft
+              a.nextBirthday -
+              b.nextBirthday
           );
 
-      const todayRecords =
-        records.filter(
-          (record) =>
-            record.daysLeft === 0
-        );
-
-      const upcomingRecords =
-        records.filter(
-          (record) =>
-            record.daysLeft > 0 &&
-            record.daysLeft <= 30
-        );
-
-      const now = new Date();
-
-      const thisMonthRecords =
-        records.filter(
-          (record) =>
-            Number(record.birthMonth) ===
-            now.getMonth() + 1
-        );
-
-      el.totalCount.textContent =
-        records.length;
-
-      el.todayCount.textContent =
-        todayRecords.length;
-
-      el.upcomingCount.textContent =
-        upcomingRecords.length;
-
-      el.monthCount.textContent =
-        thisMonthRecords.length;
-
-      renderNextBirthday(
-        records[0] || null
-      );
-
-      renderList(
-        el.upcomingList,
-        upcomingRecords,
-        "🎉 You're all caught up! No birthdays in the next 30 days."
-      );
-
-      renderList(
-        el.todayList,
-        todayRecords,
-        "No birthdays today."
-      );
-
-      renderAllBirthdays();
-      renderYearlyList();
-    }
-
-    function enrichBirthday(record) {
-      const next =
-        getNextBirthday(record);
-
-      return {
-        ...record,
-        nextBirthday:
-          formatIsoDate(next),
-        daysLeft:
-          daysBetween(
-            dateOnly(new Date()),
-            next
-          ),
-        age:
-          record.birthYear
-            ? calculateAge(
-                Number(
-                  record.birthYear
-                ),
-                Number(
-                  record.birthMonth
-                ),
-                Number(
-                  record.birthDay
-                )
+      el.upcomingList.innerHTML =
+        upcoming.length
+          ? upcoming
+              .map(
+                (contact) =>
+                  compactBirthdayRow(
+                    contact,
+                    contact.nextBirthday
+                  )
               )
-            : ""
-      };
+              .join("")
+          : emptyHtml(
+              "No birthdays in the next 30 days."
+            );
     }
 
-    function getNextBirthday(record) {
-      const today =
-        dateOnly(new Date());
-
-      const month =
-        Number(record.birthMonth);
-
-      const day =
-        Number(record.birthDay);
-
-      let next =
-        safeBirthdayDate(
-          today.getFullYear(),
-          month,
-          day
-        );
-
-      if (next < today) {
-        next =
-          safeBirthdayDate(
-            today.getFullYear() + 1,
-            month,
-            day
-          );
-      }
-
-      return next;
-    }
-
-    function safeBirthdayDate(
-      year,
-      month,
-      day
-    ) {
-      if (
-        month === 2 &&
-        day === 29 &&
-        !isLeapYear(year)
-      ) {
-        return new Date(
-          year,
-          1,
-          28,
-          0,
-          0,
-          0,
-          0
-        );
-      }
-
-      return new Date(
-        year,
-        month - 1,
-        day,
-        0,
-        0,
-        0,
-        0
-      );
-    }
-
-    function isLeapYear(year) {
-      return (
-        year % 400 === 0 ||
-        (
-          year % 4 === 0 &&
-          year % 100 !== 0
-        )
-      );
-    }
-
-    function calculateAge(
-      year,
-      month,
-      day
-    ) {
-      const today =
-        new Date();
-
-      let age =
-        today.getFullYear() -
-        year;
-
-      if (
-        today.getMonth() + 1 <
-          month ||
-        (
-          today.getMonth() + 1 ===
-            month &&
-          today.getDate() < day
-        )
-      ) {
-        age--;
-      }
-
-      return age >= 0 ? age : "";
-    }
-
-    function renderNextBirthday(record) {
-      if (!record) {
-        el.nextBirthdayCard.innerHTML =
-          '<div class="empty" style="margin:0 16px 16px">No birthday records yet.</div>';
-        return;
-      }
-
-      el.nextBirthdayCard.innerHTML = `
-        <article class="next-card">
-          <div class="avatar">${initial(record.name)}</div>
-          <div>
-            <h3>${escapeHtml(record.name)}</h3>
-            <div class="meta">
-              ${formatDisplayDate(record.nextBirthday)}
-              · ${daysText(record.daysLeft)}
-              · ${record.age === "" ? "Age: —" : `Age: ${record.age}`}
-              ${record.relation ? ` · ${escapeHtml(record.relation)}` : ""}
-            </div>
-          </div>
-          <div class="card-actions">
-            ${whatsappLinkHtml(record)}
-            <button class="icon-button" type="button" data-edit="${escapeAttribute(record.id)}">✎</button>
-          </div>
-        </article>
-      `;
-    }
-
-    function renderList(
-      container,
-      records,
-      emptyText
-    ) {
-      if (!records.length) {
-        container.innerHTML =
-          `<div class="empty">${escapeHtml(emptyText)}</div>`;
-        return;
-      }
-
-      container.innerHTML =
-        records
-          .map(birthdayCardHtml)
-          .join("");
-    }
-
-
-    function renderContactsDirectory() {
-      if (!el.contactsDirectoryList) {
-        return;
-      }
-
-      const queryText =
-        el.contactsSearchInput.value
+    function renderContacts() {
+      const query =
+        el.contactSearch.value
           .trim()
           .toLowerCase();
 
-      const birthdayFilter =
-        el.contactsBirthdayFilter.value;
+      const filter =
+        el.birthdayFilter.value;
 
-      const allRecords =
-        state.contacts.slice();
+      const contacts =
+        state.contacts.filter(
+          (contact) => {
+            const hasBirthday =
+              Boolean(
+                contact.birthday
+              );
 
-      const records =
-        allRecords
-          .filter(
-            (contact) => {
-              const hasBirthday =
-                hasBirthdayData(
-                  contact
-                );
-
-              const searchText = [
+            const matchesSearch =
+              !query ||
+              [
                 contact.name,
                 contact.gender,
                 contact.mobile,
                 contact.whatsapp
               ]
                 .join(" ")
-                .toLowerCase();
+                .toLowerCase()
+                .includes(query);
 
-              const matchesSearch =
-                !queryText ||
-                searchText.includes(
-                  queryText
-                );
-
-              const matchesBirthday =
-                !birthdayFilter ||
-                (
-                  birthdayFilter ===
-                    "withBirthday" &&
-                  hasBirthday
-                ) ||
-                (
-                  birthdayFilter ===
-                    "withoutBirthday" &&
-                  !hasBirthday
-                );
-
-              return (
-                matchesSearch &&
-                matchesBirthday
+            const matchesFilter =
+              !filter ||
+              (
+                filter === "with" &&
+                hasBirthday
+              ) ||
+              (
+                filter === "without" &&
+                !hasBirthday
               );
-            }
+
+            return (
+              matchesSearch &&
+              matchesFilter
+            );
+          }
+        );
+
+      el.contactList.innerHTML =
+        contacts.length
+          ? contacts
+              .map(
+                contactRowHtml
+              )
+              .join("")
+          : emptyHtml(
+              "No matching contacts in this temporary session."
+            );
+    }
+
+    function renderBirthdays() {
+      const query =
+        el.birthdaySearch.value
+          .trim()
+          .toLowerCase();
+
+      const contacts =
+        contactsWithBirthday()
+          .filter(
+            (contact) =>
+              !query ||
+              [
+                contact.name,
+                contact.mobile,
+                contact.whatsapp
+              ]
+                .join(" ")
+                .toLowerCase()
+                .includes(query)
           )
           .sort(
             (a, b) =>
-              String(a.name)
-                .localeCompare(
-                  String(b.name)
-                )
+              a.birthday.month -
+                b.birthday.month ||
+              a.birthday.day -
+                b.birthday.day ||
+              a.name.localeCompare(
+                b.name
+              )
           );
 
-      el.contactsTotalCount.textContent =
-        allRecords.length;
+      el.birthdayList.innerHTML =
+        contacts.length
+          ? contacts
+              .map(
+                (contact) =>
+                  compactBirthdayRow(
+                    contact,
+                    birthdayDateForYear(
+                      contact.birthday,
+                      new Date().getFullYear()
+                    )
+                  )
+              )
+              .join("")
+          : emptyHtml(
+              "No saved birthdays were found in Google Contacts."
+            );
+    }
 
-      el.contactsBirthdayCount.textContent =
-        allRecords.filter(
-          hasBirthdayData
-        ).length;
+    function renderYearly() {
+      const year =
+        Number(
+          el.yearSelect.value
+        ) ||
+        new Date().getFullYear();
 
-      el.contactsGenderCount.textContent =
-        allRecords.filter(
-          (contact) =>
-            Boolean(
-              contact.gender
-            )
-        ).length;
+      const months =
+        Array.from(
+          { length: 12 },
+          () => []
+        );
 
-      el.contactsWhatsAppCount.textContent =
-        allRecords.filter(
-          (contact) =>
-            Boolean(
-              contact.whatsapp
-            )
-        ).length;
+      contactsWithBirthday()
+        .forEach(
+          (contact) => {
+            months[
+              contact.birthday.month -
+              1
+            ].push(contact);
+          }
+        );
 
-      if (!records.length) {
-        el.contactsDirectoryList.innerHTML = `
-          <div class="empty">
-            No matching synced contacts.
-          </div>
-        `;
-        return;
-      }
+      const formatter =
+        new Intl.DateTimeFormat(
+          "en",
+          {
+            month: "long"
+          }
+        );
 
-      el.contactsDirectoryList.innerHTML =
-        records
+      el.yearlyGrid.innerHTML =
+        months
           .map(
-            contactDirectoryCardHtml
+            (
+              contacts,
+              monthIndex
+            ) => {
+              contacts.sort(
+                (a, b) =>
+                  a.birthday.day -
+                    b.birthday.day ||
+                  a.name.localeCompare(
+                    b.name
+                  )
+              );
+
+              return `
+                <article class="month-card">
+                  <header class="month-heading">
+                    <h3>
+                      ${formatter.format(
+                        new Date(
+                          year,
+                          monthIndex,
+                          1
+                        )
+                      )}
+                    </h3>
+                    <span class="month-count">
+                      ${contacts.length}
+                    </span>
+                  </header>
+
+                  ${
+                    contacts.length
+                      ? contacts
+                          .map(
+                            (contact) => {
+                              const date =
+                                birthdayDateForYear(
+                                  contact.birthday,
+                                  year
+                                );
+
+                              const age =
+                                contact
+                                  .birthday
+                                  .year
+                                  ? year -
+                                    contact
+                                      .birthday
+                                      .year
+                                  : null;
+
+                              return `
+                                <div class="month-row">
+                                  <div class="person">
+                                    <span class="avatar">
+                                      ${initial(
+                                        contact.name
+                                      )}
+                                    </span>
+                                    <div class="person-text">
+                                      <strong>
+                                        ${escapeHtml(
+                                          contact.name
+                                        )}
+                                      </strong>
+                                      <small>
+                                        ${escapeHtml(
+                                          contact.mobile
+                                        )}
+                                      </small>
+                                    </div>
+                                  </div>
+
+                                  <div>
+                                    <span class="field-value">
+                                      ${formatDate(
+                                        date,
+                                        false
+                                      )}
+                                    </span>
+                                    <span class="field-label">
+                                      ${
+                                        new Intl
+                                          .DateTimeFormat(
+                                            "en",
+                                            {
+                                              weekday:
+                                                "short"
+                                            }
+                                          )
+                                          .format(
+                                            date
+                                          )
+                                      }
+                                    </span>
+                                  </div>
+
+                                  <div>
+                                    <span class="field-value">
+                                      ${
+                                        age === null
+                                          ? "Age —"
+                                          : `Turns ${age}`
+                                      }
+                                    </span>
+                                  </div>
+                                </div>
+                              `;
+                            }
+                          )
+                          .join("")
+                      : `
+                        <div class="empty">
+                          No birthdays
+                        </div>
+                      `
+                  }
+                </article>
+              `;
+            }
           )
           .join("");
     }
 
-
-    function contactDirectoryCardHtml(
+    function contactRowHtml(
       contact
     ) {
-      const birthdayText =
-        hasBirthdayData(contact)
-          ? formatContactBirthday(
-              contact
+      const birthday =
+        contact.birthday
+          ? formatBirthday(
+              contact.birthday
             )
-          : "Birthday not saved";
+          : "Not saved";
 
-      const birthdayClass =
-        hasBirthdayData(contact)
-          ? "birthday-available"
-          : "birthday-missing";
+      const wa =
+        whatsappUrl(
+          contact.whatsapp ||
+          contact.mobile
+        );
 
       return `
-        <article class="contact-directory-card">
-          <div class="contact-main">
-            <div class="avatar">
+        <article class="contact-row">
+          <div class="person">
+            <span class="avatar">
               ${initial(contact.name)}
-            </div>
+            </span>
 
-            <div class="contact-name">
+            <div class="person-text">
               <strong>
                 ${escapeHtml(contact.name)}
               </strong>
@@ -3826,204 +2057,128 @@
             </div>
           </div>
 
-          <div class="contact-field">
-            <strong>
-              ${
-                contact.gender
-                  ? escapeHtml(
-                      contact.gender
-                    )
-                  : "Not specified"
-              }
-            </strong>
-            <span>Gender</span>
+          <div>
+            <span class="field-value">
+              ${escapeHtml(contact.gender)}
+            </span>
+            <span class="field-label">Gender</span>
           </div>
 
-          <div class="contact-number-group">
-            <span class="number-pill">
-              ☎ ${escapeHtml(contact.mobile || "—")}
+          <div class="phone-stack">
+            <span class="phone-pill">
+              Mobile: ${escapeHtml(contact.mobile)}
             </span>
 
-            <span class="number-pill whatsapp-number">
-              WA ${escapeHtml(contact.whatsapp || contact.mobile || "—")}
+            <span class="phone-pill wa">
+              WhatsApp: ${escapeHtml(contact.whatsapp)}
             </span>
           </div>
 
-          <div class="contact-field">
-            <strong class="${birthdayClass}">
-              ${escapeHtml(birthdayText)}
-            </strong>
-            <span>Birthday</span>
+          <div>
+            <span class="field-value">
+              ${escapeHtml(birthday)}
+            </span>
+            <span class="field-label">Birthday</span>
           </div>
 
-          <div class="contact-whatsapp-action">
-            ${whatsappContactLinkHtml(contact)}
-          </div>
+          <a
+            class="wa-link"
+            href="${wa}"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Open WhatsApp"
+          >
+            WA
+          </a>
         </article>
       `;
     }
 
-
-    function formatContactBirthday(
-      contact
+    function compactBirthdayRow(
+      contact,
+      date
     ) {
-      const year =
-        Number(
-          contact.birthYear
-        ) || 2000;
-
-      const date =
-        safeBirthdayDate(
-          year,
-          Number(
-            contact.birthMonth
-          ),
-          Number(
-            contact.birthDay
-          )
-        );
-
-      return new Intl
-        .DateTimeFormat(
-          "en-IN",
-          {
-            day: "2-digit",
-            month: "short",
-            year:
-              contact.birthYear
-                ? "numeric"
-                : undefined
-          }
-        )
-        .format(date);
-    }
-
-
-    function whatsappContactLinkHtml(
-      contact
-    ) {
-      const raw =
-        contact.whatsapp ||
-        contact.mobile ||
-        "";
-
-      let number =
-        String(raw)
-          .replace(/\D/g, "");
-
-      if (!number) {
-        return "";
-      }
-
-      const countryCode =
-        String(
-          state.settings.countryCode ||
-          "91"
-        ).replace(/\D/g, "");
-
-      if (
-        number.length === 10 &&
-        countryCode
-      ) {
-        number =
-          countryCode + number;
-      } else if (
-        number.length === 11 &&
-        number.startsWith("0")
-      ) {
-        number =
-          countryCode +
-          number.slice(1);
-      }
-
       return `
-        <a
-          class="icon-button whatsapp"
-          href="https://wa.me/${number}"
-          target="_blank"
-          rel="noopener"
-          title="Open WhatsApp"
-        >WA</a>
+        <article class="contact-row">
+          <div class="person">
+            <span class="avatar">
+              ${initial(contact.name)}
+            </span>
+
+            <div class="person-text">
+              <strong>
+                ${escapeHtml(contact.name)}
+              </strong>
+              <small>
+                ${escapeHtml(contact.mobile)}
+              </small>
+            </div>
+          </div>
+
+          <div>
+            <span class="field-value">
+              ${escapeHtml(contact.gender)}
+            </span>
+            <span class="field-label">Gender</span>
+          </div>
+
+          <div>
+            <span class="field-value">
+              ${formatDate(date, false)}
+            </span>
+            <span class="field-label">
+              Birthday
+            </span>
+          </div>
+
+          <div>
+            <span class="field-value">
+              ${
+                contact.birthday.year
+                  ? `Born ${contact.birthday.year}`
+                  : "Year hidden"
+              }
+            </span>
+            <span class="field-label">
+              Birth year
+            </span>
+          </div>
+
+          <a
+            class="wa-link"
+            href="${whatsappUrl(
+              contact.whatsapp ||
+              contact.mobile
+            )}"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            WA
+          </a>
+        </article>
       `;
     }
 
-
-    function renderAllBirthdays() {
-      const queryText =
-        el.searchInput.value
-          .trim()
-          .toLowerCase();
-
-      const source =
-        el.sourceFilter.value;
-
-      const records =
-        state.birthdays
-          .map(enrichBirthday)
-          .filter((record) => {
-            const searchText = [
-              record.name,
-              record.relation,
-              record.mobile,
-              record.whatsapp,
-              record.email,
-              monthName(
-                Number(
-                  record.birthMonth
-                )
-              )
-            ]
-              .join(" ")
-              .toLowerCase();
-
-            return (
-              (
-                !queryText ||
-                searchText.includes(
-                  queryText
-                )
-              ) &&
-              (
-                !source ||
-                record.source ===
-                  source
-              )
-            );
-          })
-          .sort(
-            (a, b) =>
-              a.daysLeft -
-              b.daysLeft
-          );
-
-      renderList(
-        el.allBirthdayList,
-        records,
-        "No matching birthday records."
+    function contactsWithBirthday() {
+      return state.contacts.filter(
+        (contact) =>
+          Boolean(
+            contact.birthday
+          )
       );
     }
 
-
-    function setupYearlyYearOptions() {
+    function setupYearOptions() {
       const currentYear =
         new Date().getFullYear();
 
-      const startYear =
-        currentYear - 2;
-
-      const endYear =
-        currentYear + 7;
-
-      el.yearlyYearSelect.innerHTML =
+      el.yearSelect.innerHTML =
         Array.from(
-          {
-            length:
-              endYear -
-              startYear +
-              1
-          },
+          { length: 10 },
           (_, index) =>
-            startYear + index
+            currentYear -
+            2 +
+            index
         )
           .map(
             (year) => `
@@ -4031,7 +2186,7 @@
                 value="${year}"
                 ${
                   year ===
-                  state.yearlyYear
+                  currentYear
                     ? "selected"
                     : ""
                 }
@@ -4043,823 +2198,330 @@
           .join("");
     }
 
-
-    function renderYearlyList() {
-      if (!el.yearlyList) {
-        return;
-      }
-
-      const selectedYear =
-        Number(
-          el.yearlyYearSelect.value
-        ) ||
-        state.yearlyYear ||
-        new Date().getFullYear();
-
-      state.yearlyYear =
-        selectedYear;
-
-      const records =
-        state.birthdays
-          .map(
-            (record) =>
-              enrichYearlyBirthday(
-                record,
-                selectedYear
-              )
-          )
-          .sort(
-            (a, b) =>
-              a.birthMonth -
-                b.birthMonth ||
-              a.birthDay -
-                b.birthDay ||
-              String(a.name)
-                .localeCompare(
-                  String(b.name)
-                )
-          );
-
-      const grouped =
-        Array.from(
-          { length: 12 },
-          () => []
-        );
-
-      records.forEach(
-        (record) => {
-          const monthIndex =
-            Number(
-              record.birthMonth
-            ) - 1;
-
-          if (
-            monthIndex >= 0 &&
-            monthIndex < 12
-          ) {
-            grouped[
-              monthIndex
-            ].push(record);
-          }
-        }
-      );
-
-      el.yearlyTotalCount.textContent =
-        records.length;
-
-      el.yearlyActiveMonthsCount.textContent =
-        grouped.filter(
-          (monthRecords) =>
-            monthRecords.length > 0
-        ).length;
-
-      el.yearlyKnownAgeCount.textContent =
-        records.filter(
-          (record) =>
-            record.ageTurning !== ""
-        ).length;
-
-      el.yearlyPrintHeading.textContent =
-        `Birthday Reminder — Yearly List ${selectedYear}`;
-
-      el.yearlyList.innerHTML =
-        grouped
-          .map(
-            (
-              monthRecords,
-              monthIndex
-            ) =>
-              yearlyMonthHtml(
-                monthIndex + 1,
-                monthRecords,
-                selectedYear
-              )
-          )
-          .join("");
-    }
-
-
-    function enrichYearlyBirthday(
-      record,
-      selectedYear
-    ) {
-      const birthdayDate =
-        safeBirthdayDate(
-          selectedYear,
-          Number(
-            record.birthMonth
-          ),
-          Number(
-            record.birthDay
-          )
-        );
-
-      const ageTurning =
-        record.birthYear
-          ? selectedYear -
-            Number(
-              record.birthYear
-            )
-          : "";
-
-      return {
-        ...record,
-        yearlyDate:
-          formatIsoDate(
-            birthdayDate
-          ),
-        yearlyDay:
-          new Intl.DateTimeFormat(
-            "en",
-            {
-              weekday:
-                "short"
-            }
-          ).format(
-            birthdayDate
-          ),
-        ageTurning:
-          ageTurning >= 0
-            ? ageTurning
-            : ""
-      };
-    }
-
-
-    function yearlyMonthHtml(
-      month,
-      records,
-      selectedYear
-    ) {
-      const monthLabel =
-        monthName(month);
-
-      return `
-        <section class="yearly-month">
-          <header class="yearly-month-header">
-            <h3>${escapeHtml(monthLabel)} ${selectedYear}</h3>
-            <span class="month-total">
-              ${records.length}
-            </span>
-          </header>
-
-          <div class="yearly-month-body">
-            ${
-              records.length
-                ? records
-                    .map(
-                      yearlyRowHtml
-                    )
-                    .join("")
-                : `
-                  <div class="yearly-empty-month">
-                    No birthdays
-                  </div>
-                `
-            }
-          </div>
-        </section>
-      `;
-    }
-
-
-    function yearlyRowHtml(record) {
-      const sourceLabel =
-        record.source ===
-          "googleContacts"
-          ? "Google"
-          : "Manual";
-
-      return `
-        <article class="yearly-row">
-          <div class="yearly-person">
-            <span class="yearly-avatar">
-              ${initial(record.name)}
-            </span>
-
-            <div class="yearly-person-text">
-              <strong>
-                ${escapeHtml(record.name)}
-              </strong>
-
-              <small>
-                ${escapeHtml(sourceLabel)}
-              </small>
-            </div>
-          </div>
-
-          <div class="yearly-cell">
-            <strong>
-              ${formatDisplayDate(record.yearlyDate)}
-            </strong>
-            ${escapeHtml(record.yearlyDay)}
-          </div>
-
-          <div class="yearly-cell">
-            <strong>
-              ${
-                record.ageTurning === ""
-                  ? "Age —"
-                  : `Turns ${record.ageTurning}`
-              }
-            </strong>
-            ${
-              record.birthYear
-                ? `Born ${record.birthYear}`
-                : "Year hidden"
-            }
-          </div>
-
-          <div class="yearly-cell yearly-relation-cell">
-            <strong>
-              ${
-                record.relation
-                  ? escapeHtml(
-                      record.relation
-                    )
-                  : "—"
-              }
-            </strong>
-            Relation
-          </div>
-        </article>
-      `;
-    }
-
-
-    function printYearlyList() {
-      navigate("yearly");
-      renderYearlyList();
-
-      document.body.classList.add(
-        "print-yearly"
-      );
-
-      const cleanup = () => {
-        document.body.classList.remove(
-          "print-yearly"
-        );
-
-        window.removeEventListener(
-          "afterprint",
-          cleanup
-        );
-      };
-
-      window.addEventListener(
-        "afterprint",
-        cleanup
-      );
-
-      window.setTimeout(
-        () => {
-          window.print();
-        },
-        120
-      );
-    }
-
-
-    function birthdayCardHtml(record) {
-      return `
-        <article class="birthday-card">
-          <div class="avatar">${initial(record.name)}</div>
-          <div>
-            <h3>${escapeHtml(record.name)}</h3>
-            <div class="meta">
-              ${formatDisplayDate(record.nextBirthday)}
-              · ${daysText(record.daysLeft)}
-              · ${record.age === "" ? "Age: —" : `Age: ${record.age}`}
-              ${record.relation ? ` · ${escapeHtml(record.relation)}` : ""}
-              · ${record.source === "googleContacts" ? "Google Contacts" : "Manual"}
-            </div>
-          </div>
-          <div class="card-actions">
-            ${whatsappLinkHtml(record)}
-            <button class="icon-button" type="button" data-edit="${escapeAttribute(record.id)}">✎</button>
-          </div>
-        </article>
-      `;
-    }
-
-    function whatsappLinkHtml(record) {
-      const raw =
-        record.whatsapp ||
-        record.mobile ||
-        "";
-
-      let number =
-        String(raw)
-          .replace(/\D/g, "");
-
-      if (!number) {
-        return "";
-      }
-
-      const countryCode =
-        String(
-          state.settings.countryCode ||
-          "91"
-        ).replace(/\D/g, "");
-
-      if (
-        number.length === 10 &&
-        countryCode
-      ) {
-        number =
-          countryCode + number;
-      } else if (
-        number.length === 11 &&
-        number.startsWith("0")
-      ) {
-        number =
-          countryCode +
-          number.slice(1);
-      }
-
-      const message =
-        String(
-          state.settings.message || ""
-        )
-          .replaceAll(
-            "{name}",
-            record.name || ""
-          )
-          .replaceAll(
-            "{date}",
-            formatDisplayDate(
-              record.nextBirthday
-            )
-          );
-
-      return `
-        <a
-          class="icon-button whatsapp"
-          href="https://wa.me/${number}?text=${encodeURIComponent(message)}"
-          target="_blank"
-          rel="noopener"
-          title="Open WhatsApp"
-        >WA</a>
-      `;
-    }
-
-    function handleDynamicClick(event) {
-      const editButton =
-        event.target.closest(
-          "[data-edit]"
-        );
-
-      if (!editButton) {
-        return;
-      }
-
-      const record =
-        state.birthdays.find(
-          (item) =>
-            item.id ===
-            editButton.dataset.edit
-        );
-
-      if (record) {
-        openBirthdayDialog(record);
-      }
-    }
-
-    function openBirthdayDialog(
-      record = null
-    ) {
-      state.editing = record;
-      el.birthdayForm.reset();
-
-      if (record) {
-        el.dialogTitle.textContent =
-          "Edit Birthday";
-
-        el.recordIdInput.value =
-          record.id;
-
-        el.nameInput.value =
-          record.name || "";
-
-        el.dobInput.value =
-          record.birthYear
-            ? [
-                record.birthYear,
-                String(
-                  record.birthMonth
-                ).padStart(2, "0"),
-                String(
-                  record.birthDay
-                ).padStart(2, "0")
-              ].join("-")
-            : "";
-
-        el.genderInput.value =
-          record.gender || "";
-
-        el.mobileInput.value =
-          record.mobile || "";
-
-        el.whatsappInput.value =
-          record.whatsapp || "";
-
-        el.emailInput.value =
-          record.email || "";
-
-        el.relationInput.value =
-          record.relation || "";
-
-        el.notesInput.value =
-          record.notes || "";
-
-        el.deleteButton.classList.toggle(
-          "hidden",
-          record.source ===
-            "googleContacts"
-        );
-      } else {
-        el.dialogTitle.textContent =
-          "Add Birthday";
-
-        el.recordIdInput.value = "";
-        el.deleteButton.classList.add(
-          "hidden"
-        );
-      }
-
-      el.birthdayDialog.showModal();
-    }
-
-    function closeBirthdayDialog() {
-      state.editing = null;
-      el.birthdayDialog.close();
-    }
-
-    async function saveBirthday(event) {
-      event.preventDefault();
-
-      const dob =
-        el.dobInput.value;
-
-      if (!dob) {
-        showToast(
-          "DOB is required.",
-          true
-        );
-        return;
-      }
-
-      const [
-        year,
-        month,
-        day
-      ] = dob
-        .split("-")
-        .map(Number);
-
-      const payload = {
-        name:
-          el.nameInput.value.trim(),
-        nameLower:
-          el.nameInput.value
-            .trim()
-            .toLowerCase(),
-        birthYear: year,
-        birthMonth: month,
-        birthDay: day,
-        dob,
-        gender:
-          el.genderInput.value,
-        mobile:
-          el.mobileInput.value.trim(),
-        whatsapp:
-          el.whatsappInput.value.trim(),
-        email:
-          el.emailInput.value.trim(),
-        relation:
-          el.relationInput.value.trim(),
-        notes:
-          el.notesInput.value.trim(),
-        source:
-          state.editing &&
-          state.editing.source ===
-            "googleContacts"
-            ? "googleContacts"
-            : "manual",
-        updatedAt:
-          serverTimestamp()
-      };
-
-      setButtonLoading(
-        el.saveButton,
-        true,
-        "Saving..."
-      );
-
-      try {
-        if (state.editing) {
-          await updateDoc(
-            doc(
-              db,
-              "users",
-              state.user.uid,
-              "birthdays",
-              state.editing.id
-            ),
-            payload
-          );
-        } else {
-          await addDoc(
-            collection(
-              db,
-              "users",
-              state.user.uid,
-              "birthdays"
-            ),
-            {
-              ...payload,
-              createdAt:
-                serverTimestamp()
-            }
-          );
-        }
-
-        closeBirthdayDialog();
-        showToast("Birthday saved.");
-      } catch (error) {
-        handleError(error);
-      } finally {
-        setButtonLoading(
-          el.saveButton,
-          false,
-          "Save"
-        );
-      }
-    }
-
-    async function deleteBirthday() {
-      if (
-        !state.editing ||
-        state.editing.source ===
-          "googleContacts"
-      ) {
-        return;
-      }
-
-      if (
-        !confirm(
-          `Delete ${state.editing.name}'s birthday?`
-        )
-      ) {
-        return;
-      }
-
-      try {
-        await deleteDoc(
-          doc(
-            db,
-            "users",
-            state.user.uid,
-            "birthdays",
-            state.editing.id
-          )
-        );
-
-        closeBirthdayDialog();
-        showToast("Birthday deleted.");
-      } catch (error) {
-        handleError(error);
-      }
-    }
-
     function navigate(view) {
-      state.activeView = view;
-
-      document
-        .querySelectorAll(".view")
-        .forEach(
-          (section) =>
-            section.classList.remove(
-              "active"
-            )
-        );
-
-      document
-        .getElementById(
-          `${view}View`
-        )
-        .classList.add("active");
+      state.activeView =
+        view;
 
       document
         .querySelectorAll(
-          "[data-view]"
+          ".view"
         )
-        .forEach((button) => {
-          button.classList.toggle(
-            "active",
-            button.dataset.view ===
-              view
-          );
-        });
+        .forEach(
+          (section) => {
+            section.classList.toggle(
+              "active",
+              section.id ===
+                `${view}View`
+            );
+          }
+        );
+
+      document
+        .querySelectorAll(
+          ".nav-button"
+        )
+        .forEach(
+          (button) => {
+            button.classList.toggle(
+              "active",
+              button.dataset.view ===
+                view
+            );
+          }
+        );
 
       const titles = {
-        dashboard: "Dashboard",
-        contacts: "Contact Details",
-        birthdays: "All Birthdays",
-        yearly: "Yearly Birthday List",
-        settings: "Settings"
+        dashboard:
+          "Dashboard",
+        contacts:
+          "Contact Details",
+        birthdays:
+          "Birthdays",
+        yearly:
+          "Yearly Birthday List",
+        privacy:
+          "Privacy & Data Safety"
       };
 
       el.pageTitle.textContent =
-        titles[view] || "Dashboard";
-
-      if (view === "contacts") {
-        renderContactsDirectory();
-      }
-
-      if (view === "yearly") {
-        renderYearlyList();
-      }
+        titles[view] ||
+        "Birthday Reminder";
     }
 
-    function dateOnly(date) {
-      const value =
-        new Date(date);
-
-      value.setHours(
-        0,
-        0,
-        0,
-        0
+    function showApp() {
+      el.loginPage.classList.add(
+        "hidden"
       );
 
-      return value;
+      el.appShell.classList.remove(
+        "hidden"
+      );
     }
 
-    function daysBetween(
-      startDate,
-      endDate
+    function disconnectAndClear() {
+      const token =
+        state.accessToken;
+
+      const finish = () => {
+        state.accessToken = "";
+        state.contacts = [];
+        state.syncedAt = null;
+
+        renderEverything();
+
+        el.appShell.classList.add(
+          "hidden"
+        );
+
+        el.loginPage.classList.remove(
+          "hidden"
+        );
+
+        el.loginStatus.textContent =
+          "Disconnected. Temporary contact data has been cleared.";
+
+        showToast(
+          "Google access revoked and page memory cleared."
+        );
+      };
+
+      if (
+        token &&
+        window.google &&
+        google.accounts &&
+        google.accounts.oauth2
+      ) {
+        google.accounts.oauth2
+          .revoke(
+            token,
+            finish
+          );
+      } else {
+        finish();
+      }
+    }
+
+    function setLoading(loading) {
+      el.connectButton.disabled =
+        loading;
+
+      el.syncButton.disabled =
+        loading;
+
+      if (loading) {
+        el.connectButton.textContent =
+          "Connecting privately…";
+      } else {
+        el.connectButton.textContent =
+          "Connect Google Contacts Privately";
+      }
+    }
+
+    function nextBirthdayDate(
+      birthday
     ) {
-      const start =
-        dateOnly(startDate);
+      const today =
+        startOfDay(
+          new Date()
+        );
 
-      const end =
-        dateOnly(endDate);
+      let year =
+        today.getFullYear();
 
-      return Math.round(
+      let date =
+        birthdayDateForYear(
+          birthday,
+          year
+        );
+
+      if (date < today) {
+        date =
+          birthdayDateForYear(
+            birthday,
+            year + 1
+          );
+      }
+
+      return date;
+    }
+
+    function birthdayDateForYear(
+      birthday,
+      year
+    ) {
+      return new Date(
+        year,
+        birthday.month - 1,
+        birthday.day
+      );
+    }
+
+    function dayDifference(
+      first,
+      second
+    ) {
+      return Math.floor(
         (
-          Date.UTC(
-            end.getFullYear(),
-            end.getMonth(),
-            end.getDate()
-          ) -
-          Date.UTC(
-            start.getFullYear(),
-            start.getMonth(),
-            start.getDate()
-          )
+          startOfDay(second) -
+          startOfDay(first)
         ) /
         86400000
       );
     }
 
-    function formatIsoDate(date) {
-      return [
+    function startOfDay(date) {
+      return new Date(
         date.getFullYear(),
-        String(
-          date.getMonth() + 1
-        ).padStart(2, "0"),
-        String(
-          date.getDate()
-        ).padStart(2, "0")
-      ].join("-");
+        date.getMonth(),
+        date.getDate()
+      );
     }
 
-    function formatDisplayDate(value) {
-      if (!value) {
-        return "";
-      }
-
+    function formatBirthday(
+      birthday
+    ) {
       const date =
-        new Date(
-          `${value}T00:00:00`
+        birthdayDateForYear(
+          birthday,
+          birthday.year ||
+          2000
         );
 
+      return formatDate(
+        date,
+        Boolean(
+          birthday.year
+        )
+      );
+    }
+
+    function formatDate(
+      date,
+      includeYear
+    ) {
       return new Intl
         .DateTimeFormat(
           "en-IN",
           {
             day: "2-digit",
             month: "short",
-            year: "numeric"
+            year:
+              includeYear
+                ? "numeric"
+                : undefined
           }
         )
         .format(date);
     }
 
-    function daysText(days) {
-      if (days === 0) {
-        return "Today";
+    function whatsappUrl(
+      value
+    ) {
+      let number =
+        String(value || "")
+          .replace(/\D/g, "");
+
+      if (
+        number.length === 10
+      ) {
+        number =
+          "91" + number;
+      } else if (
+        number.length === 11 &&
+        number.startsWith("0")
+      ) {
+        number =
+          "91" +
+          number.slice(1);
       }
 
-      return `${days} day${
-        days === 1 ? "" : "s"
-      }`;
-    }
-
-    function monthName(month) {
-      return new Intl
-        .DateTimeFormat(
-          "en",
-          { month: "long" }
-        )
-        .format(
-          new Date(
-            2026,
-            month - 1,
-            1
-          )
-        );
+      return number
+        ? `https://wa.me/${number}`
+        : "#";
     }
 
     function initial(name) {
-      return escapeHtml(
+      return (
         String(name || "?")
+          .trim()
           .charAt(0)
-          .toUpperCase()
+          .toUpperCase() ||
+        "?"
       );
     }
 
-    function setButtonLoading(
-      button,
-      loading,
-      text
+    function emptyHtml(message) {
+      return `
+        <div class="empty">
+          ${escapeHtml(message)}
+        </div>
+      `;
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(
+          /&/g,
+          "&amp;"
+        )
+        .replace(
+          /</g,
+          "&lt;"
+        )
+        .replace(
+          />/g,
+          "&gt;"
+        )
+        .replace(
+          /"/g,
+          "&quot;"
+        )
+        .replace(
+          /'/g,
+          "&#039;"
+        );
+    }
+
+    function showToast(
+      message,
+      isError = false
     ) {
-      button.disabled = loading;
-      button.textContent = text;
+      el.toast.textContent =
+        message;
+
+      el.toast.classList.toggle(
+        "error",
+        isError
+      );
+
+      el.toast.classList.remove(
+        "hidden"
+      );
+
+      window.clearTimeout(
+        showToast.timer
+      );
+
+      showToast.timer =
+        window.setTimeout(
+          () => {
+            el.toast.classList.add(
+              "hidden"
+            );
+          },
+          5200
+        );
     }
 
     function handleError(error) {
       console.error(error);
 
-      const message =
+      showToast(
         error &&
         error.message
           ? error.message
-          : "Something went wrong.";
-
-      showToast(message, true);
-    }
-
-    function showToast(
-      message,
-      error = false
-    ) {
-      clearTimeout(toastTimer);
-
-      el.toast.textContent =
-        message;
-
-      el.toast.style.background =
-        error ? "#b42318" : "#172033";
-
-      el.toast.classList.add(
-        "visible"
-      );
-
-      toastTimer =
-        setTimeout(
-          () =>
-            el.toast.classList.remove(
-              "visible"
-            ),
-          3500
-        );
-    }
-
-    function escapeHtml(value) {
-      return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    function escapeAttribute(value) {
-      return escapeHtml(value);
-    }
-
-    bootstrapApplication();
-
-    if ("serviceWorker" in navigator) {
-      window.addEventListener(
-        "load",
-        () => {
-          navigator.serviceWorker
-            .register("./sw.js")
-            .catch(() => {});
-        }
+          : "Something went wrong.",
+        true
       );
     }
   </script>
