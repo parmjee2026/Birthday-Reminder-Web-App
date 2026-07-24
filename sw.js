@@ -1,4 +1,4 @@
-const CACHE_NAME = "birthday-reminder-firebase-free-v2";
+const CACHE_NAME = "birthday-reminder-firebase-free-v2-configured";
 
 const APP_SHELL = [
   "./",

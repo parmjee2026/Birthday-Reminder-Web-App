@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#123b70">
   <meta name="description" content="Free multi-user Birthday Reminder with Google Login and Google Contacts sync">
+  <meta name="app-build" content="firebase-free-v2.0-configured">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <title>Birthday Reminder v2.0</title>
+  <title>Birthday Reminder v2.0 Configured</title>
 
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
@@ -581,7 +582,7 @@
         <div class="brand-icon">🎂</div>
         <div>
           <strong>Birthday Reminder</strong>
-          <small>Firebase Free v2.0</small>
+          <small>Firebase Free v2.0 Configured</small>
         </div>
       </div>
 
@@ -807,15 +808,16 @@
      * is enforced by Firebase Authentication and Firestore Rules.
      * =============================================================
      */
-    const firebaseConfig = {
-  apiKey: "AIzaSyAU5Rs6J2ZamcHa-oPYxwq4c-gAD9-37ns",
-  authDomain: "birthday-reminder-web-app.firebaseapp.com",
-  projectId: "birthday-reminder-web-app",
-  storageBucket: "birthday-reminder-web-app.firebasestorage.app",
-  messagingSenderId: "916488048354",
-  appId: "1:916488048354:web:07b54e00788a3d44d198bb",
-  measurementId: "G-QJMXCFMJNJ"
-};
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyAU5Rs6J2ZamcHa-oPYxwq4c-gAD9-37ns",
+      authDomain: "birthday-reminder-web-app.firebaseapp.com",
+      projectId: "birthday-reminder-web-app",
+      storageBucket: "birthday-reminder-web-app.firebasestorage.app",
+      messagingSenderId: "916488048354",
+      appId: "1:916488048354:web:07b54e00788a3d44d198bb",
+      measurementId: "G-QJMXCFMJNJ"
+    };
+
     const FIREBASE_VERSION = "12.16.0";
     const CONTACTS_SCOPE =
       "https://www.googleapis.com/auth/contacts.readonly";
