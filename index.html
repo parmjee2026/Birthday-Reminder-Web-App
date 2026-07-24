@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#123b70">
   <meta name="description" content="Free multi-user Birthday Reminder with Google Login and Google Contacts sync">
-  <meta name="app-build" content="firebase-free-v2.0.5-yearly-list">
+  <meta name="app-build" content="firebase-free-v2.0.6-full-year-sync">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <title>Birthday Reminder v2.0.5</title>
+  <title>Birthday Reminder v2.0.6</title>
 
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
@@ -866,7 +866,7 @@
     <div class="login-card">
       <div class="login-logo">🎂</div>
       <p class="eyebrow">Free multi-user version</p>
-      <h1>Birthday Reminder v2.0.5</h1>
+      <h1>Birthday Reminder v2.0.6</h1>
       <p>
         Login with Google. Your birthdays and synced contacts remain separate
         from every other user's data.
@@ -890,7 +890,7 @@
         <div class="brand-icon">🎂</div>
         <div>
           <strong>Birthday Reminder</strong>
-          <small>Firebase Free v2.0.5</small>
+          <small>Firebase Free v2.0.6</small>
         </div>
       </div>
 
@@ -916,7 +916,7 @@
 
         <div class="top-actions">
           <button id="syncContactsButton" class="secondary-button" type="button">
-            ↻ Sync Contacts
+            ↻ Full Year Sync
           </button>
           <button id="addBirthdayButton" class="primary-button" type="button">
             + Add Birthday
@@ -1062,7 +1062,7 @@
 
             <div class="info-box">
               Google Contacts are synced when you login for the first time or
-              press <strong>Sync Contacts</strong>. Background sync while the
+              press <strong>Full Year Sync</strong>. Background sync while the
               browser is closed is intentionally not included because this
               version uses no paid backend services.
               <br><br>
@@ -2060,7 +2060,7 @@
         setButtonLoading(
           el.syncContactsButton,
           false,
-          "↻ Sync Contacts"
+          "↻ Full Year Sync"
         );
       }
     }
@@ -2073,20 +2073,25 @@
         el.syncContactsButton,
         true,
         automatic
-          ? "Importing Contacts..."
-          : "Syncing..."
+          ? "Scanning All Months..."
+          : "Scanning All Contacts..."
       );
 
       try {
-        const contacts =
+        const scan =
           await fetchAllGoogleContacts(
             accessToken
           );
 
         const birthdayContacts =
-          contacts
+          scan.contacts
             .map(normalizeGoogleContact)
             .filter(Boolean);
+
+        const monthCounts =
+          getBirthdayMonthCounts(
+            birthdayContacts
+          );
 
         await saveContactBirthdays(
           birthdayContacts
@@ -2103,6 +2108,12 @@
               serverTimestamp(),
             lastContactSyncCount:
               birthdayContacts.length,
+            lastContactScanCount:
+              scan.totalContacts,
+            lastContactPageCount:
+              scan.pageCount,
+            lastBirthdayMonthCounts:
+              monthCounts,
             updatedAt:
               serverTimestamp()
           },
@@ -2111,15 +2122,23 @@
 
         await updateSyncStatus();
 
+        const activeMonths =
+          Object.values(
+            monthCounts
+          ).filter(
+            (count) =>
+              Number(count) > 0
+          ).length;
+
         showToast(
-          `${birthdayContacts.length} contact birthday(s) synced.`
+          `Full-year sync complete: ${birthdayContacts.length} birthday(s) across ${activeMonths} month(s), from ${scan.totalContacts} contact(s).`
         );
 
         if (
           birthdayContacts.length === 0
         ) {
           showToast(
-            "Sync complete: no contacts with a saved birthday were found. Add a birthday in Google Contacts, then sync again.",
+            "No contacts with a saved birthday were found. Add birthdays in Google Contacts, then run Full Year Sync again.",
             true
           );
         }
@@ -2129,7 +2148,7 @@
         setButtonLoading(
           el.syncContactsButton,
           false,
-          "↻ Sync Contacts"
+          "↻ Full Year Sync"
         );
       }
     }
@@ -2137,8 +2156,10 @@
     async function fetchAllGoogleContacts(
       accessToken
     ) {
-      const contacts = [];
+      const connections = [];
       let pageToken = "";
+      let pageCount = 0;
+      let reportedTotal = 0;
 
       do {
         const url = new URL(
@@ -2151,21 +2172,22 @@
         );
 
         url.searchParams.set(
+          "sortOrder",
+          "FIRST_NAME_ASCENDING"
+        );
+
+        url.searchParams.set(
           "personFields",
           [
             "names",
             "birthdays",
+            "events",
             "emailAddresses",
             "phoneNumbers",
             "genders",
             "relations",
             "metadata"
           ].join(",")
-        );
-
-        url.searchParams.set(
-          "sources",
-          "READ_SOURCE_TYPE_CONTACT"
         );
 
         if (pageToken) {
@@ -2197,7 +2219,17 @@
           );
         }
 
-        contacts.push(
+        pageCount++;
+
+        reportedTotal =
+          Math.max(
+            reportedTotal,
+            Number(
+              payload.totalItems || 0
+            )
+          );
+
+        connections.push(
           ...(payload.connections || [])
         );
 
@@ -2205,7 +2237,187 @@
           payload.nextPageToken || "";
       } while (pageToken);
 
-      return contacts;
+      const resourceNames =
+        Array.from(
+          new Set(
+            connections
+              .map(
+                (person) =>
+                  person.resourceName
+              )
+              .filter(Boolean)
+          )
+        );
+
+      const hydratedPeople =
+        await fetchContactDetailsInBatches(
+          resourceNames,
+          accessToken
+        );
+
+      const hydratedMap =
+        new Map(
+          hydratedPeople.map(
+            (person) => [
+              person.resourceName,
+              person
+            ]
+          )
+        );
+
+      const mergedContacts =
+        connections.map(
+          (person) =>
+            mergePersonRecords(
+              person,
+              hydratedMap.get(
+                person.resourceName
+              )
+            )
+        );
+
+      return {
+        contacts:
+          mergedContacts,
+        totalContacts:
+          Math.max(
+            reportedTotal,
+            mergedContacts.length
+          ),
+        pageCount
+      };
+    }
+
+
+    async function fetchContactDetailsInBatches(
+      resourceNames,
+      accessToken
+    ) {
+      const people = [];
+      const batchSize = 100;
+
+      for (
+        let index = 0;
+        index < resourceNames.length;
+        index += batchSize
+      ) {
+        const batch =
+          resourceNames.slice(
+            index,
+            index + batchSize
+          );
+
+        const url = new URL(
+          "https://people.googleapis.com/v1/people:batchGet"
+        );
+
+        batch.forEach(
+          (resourceName) => {
+            url.searchParams.append(
+              "resourceNames",
+              resourceName
+            );
+          }
+        );
+
+        url.searchParams.set(
+          "personFields",
+          [
+            "names",
+            "birthdays",
+            "events",
+            "emailAddresses",
+            "phoneNumbers",
+            "genders",
+            "relations",
+            "metadata"
+          ].join(",")
+        );
+
+        const response = await fetch(
+          url.toString(),
+          {
+            headers: {
+              Authorization:
+                `Bearer ${accessToken}`
+            }
+          }
+        );
+
+        const payload =
+          await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            payload.error &&
+            payload.error.message
+              ? payload.error.message
+              : "Google Contact detail scan failed."
+          );
+        }
+
+        (payload.responses || [])
+          .forEach(
+            (item) => {
+              if (item.person) {
+                people.push(
+                  item.person
+                );
+              }
+            }
+          );
+      }
+
+      return people;
+    }
+
+
+    function mergePersonRecords(
+      basePerson,
+      detailedPerson
+    ) {
+      if (!detailedPerson) {
+        return basePerson;
+      }
+
+      const merged = {
+        ...basePerson,
+        ...detailedPerson
+      };
+
+      [
+        "names",
+        "birthdays",
+        "events",
+        "emailAddresses",
+        "phoneNumbers",
+        "genders",
+        "relations"
+      ].forEach(
+        (field) => {
+          const detailedValue =
+            detailedPerson[field];
+
+          const baseValue =
+            basePerson[field];
+
+          merged[field] =
+            Array.isArray(
+              detailedValue
+            ) &&
+            detailedValue.length
+              ? detailedValue
+              : (
+                  Array.isArray(
+                    baseValue
+                  )
+                    ? baseValue
+                    : []
+                );
+        }
+      );
+
+      return merged;
     }
 
     function normalizeGoogleContact(
@@ -2213,7 +2425,8 @@
     ) {
       const birthday =
         chooseBirthday(
-          person.birthdays || []
+          person.birthdays || [],
+          person.events || []
         );
 
       if (!birthday) {
@@ -2221,50 +2434,49 @@
       }
 
       const name =
-        (
-          person.names &&
-          person.names[0] &&
-          person.names[0].displayName
+        choosePrimaryFieldValue(
+          person.names,
+          "displayName"
         ) ||
         "Unnamed Contact";
 
       const phone =
-        (
-          person.phoneNumbers &&
-          person.phoneNumbers[0] &&
-          person.phoneNumbers[0].value
+        choosePrimaryFieldValue(
+          person.phoneNumbers,
+          "value"
         ) || "";
 
       const email =
-        (
-          person.emailAddresses &&
-          person.emailAddresses[0] &&
-          person.emailAddresses[0].value
+        choosePrimaryFieldValue(
+          person.emailAddresses,
+          "value"
         ) || "";
 
       const gender =
-        (
-          person.genders &&
-          person.genders[0] &&
-          person.genders[0].formattedValue
+        choosePrimaryFieldValue(
+          person.genders,
+          "formattedValue"
         ) ||
-        (
-          person.genders &&
-          person.genders[0] &&
-          person.genders[0].value
+        choosePrimaryFieldValue(
+          person.genders,
+          "value"
         ) ||
         "";
 
+      const relationItem =
+        choosePrimaryItem(
+          person.relations
+        );
+
       const relation =
-        (
-          person.relations &&
-          person.relations[0] &&
-          (
-            person.relations[0].person ||
-            person.relations[0].formattedType ||
-            person.relations[0].type
-          )
-        ) || "";
+        relationItem
+          ? (
+              relationItem.person ||
+              relationItem.formattedType ||
+              relationItem.type ||
+              ""
+            )
+          : "";
 
       const resourceName =
         person.resourceName || "";
@@ -2287,6 +2499,8 @@
           birthday.month,
         birthDay:
           birthday.day,
+        birthdaySource:
+          birthday.source || "birthday",
         dob:
           birthday.year
             ? [
@@ -2309,30 +2523,297 @@
       };
     }
 
-    function chooseBirthday(items) {
-      const valid =
-        items
-          .map((item) => item.date)
-          .filter(
-            (date) =>
-              date &&
-              Number(date.month) >= 1 &&
-              Number(date.month) <= 12 &&
-              Number(date.day) >= 1 &&
-              Number(date.day) <= 31
-          );
 
-      if (!valid.length) {
+    function choosePrimaryItem(items) {
+      if (
+        !Array.isArray(items) ||
+        !items.length
+      ) {
         return null;
       }
 
       return (
-        valid.find(
+        items.find(
+          (item) =>
+            item &&
+            item.metadata &&
+            item.metadata.primary ===
+              true
+        ) ||
+        items[0]
+      );
+    }
+
+
+    function choosePrimaryFieldValue(
+      items,
+      key
+    ) {
+      const item =
+        choosePrimaryItem(items);
+
+      return (
+        item &&
+        item[key]
+      ) || "";
+    }
+
+
+    function chooseBirthday(
+      birthdays,
+      events
+    ) {
+      const candidates = [];
+
+      (birthdays || []).forEach(
+        (item) => {
+          const date =
+            normalizeBirthdayDate(
+              item && item.date
+            ) ||
+            parseBirthdayText(
+              item && item.text
+            );
+
+          if (date) {
+            candidates.push({
+              ...date,
+              source: "birthday"
+            });
+          }
+        }
+      );
+
+      (events || []).forEach(
+        (item) => {
+          const typeText =
+            [
+              item &&
+                item.type,
+              item &&
+                item.formattedType
+            ]
+              .filter(Boolean)
+              .join(" ")
+              .toLowerCase();
+
+          if (
+            !typeText.includes(
+              "birthday"
+            ) &&
+            !typeText.includes(
+              "birth"
+            ) &&
+            !typeText.includes(
+              "dob"
+            )
+          ) {
+            return;
+          }
+
+          const date =
+            normalizeBirthdayDate(
+              item &&
+              item.date
+            );
+
+          if (date) {
+            candidates.push({
+              ...date,
+              source: "event"
+            });
+          }
+        }
+      );
+
+      if (!candidates.length) {
+        return null;
+      }
+
+      return (
+        candidates.find(
           (date) =>
             Number(date.year) > 0
         ) ||
-        valid[0]
+        candidates[0]
       );
+    }
+
+
+    function normalizeBirthdayDate(
+      date
+    ) {
+      if (!date) {
+        return null;
+      }
+
+      const month =
+        Number(date.month);
+
+      const day =
+        Number(date.day);
+
+      const year =
+        Number(date.year) || 0;
+
+      if (
+        month < 1 ||
+        month > 12 ||
+        day < 1 ||
+        day > 31
+      ) {
+        return null;
+      }
+
+      const validationYear =
+        year > 0
+          ? year
+          : 2000;
+
+      const testDate =
+        new Date(
+          validationYear,
+          month - 1,
+          day
+        );
+
+      if (
+        testDate.getMonth() !==
+          month - 1 ||
+        testDate.getDate() !== day
+      ) {
+        return null;
+      }
+
+      return {
+        year,
+        month,
+        day
+      };
+    }
+
+
+    function parseBirthdayText(
+      value
+    ) {
+      const text =
+        String(value || "")
+          .trim();
+
+      if (!text) {
+        return null;
+      }
+
+      const parsed =
+        new Date(text);
+
+      if (
+        !Number.isNaN(
+          parsed.getTime()
+        )
+      ) {
+        return {
+          year:
+            parsed.getFullYear(),
+          month:
+            parsed.getMonth() + 1,
+          day:
+            parsed.getDate()
+        };
+      }
+
+      const numericMatch =
+        text.match(
+          /^(\d{1,2})[\/\-.](\d{1,2})(?:[\/\-.](\d{2,4}))?$/
+        );
+
+      if (!numericMatch) {
+        return null;
+      }
+
+      const first =
+        Number(
+          numericMatch[1]
+        );
+
+      const second =
+        Number(
+          numericMatch[2]
+        );
+
+      let year =
+        Number(
+          numericMatch[3] || 0
+        );
+
+      if (
+        year > 0 &&
+        year < 100
+      ) {
+        year +=
+          year >= 50
+            ? 1900
+            : 2000;
+      }
+
+      const day =
+        first > 12
+          ? first
+          : second > 12
+            ? second
+            : first;
+
+      const month =
+        first > 12
+          ? second
+          : second > 12
+            ? first
+            : second;
+
+      return normalizeBirthdayDate({
+        year,
+        month,
+        day
+      });
+    }
+
+
+    function getBirthdayMonthCounts(
+      contacts
+    ) {
+      const counts = {};
+
+      for (
+        let month = 1;
+        month <= 12;
+        month++
+      ) {
+        counts[
+          String(month)
+        ] = 0;
+      }
+
+      contacts.forEach(
+        (contact) => {
+          const key =
+            String(
+              Number(
+                contact.birthMonth
+              )
+            );
+
+          if (
+            Object.prototype.hasOwnProperty.call(
+              counts,
+              key
+            )
+          ) {
+            counts[key]++;
+          }
+        }
+      );
+
+      return counts;
     }
 
     async function saveContactBirthdays(
@@ -2407,6 +2888,28 @@
           data.lastContactSyncCount || 0
         );
 
+      const scanned =
+        Number(
+          data.lastContactScanCount || 0
+        );
+
+      const pageCount =
+        Number(
+          data.lastContactPageCount || 0
+        );
+
+      const monthCounts =
+        data.lastBirthdayMonthCounts ||
+        {};
+
+      const activeMonths =
+        Object.values(
+          monthCounts
+        ).filter(
+          (value) =>
+            Number(value) > 0
+        ).length;
+
       const timestamp =
         data.lastContactSyncAt;
 
@@ -2418,24 +2921,24 @@
       if (hasSynced) {
         el.syncSummary.textContent =
           count
-            ? `${count} Google Contact birthday(s)`
-            : "Sync complete · 0 birthdays found";
+            ? `${count} birthday(s) · ${activeMonths} month(s)`
+            : "Full-year sync · 0 birthdays found";
 
         el.lastSyncText.textContent =
           count
-            ? "Last synced: " +
+            ? `${scanned} contact(s) scanned across ${pageCount || 1} page(s) · ` +
               timestamp
                 .toDate()
                 .toLocaleString(
                   "en-IN"
                 )
-            : "Add birthdays to Google Contacts, then press Sync Contacts.";
+            : "All contacts were scanned. Add birthdays in Google Contacts, then sync again.";
       } else {
         el.syncSummary.textContent =
           "Contacts not synced yet";
 
         el.lastSyncText.textContent =
-          "Use Sync Contacts to import birthdays.";
+          "Use Full Year Sync to scan all contacts and months.";
       }
     }
 
