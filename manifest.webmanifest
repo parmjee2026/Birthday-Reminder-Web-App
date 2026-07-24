@@ -1,8 +1,8 @@
 {
-  "name": "Birthday Reminder Firebase Free v2.0.6",
+  "name": "Birthday Reminder Firebase Free v2.0.7",
   "short_name": "Birthdays",
-  "description": "Free birthday reminder with complete all-page, all-month Google Contacts sync",
-  "start_url": "./?v=2.0.6",
+  "description": "Free contact sync for name, gender, mobile or WhatsApp number and birthday",
+  "start_url": "./?v=2.0.7",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f7fc",

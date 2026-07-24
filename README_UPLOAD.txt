@@ -1,22 +1,23 @@
-BIRTHDAY REMINDER FIREBASE FREE v2.0.6
-FULL-YEAR GOOGLE CONTACTS SYNC
+BIRTHDAY REMINDER FIREBASE FREE v2.0.7
+CONTACT DETAILS SYNC
 
-FIXED
------
-The app now performs a complete contact scan instead of relying only on the
-initial contact data returned in one response.
+SYNCED FIELDS
+-------------
+- Name
+- Gender
+- Mobile Number
+- WhatsApp Number
+- Birthday
 
-FULL-YEAR SYNC NOW
-------------------
-- Reads every People API page using nextPageToken.
-- Scans up to 1000 contacts per page.
-- Hydrates every contact through people.getBatchGet in safe batches.
-- Reads standard birthday fields.
-- Reads birthday-like contact events.
-- Supports structured birthday dates and legacy birthday text.
-- Counts birthdays month by month.
-- Shows contacts scanned, API pages scanned and months containing birthdays.
-- Imports all months into the Yearly List.
+BEHAVIOR
+--------
+- Only Google Contacts with at least one phone number are stored in the
+  Contacts directory.
+- If a phone label contains WhatsApp, that number is used as WhatsApp.
+- Otherwise the selected mobile number is also used as the WhatsApp fallback.
+- Contacts without a birthday remain visible in Contacts.
+- Only contacts with a valid birthday appear in Birthdays and Yearly List.
+- Gender shows Not specified when it is not saved in Google Contacts.
 
 UPLOAD
 ------
@@ -25,25 +26,12 @@ UPLOAD
 3. Commit changes.
 4. Wait for GitHub Pages deployment.
 5. Open:
-   https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=2.0.6
+   https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=2.0.7
 6. Press Ctrl + Shift + R.
+7. Click Sync Contact Details.
+8. Open Contacts from the left sidebar.
 
-TEST
-----
-1. Login with the correct Gmail.
-2. Click Full Year Sync.
-3. Approve read-only Contacts access.
-4. Wait until the completion message appears.
-5. Open Yearly List.
-
-The dashboard sync box will show:
-- total birthday records,
-- number of months containing birthdays,
-- total contacts scanned,
-- total API pages scanned.
-
-NOTE
-----
-Only birthdays actually saved in Google Contacts can be imported. Google
-Calendar events that are not backed by a Google Contact are not People API
-contact birthdays.
+FREE PLAN
+---------
+Firebase Spark/free-only architecture is preserved. No billing service,
+Cloud Function or Scheduler is used.

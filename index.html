@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#123b70">
   <meta name="description" content="Free multi-user Birthday Reminder with Google Login and Google Contacts sync">
-  <meta name="app-build" content="firebase-free-v2.0.6-full-year-sync">
+  <meta name="app-build" content="firebase-free-v2.0.7-contact-fields-sync">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <title>Birthday Reminder v2.0.6</title>
+  <title>Birthday Reminder v2.0.7</title>
 
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png">
@@ -858,6 +858,205 @@
         color: #111;
       }
     }
+
+
+    .contacts-toolbar {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 14px;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--surface);
+      box-shadow: 0 6px 20px rgba(28, 43, 64, .045);
+    }
+
+    .contacts-toolbar h2 {
+      margin: 4px 0 5px;
+      font-size: 24px;
+    }
+
+    .contacts-description {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .contacts-controls {
+      display: grid;
+      grid-template-columns: minmax(230px, 1fr) 170px;
+      gap: 10px;
+      min-width: min(500px, 48vw);
+    }
+
+    .contacts-summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .contacts-summary-card {
+      padding: 15px 17px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: var(--surface);
+    }
+
+    .contacts-summary-card span {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .contacts-summary-card strong {
+      font-size: 24px;
+    }
+
+    .contacts-directory-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .contact-directory-card {
+      display: grid;
+      grid-template-columns: minmax(180px, 1.3fr) minmax(120px, .7fr) minmax(200px, 1.15fr) minmax(140px, .8fr) auto;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: var(--surface);
+      box-shadow: 0 5px 16px rgba(28, 43, 64, .035);
+    }
+
+    .contact-main {
+      display: flex;
+      min-width: 0;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .contact-main .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      font-size: 16px;
+    }
+
+    .contact-name {
+      min-width: 0;
+    }
+
+    .contact-name strong,
+    .contact-name small {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .contact-name strong {
+      font-size: 13px;
+    }
+
+    .contact-name small,
+    .contact-field span {
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .contact-field strong {
+      display: block;
+      margin-bottom: 2px;
+      overflow: hidden;
+      color: var(--text);
+      font-size: 12px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .contact-number-group {
+      display: grid;
+      gap: 5px;
+    }
+
+    .number-pill {
+      display: inline-flex;
+      width: fit-content;
+      max-width: 100%;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: var(--blue-soft);
+      color: var(--navy);
+      font-size: 10px;
+      font-weight: 780;
+    }
+
+    .number-pill.whatsapp-number {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .birthday-available {
+      color: var(--green) !important;
+    }
+
+    .birthday-missing {
+      color: var(--amber) !important;
+    }
+
+    @media (max-width: 980px) {
+      .contact-directory-card {
+        grid-template-columns: minmax(170px, 1.2fr) 110px minmax(170px, 1fr) minmax(130px, .8fr);
+      }
+
+      .contact-directory-card .contact-whatsapp-action {
+        grid-column: 1 / -1;
+        justify-self: end;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .contacts-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .contacts-controls {
+        min-width: 0;
+        grid-template-columns: 1fr;
+      }
+
+      .contacts-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .contact-directory-card {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .contact-main {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .contact-directory-card {
+        grid-template-columns: 1fr;
+      }
+
+      .contact-main,
+      .contact-directory-card .contact-whatsapp-action {
+        grid-column: auto;
+      }
+    }
   </style>
 </head>
 
@@ -866,7 +1065,7 @@
     <div class="login-card">
       <div class="login-logo">🎂</div>
       <p class="eyebrow">Free multi-user version</p>
-      <h1>Birthday Reminder v2.0.6</h1>
+      <h1>Birthday Reminder v2.0.7</h1>
       <p>
         Login with Google. Your birthdays and synced contacts remain separate
         from every other user's data.
@@ -890,12 +1089,13 @@
         <div class="brand-icon">🎂</div>
         <div>
           <strong>Birthday Reminder</strong>
-          <small>Firebase Free v2.0.6</small>
+          <small>Firebase Free v2.0.7</small>
         </div>
       </div>
 
       <nav class="nav-list">
         <button class="nav-button active" data-view="dashboard" type="button">⌂ Dashboard</button>
+        <button class="nav-button" data-view="contacts" type="button">☎ Contacts</button>
         <button class="nav-button" data-view="birthdays" type="button">☷ Birthdays</button>
         <button class="nav-button" data-view="yearly" type="button">▣ Yearly List</button>
         <button class="nav-button" data-view="settings" type="button">⚙ Settings</button>
@@ -916,7 +1116,7 @@
 
         <div class="top-actions">
           <button id="syncContactsButton" class="secondary-button" type="button">
-            ↻ Full Year Sync
+            ↻ Sync Contact Details
           </button>
           <button id="addBirthdayButton" class="primary-button" type="button">
             + Add Birthday
@@ -992,6 +1192,57 @@
           </div>
         </section>
 
+
+        <section id="contactsView" class="view">
+          <div class="contacts-toolbar">
+            <div>
+              <p class="eyebrow">Google Contacts directory</p>
+              <h2>Contact Details</h2>
+              <p class="contacts-description">
+                Name, gender, mobile/WhatsApp number and birthday only.
+              </p>
+            </div>
+
+            <div class="contacts-controls">
+              <input
+                id="contactsSearchInput"
+                type="search"
+                placeholder="Search name or mobile number"
+              >
+
+              <select id="contactsBirthdayFilter">
+                <option value="">All contacts</option>
+                <option value="withBirthday">With birthday</option>
+                <option value="withoutBirthday">Without birthday</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="contacts-summary">
+            <article class="contacts-summary-card">
+              <span>Synced Contacts</span>
+              <strong id="contactsTotalCount">0</strong>
+            </article>
+
+            <article class="contacts-summary-card">
+              <span>With Birthday</span>
+              <strong id="contactsBirthdayCount">0</strong>
+            </article>
+
+            <article class="contacts-summary-card">
+              <span>Gender Available</span>
+              <strong id="contactsGenderCount">0</strong>
+            </article>
+
+            <article class="contacts-summary-card">
+              <span>WhatsApp Ready</span>
+              <strong id="contactsWhatsAppCount">0</strong>
+            </article>
+          </div>
+
+          <div id="contactsDirectoryList" class="contacts-directory-list"></div>
+        </section>
+
         <section id="birthdaysView" class="view">
           <div class="toolbar">
             <input id="searchInput" type="search" placeholder="Search name, relation, month or number">
@@ -1062,11 +1313,11 @@
 
             <div class="info-box">
               Google Contacts are synced when you login for the first time or
-              press <strong>Full Year Sync</strong>. Background sync while the
+              press <strong>Sync Contact Details</strong>. Background sync while the
               browser is closed is intentionally not included because this
               version uses no paid backend services.
               <br><br>
-              Contact sync must use the same Gmail account currently logged
+              Name, Gender, Mobile/WhatsApp and Birthday sync must use the same Gmail account currently logged
               into the dashboard. To use another Gmail account, logout first.
             </div>
 
@@ -1475,7 +1726,9 @@
     const state = {
       user: null,
       birthdays: [],
+      contacts: [],
       unsubscribe: null,
+      unsubscribeContacts: null,
       settings: {
         countryCode: "91",
         message:
@@ -1550,8 +1803,11 @@
         "logoutButton", "welcomeName", "syncSummary",
         "lastSyncText", "totalCount", "todayCount",
         "upcomingCount", "monthCount", "nextBirthdayCard",
-        "upcomingList", "todayList", "searchInput",
-        "sourceFilter", "allBirthdayList", "yearlyYearSelect",
+        "upcomingList", "todayList", "contactsSearchInput",
+        "contactsBirthdayFilter", "contactsTotalCount",
+        "contactsBirthdayCount", "contactsGenderCount",
+        "contactsWhatsAppCount", "contactsDirectoryList",
+        "searchInput", "sourceFilter", "allBirthdayList", "yearlyYearSelect",
         "printYearlyButton", "yearlyTotalCount",
         "yearlyActiveMonthsCount", "yearlyKnownAgeCount",
         "yearlyPrintHeading", "yearlyList", "countryCodeInput",
@@ -1590,6 +1846,11 @@
             state.unsubscribe = null;
           }
 
+          if (state.unsubscribeContacts) {
+            state.unsubscribeContacts();
+            state.unsubscribeContacts = null;
+          }
+
           await signOut(auth);
         }
       );
@@ -1602,6 +1863,16 @@
             () => navigate(button.dataset.view)
           );
         });
+
+      el.contactsSearchInput.addEventListener(
+        "input",
+        renderContactsDirectory
+      );
+
+      el.contactsBirthdayFilter.addEventListener(
+        "change",
+        renderContactsDirectory
+      );
 
       el.searchInput.addEventListener(
         "input",
@@ -1828,6 +2099,7 @@
 
       await ensureUserProfile(user);
       await loadSettings();
+      subscribeContactsDirectory();
       subscribeBirthdays();
       await updateSyncStatus();
 
@@ -1851,6 +2123,7 @@
     function showLogin() {
       state.user = null;
       state.birthdays = [];
+      state.contacts = [];
 
       el.appShell.classList.add("hidden");
       el.loginPage.classList.remove("hidden");
@@ -1932,6 +2205,44 @@
 
       showToast("Settings saved.");
     }
+
+
+    function subscribeContactsDirectory() {
+      if (state.unsubscribeContacts) {
+        state.unsubscribeContacts();
+      }
+
+      const contactsQuery = query(
+        collection(
+          db,
+          "users",
+          state.user.uid,
+          "contacts"
+        ),
+        orderBy(
+          "nameLower",
+          "asc"
+        )
+      );
+
+      state.unsubscribeContacts =
+        onSnapshot(
+          contactsQuery,
+          (snapshot) => {
+            state.contacts =
+              snapshot.docs.map(
+                (item) => ({
+                  id: item.id,
+                  ...item.data()
+                })
+              );
+
+            renderContactsDirectory();
+          },
+          handleError
+        );
+    }
+
 
     function subscribeBirthdays() {
       if (state.unsubscribe) {
@@ -2060,7 +2371,7 @@
         setButtonLoading(
           el.syncContactsButton,
           false,
-          "↻ Full Year Sync"
+          "↻ Sync Contact Details"
         );
       }
     }
@@ -2073,8 +2384,8 @@
         el.syncContactsButton,
         true,
         automatic
-          ? "Scanning All Months..."
-          : "Scanning All Contacts..."
+          ? "Importing Contact Details..."
+          : "Scanning Name & Mobile..."
       );
 
       try {
@@ -2083,19 +2394,50 @@
             accessToken
           );
 
-        const birthdayContacts =
+        const contactRecords =
           scan.contacts
-            .map(normalizeGoogleContact)
+            .map(
+              normalizeContactDirectoryRecord
+            )
             .filter(Boolean);
+
+        const birthdayContacts =
+          contactRecords
+            .filter(
+              hasBirthdayData
+            )
+            .map(
+              contactToBirthdayRecord
+            );
 
         const monthCounts =
           getBirthdayMonthCounts(
             birthdayContacts
           );
 
+        await saveContactsDirectory(
+          contactRecords
+        );
+
         await saveContactBirthdays(
           birthdayContacts
         );
+
+        const genderCount =
+          contactRecords.filter(
+            (contact) =>
+              Boolean(
+                contact.gender
+              )
+          ).length;
+
+        const whatsappCount =
+          contactRecords.filter(
+            (contact) =>
+              Boolean(
+                contact.whatsapp
+              )
+          ).length;
 
         await setDoc(
           doc(
@@ -2107,11 +2449,17 @@
             lastContactSyncAt:
               serverTimestamp(),
             lastContactSyncCount:
+              contactRecords.length,
+            lastBirthdaySyncCount:
               birthdayContacts.length,
             lastContactScanCount:
               scan.totalContacts,
             lastContactPageCount:
               scan.pageCount,
+            lastContactGenderCount:
+              genderCount,
+            lastContactWhatsAppCount:
+              whatsappCount,
             lastBirthdayMonthCounts:
               monthCounts,
             updatedAt:
@@ -2122,23 +2470,15 @@
 
         await updateSyncStatus();
 
-        const activeMonths =
-          Object.values(
-            monthCounts
-          ).filter(
-            (count) =>
-              Number(count) > 0
-          ).length;
-
         showToast(
-          `Full-year sync complete: ${birthdayContacts.length} birthday(s) across ${activeMonths} month(s), from ${scan.totalContacts} contact(s).`
+          `Sync complete: ${contactRecords.length} contact(s), ${birthdayContacts.length} birthday(s).`
         );
 
         if (
-          birthdayContacts.length === 0
+          contactRecords.length === 0
         ) {
           showToast(
-            "No contacts with a saved birthday were found. Add birthdays in Google Contacts, then run Full Year Sync again.",
+            "No contacts with a mobile or WhatsApp number were found.",
             true
           );
         }
@@ -2148,7 +2488,7 @@
         setButtonLoading(
           el.syncContactsButton,
           false,
-          "↻ Full Year Sync"
+          "↻ Sync Contact Details"
         );
       }
     }
@@ -2420,19 +2760,9 @@
       return merged;
     }
 
-    function normalizeGoogleContact(
+    function normalizeContactDirectoryRecord(
       person
     ) {
-      const birthday =
-        chooseBirthday(
-          person.birthdays || [],
-          person.events || []
-        );
-
-      if (!birthday) {
-        return null;
-      }
-
       const name =
         choosePrimaryFieldValue(
           person.names,
@@ -2440,17 +2770,23 @@
         ) ||
         "Unnamed Contact";
 
-      const phone =
-        choosePrimaryFieldValue(
-          person.phoneNumbers,
-          "value"
-        ) || "";
+      const phoneData =
+        chooseContactPhoneNumbers(
+          person.phoneNumbers || []
+        );
 
-      const email =
-        choosePrimaryFieldValue(
-          person.emailAddresses,
-          "value"
-        ) || "";
+      if (
+        !phoneData.mobile &&
+        !phoneData.whatsapp
+      ) {
+        return null;
+      }
+
+      const birthday =
+        chooseBirthday(
+          person.birthdays || [],
+          person.events || []
+        );
 
       const gender =
         choosePrimaryFieldValue(
@@ -2463,27 +2799,15 @@
         ) ||
         "";
 
-      const relationItem =
-        choosePrimaryItem(
-          person.relations
-        );
-
-      const relation =
-        relationItem
-          ? (
-              relationItem.person ||
-              relationItem.formattedType ||
-              relationItem.type ||
-              ""
-            )
-          : "";
-
       const resourceName =
         person.resourceName || "";
 
       const docId =
         resourceName
-          .replace(/[^a-zA-Z0-9_-]/g, "_") ||
+          .replace(
+            /[^a-zA-Z0-9_-]/g,
+            "_"
+          ) ||
         `contact_${crypto.randomUUID()}`;
 
       return {
@@ -2493,36 +2817,183 @@
         name,
         nameLower:
           name.toLowerCase(),
+        gender,
+        mobile:
+          phoneData.mobile,
+        whatsapp:
+          phoneData.whatsapp,
+        allPhoneNumbers:
+          phoneData.allNumbers,
         birthYear:
-          birthday.year || null,
+          birthday
+            ? birthday.year || null
+            : null,
         birthMonth:
-          birthday.month,
+          birthday
+            ? birthday.month
+            : null,
         birthDay:
-          birthday.day,
+          birthday
+            ? birthday.day
+            : null,
         birthdaySource:
-          birthday.source || "birthday",
+          birthday
+            ? birthday.source ||
+              "birthday"
+            : "",
         dob:
+          birthday &&
           birthday.year
             ? [
                 birthday.year,
                 String(
                   birthday.month
-                ).padStart(2, "0"),
+                ).padStart(
+                  2,
+                  "0"
+                ),
                 String(
                   birthday.day
-                ).padStart(2, "0")
+                ).padStart(
+                  2,
+                  "0"
+                )
               ].join("-")
             : "",
-        gender,
-        email,
-        mobile: phone,
-        whatsapp: phone,
-        relation,
-        notes: "",
-        source: "googleContacts"
+        source:
+          "googleContacts"
       };
     }
 
+
+    function chooseContactPhoneNumbers(
+      phoneNumbers
+    ) {
+      const normalized =
+        (phoneNumbers || [])
+          .map(
+            (item) => {
+              const value =
+                String(
+                  item &&
+                  item.value ||
+                  ""
+                ).trim();
+
+              if (!value) {
+                return null;
+              }
+
+              const label =
+                [
+                  item.type,
+                  item.formattedType
+                ]
+                  .filter(Boolean)
+                  .join(" ")
+                  .toLowerCase();
+
+              return {
+                value,
+                label,
+                primary:
+                  Boolean(
+                    item.metadata &&
+                    item.metadata.primary
+                  )
+              };
+            }
+          )
+          .filter(Boolean);
+
+      const whatsappItem =
+        normalized.find(
+          (item) =>
+            /whatsapp|what'?s?app|\bwa\b/.test(
+              item.label
+            )
+        );
+
+      const mobileItem =
+        normalized.find(
+          (item) =>
+            item.primary &&
+            /mobile|cell|main/.test(
+              item.label
+            )
+        ) ||
+        normalized.find(
+          (item) =>
+            /mobile|cell|main/.test(
+              item.label
+            )
+        ) ||
+        normalized.find(
+          (item) =>
+            item.primary
+        ) ||
+        normalized[0] ||
+        null;
+
+      const mobile =
+        mobileItem
+          ? mobileItem.value
+          : "";
+
+      const whatsapp =
+        whatsappItem
+          ? whatsappItem.value
+          : mobile;
+
+      return {
+        mobile,
+        whatsapp,
+        allNumbers:
+          Array.from(
+            new Set(
+              normalized.map(
+                (item) =>
+                  item.value
+              )
+            )
+          )
+      };
+    }
+
+
+    function hasBirthdayData(
+      contact
+    ) {
+      return Boolean(
+        contact &&
+        Number(
+          contact.birthMonth
+        ) >= 1 &&
+        Number(
+          contact.birthMonth
+        ) <= 12 &&
+        Number(
+          contact.birthDay
+        ) >= 1 &&
+        Number(
+          contact.birthDay
+        ) <= 31
+      );
+    }
+
+
+    function contactToBirthdayRecord(
+      contact
+    ) {
+      return {
+        ...contact,
+        relation: "",
+        notes: "",
+        email: "",
+        source:
+          "googleContacts"
+      };
+    }
 
     function choosePrimaryItem(items) {
       if (
@@ -2816,6 +3287,58 @@
       return counts;
     }
 
+
+    async function saveContactsDirectory(
+      contacts
+    ) {
+      const chunks = [];
+
+      for (
+        let index = 0;
+        index < contacts.length;
+        index += 400
+      ) {
+        chunks.push(
+          contacts.slice(
+            index,
+            index + 400
+          )
+        );
+      }
+
+      for (const chunk of chunks) {
+        const batch =
+          writeBatch(db);
+
+        chunk.forEach(
+          (contact) => {
+            const reference = doc(
+              db,
+              "users",
+              state.user.uid,
+              "contacts",
+              contact.id
+            );
+
+            batch.set(
+              reference,
+              {
+                ...contact,
+                syncedAt:
+                  serverTimestamp(),
+                updatedAt:
+                  serverTimestamp()
+              },
+              { merge: true }
+            );
+          }
+        );
+
+        await batch.commit();
+      }
+    }
+
+
     async function saveContactBirthdays(
       contacts
     ) {
@@ -2883,32 +3406,21 @@
       const data =
         snapshot.data();
 
-      const count =
+      const contactCount =
         Number(
           data.lastContactSyncCount || 0
+        );
+
+      const birthdayCount =
+        Number(
+          data.lastBirthdaySyncCount ||
+          0
         );
 
       const scanned =
         Number(
           data.lastContactScanCount || 0
         );
-
-      const pageCount =
-        Number(
-          data.lastContactPageCount || 0
-        );
-
-      const monthCounts =
-        data.lastBirthdayMonthCounts ||
-        {};
-
-      const activeMonths =
-        Object.values(
-          monthCounts
-        ).filter(
-          (value) =>
-            Number(value) > 0
-        ).length;
 
       const timestamp =
         data.lastContactSyncAt;
@@ -2920,25 +3432,21 @@
 
       if (hasSynced) {
         el.syncSummary.textContent =
-          count
-            ? `${count} birthday(s) · ${activeMonths} month(s)`
-            : "Full-year sync · 0 birthdays found";
+          `${contactCount} contact(s) · ${birthdayCount} birthday(s)`;
 
         el.lastSyncText.textContent =
-          count
-            ? `${scanned} contact(s) scanned across ${pageCount || 1} page(s) · ` +
-              timestamp
-                .toDate()
-                .toLocaleString(
-                  "en-IN"
-                )
-            : "All contacts were scanned. Add birthdays in Google Contacts, then sync again.";
+          `${scanned} Google contact(s) scanned · ` +
+          timestamp
+            .toDate()
+            .toLocaleString(
+              "en-IN"
+            );
       } else {
         el.syncSummary.textContent =
           "Contacts not synced yet";
 
         el.lastSyncText.textContent =
-          "Use Full Year Sync to scan all contacts and months.";
+          "Sync Name, Gender, Mobile/WhatsApp and Birthday.";
       }
     }
 
@@ -3177,6 +3685,268 @@
           .map(birthdayCardHtml)
           .join("");
     }
+
+
+    function renderContactsDirectory() {
+      if (!el.contactsDirectoryList) {
+        return;
+      }
+
+      const queryText =
+        el.contactsSearchInput.value
+          .trim()
+          .toLowerCase();
+
+      const birthdayFilter =
+        el.contactsBirthdayFilter.value;
+
+      const allRecords =
+        state.contacts.slice();
+
+      const records =
+        allRecords
+          .filter(
+            (contact) => {
+              const hasBirthday =
+                hasBirthdayData(
+                  contact
+                );
+
+              const searchText = [
+                contact.name,
+                contact.gender,
+                contact.mobile,
+                contact.whatsapp
+              ]
+                .join(" ")
+                .toLowerCase();
+
+              const matchesSearch =
+                !queryText ||
+                searchText.includes(
+                  queryText
+                );
+
+              const matchesBirthday =
+                !birthdayFilter ||
+                (
+                  birthdayFilter ===
+                    "withBirthday" &&
+                  hasBirthday
+                ) ||
+                (
+                  birthdayFilter ===
+                    "withoutBirthday" &&
+                  !hasBirthday
+                );
+
+              return (
+                matchesSearch &&
+                matchesBirthday
+              );
+            }
+          )
+          .sort(
+            (a, b) =>
+              String(a.name)
+                .localeCompare(
+                  String(b.name)
+                )
+          );
+
+      el.contactsTotalCount.textContent =
+        allRecords.length;
+
+      el.contactsBirthdayCount.textContent =
+        allRecords.filter(
+          hasBirthdayData
+        ).length;
+
+      el.contactsGenderCount.textContent =
+        allRecords.filter(
+          (contact) =>
+            Boolean(
+              contact.gender
+            )
+        ).length;
+
+      el.contactsWhatsAppCount.textContent =
+        allRecords.filter(
+          (contact) =>
+            Boolean(
+              contact.whatsapp
+            )
+        ).length;
+
+      if (!records.length) {
+        el.contactsDirectoryList.innerHTML = `
+          <div class="empty">
+            No matching synced contacts.
+          </div>
+        `;
+        return;
+      }
+
+      el.contactsDirectoryList.innerHTML =
+        records
+          .map(
+            contactDirectoryCardHtml
+          )
+          .join("");
+    }
+
+
+    function contactDirectoryCardHtml(
+      contact
+    ) {
+      const birthdayText =
+        hasBirthdayData(contact)
+          ? formatContactBirthday(
+              contact
+            )
+          : "Birthday not saved";
+
+      const birthdayClass =
+        hasBirthdayData(contact)
+          ? "birthday-available"
+          : "birthday-missing";
+
+      return `
+        <article class="contact-directory-card">
+          <div class="contact-main">
+            <div class="avatar">
+              ${initial(contact.name)}
+            </div>
+
+            <div class="contact-name">
+              <strong>
+                ${escapeHtml(contact.name)}
+              </strong>
+              <small>Google Contact</small>
+            </div>
+          </div>
+
+          <div class="contact-field">
+            <strong>
+              ${
+                contact.gender
+                  ? escapeHtml(
+                      contact.gender
+                    )
+                  : "Not specified"
+              }
+            </strong>
+            <span>Gender</span>
+          </div>
+
+          <div class="contact-number-group">
+            <span class="number-pill">
+              ☎ ${escapeHtml(contact.mobile || "—")}
+            </span>
+
+            <span class="number-pill whatsapp-number">
+              WA ${escapeHtml(contact.whatsapp || contact.mobile || "—")}
+            </span>
+          </div>
+
+          <div class="contact-field">
+            <strong class="${birthdayClass}">
+              ${escapeHtml(birthdayText)}
+            </strong>
+            <span>Birthday</span>
+          </div>
+
+          <div class="contact-whatsapp-action">
+            ${whatsappContactLinkHtml(contact)}
+          </div>
+        </article>
+      `;
+    }
+
+
+    function formatContactBirthday(
+      contact
+    ) {
+      const year =
+        Number(
+          contact.birthYear
+        ) || 2000;
+
+      const date =
+        safeBirthdayDate(
+          year,
+          Number(
+            contact.birthMonth
+          ),
+          Number(
+            contact.birthDay
+          )
+        );
+
+      return new Intl
+        .DateTimeFormat(
+          "en-IN",
+          {
+            day: "2-digit",
+            month: "short",
+            year:
+              contact.birthYear
+                ? "numeric"
+                : undefined
+          }
+        )
+        .format(date);
+    }
+
+
+    function whatsappContactLinkHtml(
+      contact
+    ) {
+      const raw =
+        contact.whatsapp ||
+        contact.mobile ||
+        "";
+
+      let number =
+        String(raw)
+          .replace(/\D/g, "");
+
+      if (!number) {
+        return "";
+      }
+
+      const countryCode =
+        String(
+          state.settings.countryCode ||
+          "91"
+        ).replace(/\D/g, "");
+
+      if (
+        number.length === 10 &&
+        countryCode
+      ) {
+        number =
+          countryCode + number;
+      } else if (
+        number.length === 11 &&
+        number.startsWith("0")
+      ) {
+        number =
+          countryCode +
+          number.slice(1);
+      }
+
+      return `
+        <a
+          class="icon-button whatsapp"
+          href="https://wa.me/${number}"
+          target="_blank"
+          rel="noopener"
+          title="Open WhatsApp"
+        >WA</a>
+      `;
+    }
+
 
     function renderAllBirthdays() {
       const queryText =
@@ -3894,6 +4664,7 @@
 
       const titles = {
         dashboard: "Dashboard",
+        contacts: "Contact Details",
         birthdays: "All Birthdays",
         yearly: "Yearly Birthday List",
         settings: "Settings"
@@ -3901,6 +4672,10 @@
 
       el.pageTitle.textContent =
         titles[view] || "Dashboard";
+
+      if (view === "contacts") {
+        renderContactsDirectory();
+      }
 
       if (view === "yearly") {
         renderYearlyList();
