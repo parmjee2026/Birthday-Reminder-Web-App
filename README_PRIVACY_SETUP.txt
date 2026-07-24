@@ -38,7 +38,7 @@ GOOGLE OAUTH CLIENT ID
 ----------------------
 Configured client ID:
 
-205720505540-ncjatpfsvr91pcebl9mkd5obum3cjf62.apps.googleusercontent.com
+916488048354-audna61g0erlfevtjp62d9aq73iqf74t.apps.googleusercontent.com
 
 GOOGLE CLOUD SETUP
 ------------------
@@ -107,3 +107,20 @@ Because no application database or device storage is used:
 - background reminders cannot run while the page is closed.
 
 These limitations are intentional for maximum privacy.
+
+
+V3.0.1 OAUTH FIX
+----------------
+Configured OAuth Web Client ID:
+
+916488048354-audna61g0erlfevtjp62d9aq73iqf74t.apps.googleusercontent.com
+
+Authorized JavaScript origin that must exist in this SAME OAuth client:
+
+https://parmjee2026.github.io
+
+After saving the origin in Google Cloud, open:
+
+https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=3.0.1
+
+Then press Ctrl + Shift + R.
