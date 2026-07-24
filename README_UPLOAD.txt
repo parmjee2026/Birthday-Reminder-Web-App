@@ -1,20 +1,16 @@
-BIRTHDAY REMINDER FIREBASE FREE v2.0.4
-ACCOUNT MISMATCH FIX
+BIRTHDAY REMINDER FIREBASE FREE v2.0.5
+YEARLY BIRTHDAY LIST
 
-ERROR FIXED
------------
-Firebase: Error (auth/user-mismatch)
-
-The dashboard was logged into one Gmail account, but another Gmail account
-was selected in the Sync Contacts authorization popup.
-
-FIXES
+ADDED
 -----
-- Sync Contacts now preselects the currently logged-in Gmail.
-- The current Gmail is passed as login_hint.
-- A clear error explains which Gmail must be selected.
-- To use another Gmail, logout first and login with that account.
-- Initial login still allows normal account selection.
+- Yearly List navigation item
+- All 12 months displayed separately
+- Year selector: current year -2 through current year +7
+- Birthday date and weekday for the selected year
+- Age turning when birth year is available
+- Relation and record source
+- Total birthdays, active months and known birth-year summary
+- Print-friendly yearly list
 
 UPLOAD
 ------
@@ -23,11 +19,13 @@ UPLOAD
 3. Commit changes.
 4. Wait for GitHub Pages deployment.
 5. Open:
-   https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=2.0.4
+   https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=2.0.5
 6. Press Ctrl + Shift + R.
 
 TEST
 ----
-1. Click Sync Contacts.
-2. Continue with the same Gmail shown in the bottom-left profile.
-3. Approve read-only Contacts access.
+1. Login.
+2. Add or sync at least one birthday.
+3. Open Yearly List from the left sidebar.
+4. Change the year.
+5. Test Print List.
