@@ -141,3 +141,28 @@ Then:
 2. Tap Connect Google Contacts Privately.
 3. Google authorization should open immediately.
 4. For install, tap Install Birthday Reminder.
+
+
+V4.2.2 SHARE APP
+----------------
+Added Share App in:
+- Login screen
+- Main orange header
+- Settings & Privacy
+
+Behavior:
+- Supported mobile browsers open the native device share sheet.
+- WhatsApp, Messages, email and other installed apps can be selected.
+- Unsupported browsers copy the public app URL to clipboard.
+- Final fallback shows a copyable URL prompt.
+
+Shared data:
+- ONLY the public Birthday Reminder app URL and generic share text.
+- No contacts
+- No birthdays
+- No profile name/status
+- No Google access token
+- No device-cached data
+
+Open:
+https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=4.2.2

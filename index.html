@@ -16,7 +16,7 @@
   >
   <meta
     name="app-build"
-    content="privacy-first-device-v4.2.1-mobile-auth-pwa-fix"
+    content="privacy-first-device-v4.2.2-share-app"
   >
   <title>Birthday Reminder — Privacy First</title>
 
@@ -2178,6 +2178,44 @@
       }
     }
 
+
+    .share-app-button {
+      white-space: nowrap;
+    }
+
+    .login-secondary-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+      margin-top: 10px;
+    }
+
+    .login-secondary-actions .login-install-button {
+      margin-top: 0;
+    }
+
+    @media (max-width: 820px) {
+      .orange-app-header .share-app-button {
+        position: absolute;
+        left: 18px;
+        bottom: 14px;
+        min-height: 34px;
+        padding: 0 10px;
+        border-radius: 999px;
+        font-size: 10px;
+      }
+
+      .orange-app-header .install-button {
+        display: none;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .login-secondary-actions {
+        grid-template-columns: 1fr;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -2213,13 +2251,23 @@
         Connect Google Contacts Privately
       </button>
 
-      <button
-        id="loginInstallButton"
-        class="secondary-button login-install-button"
-        type="button"
-      >
-        ⬇ Install Birthday Reminder
-      </button>
+      <div class="login-secondary-actions">
+        <button
+          id="loginShareButton"
+          class="secondary-button"
+          type="button"
+        >
+          ↗ Share App
+        </button>
+
+        <button
+          id="loginInstallButton"
+          class="secondary-button login-install-button"
+          type="button"
+        >
+          ⬇ Install Birthday Reminder
+        </button>
+      </div>
 
       <p id="loginStatus" class="status-line">
         Loading secure Google authorization…
@@ -2233,7 +2281,7 @@
         <div class="brand-mark">🎂</div>
         <div>
           <strong>Birthday Reminder</strong>
-          <small>Private Device v4.2.1</small>
+          <small>Private Device v4.2.2</small>
         </div>
       </div>
 
@@ -2307,6 +2355,15 @@
           <span id="lastSyncTop" class="top-sync-status">
             Not synced
           </span>
+
+          <button
+            id="shareAppButton"
+            class="secondary-button share-app-button"
+            type="button"
+            title="Share Birthday Reminder"
+          >
+            ↗ Share
+          </button>
 
           <button
             id="installButton"
@@ -2624,6 +2681,22 @@
                   Save Profile
                 </button>
               </form>
+            </article>
+
+            <article class="privacy-card settings-card">
+              <h3>Share Birthday Reminder</h3>
+              <p>
+                Share only the public app link. Your contacts, profile name,
+                status and birthday data are never included.
+              </p>
+
+              <button
+                id="settingsShareButton"
+                class="orange-action-button"
+                type="button"
+              >
+                ↗ Share App
+              </button>
             </article>
 
             <article class="privacy-card settings-card">
@@ -2978,9 +3051,11 @@
         "loginPage",
         "appShell",
         "connectButton",
+        "loginShareButton",
         "loginInstallButton",
         "loginStatus",
         "disconnectButton",
+        "shareAppButton",
         "installButton",
         "syncButton",
         "pageTitle",
@@ -3029,6 +3104,7 @@
         "printButton",
         "yearlyGrid",
         "profileSettingsForm",
+        "settingsShareButton",
         "settingsName",
         "settingsStatus",
         "rememberContactsToggle",
@@ -3083,9 +3159,24 @@
         clearSavedDeviceData
       );
 
+      el.settingsShareButton.addEventListener(
+        "click",
+        shareBirthdayReminderApp
+      );
+
+      el.loginShareButton.addEventListener(
+        "click",
+        shareBirthdayReminderApp
+      );
+
       el.loginInstallButton.addEventListener(
         "click",
         handleInstallApp
+      );
+
+      el.shareAppButton.addEventListener(
+        "click",
+        shareBirthdayReminderApp
       );
 
       el.installButton.addEventListener(
@@ -4103,6 +4194,78 @@
       db.close();
     }
 
+
+
+
+    async function shareBirthdayReminderApp() {
+      const appUrl =
+        "https://parmjee2026.github.io/Birthday-Reminder-Web-App/";
+
+      const shareData = {
+        title:
+          "Birthday Reminder",
+        text:
+          "Try Birthday Reminder — a privacy-first app for birthdays and Google Contacts.",
+        url:
+          appUrl
+      };
+
+      if (
+        navigator.share
+      ) {
+        try {
+          await navigator.share(
+            shareData
+          );
+
+          showToast(
+            "Birthday Reminder shared."
+          );
+
+          return;
+        } catch (error) {
+          if (
+            error &&
+            error.name ===
+              "AbortError"
+          ) {
+            return;
+          }
+
+          console.warn(
+            "Native share unavailable:",
+            error
+          );
+        }
+      }
+
+      try {
+        if (
+          navigator.clipboard &&
+          navigator.clipboard.writeText
+        ) {
+          await navigator.clipboard.writeText(
+            appUrl
+          );
+
+          showToast(
+            "App link copied to clipboard."
+          );
+
+          return;
+        }
+      } catch (error) {
+        console.warn(
+          "Clipboard copy failed:",
+          error
+        );
+      }
+
+      window.prompt(
+        "Copy and share this Birthday Reminder link:",
+        appUrl
+      );
+    }
 
 
     function registerStaticServiceWorker() {
