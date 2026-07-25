@@ -409,3 +409,29 @@ The detailed explanation remains available under Privacy -> Learn more.
 
 Open:
 https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=5.2.1
+
+
+V5.2.2 PRIVACY NOTICE IN SETTINGS
+=================================
+
+UI refinement:
+- Removed the large privacy notice from Dashboard/front screen.
+- Privacy/legal-style information now lives under:
+  Settings -> Data & Privacy -> Privacy Notice
+- Added expandable "Read privacy details" section.
+- Dashboard is now cleaner and focused on birthdays/actions.
+- Privacy Dashboard remains available in Settings.
+
+Dynamic notice:
+- Session Mode:
+  contacts stay in current browser memory.
+- Private Device Mode:
+  contacts may be remembered only on this device.
+
+No privacy architecture change:
+- Google Contacts remains read-only.
+- No Firebase / Firestore / Sheets / Apps Script contact database.
+- Device persistence remains optional.
+
+Open:
+https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=5.2.2

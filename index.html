@@ -16,7 +16,7 @@
   >
   <meta
     name="app-build"
-    content="privacy-first-device-v5.2.1-compact-why-connect"
+    content="privacy-first-device-v5.2.2-privacy-notice-settings"
   >
   <title>Birthday Reminder — Privacy First</title>
 
@@ -2977,6 +2977,70 @@
       }
     }
 
+
+    .privacy-notice-settings-card {
+      gap: 12px;
+    }
+
+    .settings-privacy-notice-heading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .settings-privacy-notice-heading h3,
+    .settings-privacy-notice-heading p {
+      margin: 0;
+    }
+
+    .settings-privacy-notice-heading p {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.4;
+    }
+
+    .settings-privacy-lock {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      flex: 0 0 auto;
+      place-items: center;
+      border-radius: 12px;
+      background: #eaf8f0;
+      font-size: 18px;
+    }
+
+    .settings-privacy-notice {
+      border: 1px solid #b9e0cb;
+      border-radius: 14px;
+      padding: 12px 13px;
+      background: #f0fbf5;
+      color: #315d49;
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    .settings-privacy-details {
+      border-top: 1px solid var(--line);
+      padding-top: 9px;
+    }
+
+    .settings-privacy-details summary {
+      width: fit-content;
+      color: var(--orange-deep);
+      font-size: 10px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .settings-privacy-details p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.5;
+    }
+
   </style>
 </head>
 <body>
@@ -3110,7 +3174,7 @@
         <div class="brand-mark">🎂</div>
         <div>
           <strong>Birthday Reminder</strong>
-          <small>Private Device v5.2.1</small>
+          <small>Private Device v5.2.2</small>
         </div>
       </div>
 
@@ -3220,10 +3284,6 @@
       </header>
 
       <div class="content">
-        <div id="privacyNotice" class="notice">
-          🔒 Privacy mode is active. No contact data is uploaded to Firebase,
-          Sheets, Apps Script or any owner-controlled database.
-        </div>
 
         <section id="dashboardView" class="view active">
           <div class="mobile-dashboard-intro">
@@ -3597,6 +3657,37 @@
                 Review Duplicates
               </button>
             </article>
+            <article class="privacy-card settings-card privacy-notice-settings-card">
+              <div class="settings-privacy-notice-heading">
+                <span class="settings-privacy-lock">🔒</span>
+                <div>
+                  <h3>Privacy Notice</h3>
+                  <p>Device storage and data handling information.</p>
+                </div>
+              </div>
+
+              <div id="privacyNotice" class="settings-privacy-notice">
+                Privacy mode is active.
+              </div>
+
+              <details class="settings-privacy-details">
+                <summary>Read privacy details</summary>
+                <p>
+                  Birthday Reminder does not upload your contacts to Firebase,
+                  Google Sheets, Apps Script or any owner-controlled contact database.
+                </p>
+                <p>
+                  If "Remember contacts on this device" is enabled, the app keeps
+                  a local copy in this device's browser storage so the installed app
+                  can reopen your saved contact list.
+                </p>
+                <p>
+                  Google Contacts remain read-only. You can clear saved device data
+                  or disconnect Google at any time.
+                </p>
+              </details>
+            </article>
+
             <article class="privacy-card settings-card privacy-dashboard-card">
               <h3>Privacy Dashboard</h3>
               <p>
@@ -3807,11 +3898,11 @@
             <article class="privacy-card settings-card app-update-card">
               <h3>App Updates</h3>
               <p id="appVersionText">
-                Birthday Reminder v5.2.1
+                Birthday Reminder v5.2.2
               </p>
 
               <small class="settings-helper-text">
-                Build: v5.2.1 · Compact Why Connect
+                Build: v5.2.2 · Privacy Notice in Settings
               </small>
 
               <button
@@ -4119,10 +4210,10 @@
       "https://www.googleapis.com/auth/contacts.readonly";
 
     const APP_VERSION =
-      "5.2.1";
+      "5.2.2";
 
     const SERVICE_WORKER_URL =
-      "./sw.js?v=5.2.1";
+      "./sw.js?v=5.2.2";
 
     const state = {
       accessToken: "",
@@ -5327,10 +5418,10 @@
         state.rememberContacts
       ) {
         el.privacyNotice.textContent =
-          "🔒 Private Device Mode: contacts may be remembered in this device's browser storage. Nothing is uploaded to Firebase, Sheets, Apps Script or an owner-controlled database.";
+          "Private Device Mode is ON. Contacts may be remembered only on this device. No Birthday Reminder cloud contact database is used.";
       } else {
         el.privacyNotice.textContent =
-          "🔒 Session Mode: contacts stay in browser memory only. Nothing is uploaded to Firebase, Sheets, Apps Script or an owner-controlled database.";
+          "Session Mode is ON. Contacts stay in browser memory for the current session unless device memory is enabled.";
       }
     }
 
@@ -6043,7 +6134,7 @@
                 "birthday-reminder-static-"
               ) &&
               key !==
-                "birthday-reminder-static-v5.2.1"
+                "birthday-reminder-static-v5.2.2"
           );
 
         await Promise.all(

@@ -1,4 +1,4 @@
-const STATIC_CACHE = "birthday-reminder-static-v5.2.1";
+const STATIC_CACHE = "birthday-reminder-static-v5.2.2";
 
 const STATIC_ASSETS = [
   "./",
