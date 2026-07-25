@@ -107,3 +107,37 @@ PRIVACY
 
 Open:
 https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=4.2
+
+
+V4.2.1 MOBILE AUTH + PWA FIX
+----------------------------
+Fixed from mobile video review:
+
+1. Google Connect button
+   - Root cause: the browser click MouseEvent was accidentally being passed into
+     authorizeAndSync(promptMode) and then used as Google's OAuth `prompt`.
+   - Connect click now explicitly calls authorizeAndSync(null).
+   - authorizeAndSync also rejects non-string prompt values defensively.
+
+2. Login screen
+   - Bottom navigation is now hidden until the main app is visible.
+   - Install Birthday Reminder button is available directly on the login screen.
+
+3. PWA install reliability
+   - Added a service worker that caches ONLY public static app-shell assets:
+     index.html, manifest and icons.
+   - It NEVER intercepts/caches Google OAuth or People API requests.
+   - It never contains or caches contacts, access tokens, profile data, wish
+     images, or IndexedDB data.
+   - Contacts remain governed by the existing Session / Private Device settings.
+
+TEST
+----
+Open:
+https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=4.2.1
+
+Then:
+1. Ctrl+Shift+R on desktop, or close/reopen Chrome tab on mobile.
+2. Tap Connect Google Contacts Privately.
+3. Google authorization should open immediately.
+4. For install, tap Install Birthday Reminder.

@@ -1,6 +1,6 @@
-const CACHE_NAME = "birthday-reminder-firebase-free-v2-0-7";
+const STATIC_CACHE = "birthday-reminder-static-v4.2.1";
 
-const APP_SHELL = [
+const STATIC_ASSETS = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
@@ -8,63 +8,81 @@ const APP_SHELL = [
   "./icon-512.png"
 ];
 
-self.addEventListener("install", function (event) {
+self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(function (cache) {
-      return cache.addAll(APP_SHELL);
-    })
+    caches
+      .open(STATIC_CACHE)
+      .then((cache) => cache.addAll(STATIC_ASSETS))
+      .then(() => self.skipWaiting())
   );
-
-  self.skipWaiting();
 });
 
-self.addEventListener("activate", function (event) {
+self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then(function (keys) {
-      return Promise.all(
-        keys
-          .filter(function (key) {
-            return key !== CACHE_NAME;
-          })
-          .map(function (key) {
-            return caches.delete(key);
-          })
-      );
-    })
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(
+          keys
+            .filter((key) => key !== STATIC_CACHE)
+            .map((key) => caches.delete(key))
+        )
+      )
+      .then(() => self.clients.claim())
   );
-
-  self.clients.claim();
 });
 
-self.addEventListener("fetch", function (event) {
-  if (event.request.method !== "GET") {
+self.addEventListener("fetch", (event) => {
+  const request = event.request;
+  const url = new URL(request.url);
+
+  // Never intercept/cache Google OAuth, People API, or any cross-origin request.
+  if (url.origin !== self.location.origin) {
     return;
   }
 
-  const url = new URL(event.request.url);
-
-  if (
-    url.hostname.includes("googleapis.com") ||
-    url.hostname.includes("gstatic.com") ||
-    url.hostname.includes("firebaseapp.com")
-  ) {
-    event.respondWith(fetch(event.request));
+  // Never cache non-GET requests.
+  if (request.method !== "GET") {
     return;
   }
 
+  // Navigation: network first so new deployments update quickly.
+  if (request.mode === "navigate") {
+    event.respondWith(
+      fetch(request)
+        .then((response) => response)
+        .catch(() => caches.match("./index.html"))
+    );
+    return;
+  }
+
+  // Static same-origin app files only.
   event.respondWith(
-    fetch(event.request)
-      .then(function (response) {
-        const copy = response.clone();
+    caches.match(request).then((cached) => {
+      if (cached) {
+        return cached;
+      }
 
-        caches.open(CACHE_NAME).then(function (cache) {
-          cache.put(event.request, copy);
-        });
+      return fetch(request).then((response) => {
+        const pathname = url.pathname.toLowerCase();
+        const isStatic =
+          pathname.endsWith(".png") ||
+          pathname.endsWith(".webmanifest") ||
+          pathname.endsWith(".html");
+
+        if (
+          isStatic &&
+          response.ok
+        ) {
+          const copy = response.clone();
+
+          caches
+            .open(STATIC_CACHE)
+            .then((cache) => cache.put(request, copy));
+        }
 
         return response;
-      })
-      .catch(function () {
-        return caches.match(event.request);
-      })
+      });
+    })
   );
 });
