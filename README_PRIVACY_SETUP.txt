@@ -232,3 +232,29 @@ Behavior:
 
 Open:
 https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=4.2.5
+
+
+V4.2.6 PROFILE PHOTO
+--------------------
+Added:
+Settings & Privacy -> Profile Settings -> Choose Photo
+
+Features:
+- JPG / PNG / WebP
+- Max source image: 10 MB
+- Center-cropped and resized locally to 512 x 512
+- WebP compression with JPEG fallback
+- Photo appears in top profile circle
+- Settings shows profile photo preview
+- Remove Photo option
+
+Privacy:
+- Profile photo is stored only in this device's IndexedDB.
+- It is never uploaded to Firebase, Firestore, Google Sheets, Apps Script or
+  the website owner.
+- Share App does not include the photo.
+- Clear Saved Device Data removes the photo.
+- No extra Google OAuth permission is required.
+
+Open:
+https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=4.2.6
