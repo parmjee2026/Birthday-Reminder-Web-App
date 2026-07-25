@@ -16,7 +16,7 @@
   >
   <meta
     name="app-build"
-    content="privacy-first-device-v4.2.2-share-app"
+    content="privacy-first-device-v4.2.3-clean-header-share"
   >
   <title>Birthday Reminder — Privacy First</title>
 
@@ -2179,10 +2179,6 @@
     }
 
 
-    .share-app-button {
-      white-space: nowrap;
-    }
-
     .login-secondary-actions {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -2195,16 +2191,6 @@
     }
 
     @media (max-width: 820px) {
-      .orange-app-header .share-app-button {
-        position: absolute;
-        left: 18px;
-        bottom: 14px;
-        min-height: 34px;
-        padding: 0 10px;
-        border-radius: 999px;
-        font-size: 10px;
-      }
-
       .orange-app-header .install-button {
         display: none;
       }
@@ -2213,6 +2199,23 @@
     @media (max-width: 520px) {
       .login-secondary-actions {
         grid-template-columns: 1fr;
+      }
+    }
+
+
+    @media (max-width: 820px) {
+      .orange-app-header {
+        min-height: 112px;
+        padding-bottom: 16px;
+      }
+
+      .orange-app-header .sync-button {
+        right: 18px;
+        bottom: 12px;
+      }
+
+      .top-profile-circle {
+        align-self: flex-start;
       }
     }
 
@@ -2281,7 +2284,7 @@
         <div class="brand-mark">🎂</div>
         <div>
           <strong>Birthday Reminder</strong>
-          <small>Private Device v4.2.2</small>
+          <small>Private Device v4.2.3</small>
         </div>
       </div>
 
@@ -2355,15 +2358,6 @@
           <span id="lastSyncTop" class="top-sync-status">
             Not synced
           </span>
-
-          <button
-            id="shareAppButton"
-            class="secondary-button share-app-button"
-            type="button"
-            title="Share Birthday Reminder"
-          >
-            ↗ Share
-          </button>
 
           <button
             id="installButton"
@@ -3055,7 +3049,6 @@
         "loginInstallButton",
         "loginStatus",
         "disconnectButton",
-        "shareAppButton",
         "installButton",
         "syncButton",
         "pageTitle",
@@ -3172,11 +3165,6 @@
       el.loginInstallButton.addEventListener(
         "click",
         handleInstallApp
-      );
-
-      el.shareAppButton.addEventListener(
-        "click",
-        shareBirthdayReminderApp
       );
 
       el.installButton.addEventListener(

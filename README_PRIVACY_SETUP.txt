@@ -166,3 +166,17 @@ Shared data:
 
 Open:
 https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=4.2.2
+
+
+V4.2.3 CLEAN HEADER
+-------------------
+UI refinement:
+- Removed Share button from the orange app header.
+- Mobile header now keeps only Brand, Profile and Sync.
+- Share App remains available on:
+  - Login screen
+  - Settings & Privacy
+- This keeps the header visually cleaner and closer to a native mobile app.
+
+Open:
+https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=4.2.3
