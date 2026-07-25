@@ -303,3 +303,31 @@ PRIVACY
 
 Open:
 https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=5.0
+
+
+V5.0.1 UPDATE ACTIVATION FIX
+============================
+
+Video review showed the phone was still displaying the older Settings screen.
+The v5.0 Calendar & Backup and App Updates cards were not active on the device.
+
+Fixes:
+- Versioned service-worker URL: ./sw.js?v=5.0.1
+- updateViaCache: none
+- Automatic update check after service-worker registration
+- Old Birthday Reminder static Cache Storage entries removed
+- IndexedDB contacts/profile photo are preserved
+- localStorage profile/settings are preserved
+- Current build clearly shows Birthday Reminder v5.0.1 in Settings
+
+Expected Settings order:
+1. Profile Settings
+2. Calendar & Backup
+3. App Updates
+4. More Apps
+5. Share Birthday Reminder
+6. Device Memory
+7. Privacy information
+
+Open:
+https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=5.0.1
