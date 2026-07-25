@@ -1,12 +1,15 @@
 {
-  "name": "Birthday Reminder Firebase Free v2.0.7",
+  "id": "./",
+  "name": "Birthday Reminder",
   "short_name": "Birthdays",
-  "description": "Free contact sync for name, gender, mobile or WhatsApp number and birthday",
-  "start_url": "./?v=2.0.7",
+  "description": "Privacy-first birthday reminder using temporary browser memory.",
+  "start_url": "./?source=pwa",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f3f7fc",
-  "theme_color": "#123b70",
+  "background_color": "#f6f7fb",
+  "theme_color": "#ff7a00",
+  "orientation": "portrait-primary",
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "./icon-192.png",
@@ -19,6 +22,18 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Contacts",
+      "short_name": "Contacts",
+      "url": "./?source=pwa#contacts"
+    },
+    {
+      "name": "Birthdays",
+      "short_name": "Birthdays",
+      "url": "./?source=pwa#birthdays"
     }
   ]
 }

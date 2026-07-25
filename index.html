@@ -16,9 +16,19 @@
   >
   <meta
     name="app-build"
-    content="privacy-first-local-only-v4.0-orange-mobile-ui"
+    content="privacy-first-local-only-v4.1-contact-wish-install"
   >
   <title>Birthday Reminder — Privacy First</title>
+
+  <meta name="theme-color" content="#ff7a00">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Birthday Reminder">
+
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon-192.png" sizes="192x192">
+  <link rel="apple-touch-icon" href="./icon-192.png">
 
   <script
     src="https://accounts.google.com/gsi/client"
@@ -1803,6 +1813,258 @@
       }
     }
 
+
+    .install-button {
+      white-space: nowrap;
+    }
+
+    .add-contact-button {
+      color: var(--orange-deep);
+      border-color: var(--orange-border);
+    }
+
+    .app-dialog {
+      width: min(620px, calc(100vw - 28px));
+      max-height: min(88vh, 760px);
+      padding: 0;
+      border: 0;
+      border-radius: 24px;
+      background: transparent;
+      overflow: visible;
+    }
+
+    .app-dialog::backdrop {
+      background: rgba(15, 29, 48, .48);
+      backdrop-filter: blur(3px);
+    }
+
+    .dialog-card {
+      max-height: min(88vh, 760px);
+      padding: 22px;
+      border: 1px solid #eadfcf;
+      border-radius: 24px;
+      background: white;
+      box-shadow: 0 24px 70px rgba(20, 35, 55, .22);
+      overflow-y: auto;
+    }
+
+    .dialog-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .dialog-heading h2 {
+      margin: 3px 0 5px;
+      font-size: 23px;
+    }
+
+    .dialog-heading p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .dialog-eyebrow {
+      color: var(--orange-deep);
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 1.2px;
+    }
+
+    .dialog-close {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      flex: 0 0 auto;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: white;
+      color: var(--text);
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .dialog-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 13px;
+    }
+
+    .dialog-grid label,
+    .wish-message-label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .dialog-grid input,
+    .dialog-grid select,
+    .wish-message-label textarea {
+      width: 100%;
+    }
+
+    .wish-message-label textarea {
+      min-height: 100px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 11px 12px;
+      resize: vertical;
+      color: var(--text);
+      font: inherit;
+      outline: none;
+    }
+
+    .wish-message-label textarea:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(255, 122, 0, .12);
+    }
+
+    .dialog-full {
+      grid-column: 1 / -1;
+    }
+
+    .dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 9px;
+      margin-top: 18px;
+    }
+
+    .orange-action-button {
+      min-height: 44px;
+      border: 0;
+      border-radius: 12px;
+      padding: 0 17px;
+      background: linear-gradient(135deg, #ff7100, #ff8d00);
+      color: white;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .wish-image-zone {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 15px;
+      padding: 13px;
+      border: 1px dashed var(--orange-border);
+      border-radius: 14px;
+      background: #fffaf6;
+    }
+
+    .wish-upload-button {
+      display: inline-flex;
+      min-height: 40px;
+      align-items: center;
+      border-radius: 11px;
+      padding: 0 13px;
+      background: var(--orange-soft);
+      color: var(--orange-deep);
+      font-size: 11px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    #wishImageStatus {
+      color: var(--muted);
+      font-size: 10px;
+      text-align: right;
+    }
+
+    .wish-preview-wrap {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .wish-preview-wrap img {
+      width: 100%;
+      max-height: 300px;
+      object-fit: contain;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: #f5f5f5;
+    }
+
+    .remove-image-button {
+      justify-self: end;
+      border: 0;
+      background: transparent;
+      color: var(--red);
+      font-size: 10px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .dialog-footnote {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .wish-open-button {
+      font: inherit;
+      cursor: pointer;
+    }
+
+    @media (max-width: 820px) {
+      .orange-app-header .install-button {
+        position: absolute;
+        left: 18px;
+        bottom: 14px;
+        min-height: 34px;
+        padding: 0 10px;
+        border-radius: 999px;
+        font-size: 10px;
+      }
+
+      .orange-app-header .sync-button {
+        right: 18px;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .dialog-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .dialog-full {
+        grid-column: auto;
+      }
+
+      .dialog-card {
+        padding: 17px;
+      }
+
+      .dialog-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .wish-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .wish-image-zone {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      #wishImageStatus {
+        text-align: left;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -1849,7 +2111,7 @@
         <div class="brand-mark">🎂</div>
         <div>
           <strong>Birthday Reminder</strong>
-          <small>Local-Only v4.0</small>
+          <small>Local-Only v4.1</small>
         </div>
       </div>
 
@@ -1925,6 +2187,15 @@
           </span>
 
           <button
+            id="installButton"
+            class="secondary-button install-button"
+            type="button"
+            title="Install Birthday Reminder"
+          >
+            ⬇ Install App
+          </button>
+
+          <button
             id="syncButton"
             class="secondary-button sync-button"
             type="button"
@@ -1996,16 +2267,14 @@
               <div id="focusDaysCount" class="focus-days-count">0</div>
               <div class="focus-days-label">days to go</div>
 
-              <a
+              <button
                 id="focusActionButton"
                 class="focus-action-button"
-                href="#"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-disabled="true"
+                type="button"
+                disabled
               >
-                🎂 Send Birthday Wish
-              </a>
+                🎂 Create Birthday Wish
+              </button>
             </article>
           </div>
 
@@ -2115,6 +2384,14 @@
               </div>
 
               <div class="toolbar-controls">
+                <button
+                  id="addContactButton"
+                  class="secondary-button add-contact-button"
+                  type="button"
+                >
+                  + Add Contact
+                </button>
+
                 <input
                   id="contactSearch"
                   type="search"
@@ -2205,6 +2482,10 @@
                 Google Contacts → Google People API → your browser memory.
               </p>
               <p>
+                Manually added contacts and uploaded birthday-wish images also
+                stay only in the current browser session.
+              </p>
+              <p>
                 No contact record is uploaded from the browser to the website
                 owner.
               </p>
@@ -2265,6 +2546,164 @@
     </button>
   </nav>
 
+  <dialog id="contactDialog" class="app-dialog">
+    <form id="contactForm" class="dialog-card">
+      <div class="dialog-heading">
+        <div>
+          <span class="dialog-eyebrow">SESSION ONLY</span>
+          <h2>Add Contact</h2>
+          <p>
+            This contact stays only in this browser tab and is cleared on reload.
+          </p>
+        </div>
+
+        <button
+          id="closeContactDialog"
+          class="dialog-close"
+          type="button"
+          aria-label="Close"
+        >
+          ×
+        </button>
+      </div>
+
+      <div class="dialog-grid">
+        <label>
+          <span>Name *</span>
+          <input id="manualName" type="text" required autocomplete="off">
+        </label>
+
+        <label>
+          <span>Gender</span>
+          <select id="manualGender">
+            <option value="Not specified">Not specified</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Mobile Number *</span>
+          <input
+            id="manualMobile"
+            type="tel"
+            required
+            inputmode="tel"
+            placeholder="+91..."
+          >
+        </label>
+
+        <label>
+          <span>WhatsApp Number</span>
+          <input
+            id="manualWhatsapp"
+            type="tel"
+            inputmode="tel"
+            placeholder="Same as mobile if blank"
+          >
+        </label>
+
+        <label class="dialog-full">
+          <span>Birthday</span>
+          <input id="manualBirthday" type="date">
+        </label>
+      </div>
+
+      <div class="dialog-actions">
+        <button
+          id="cancelContactButton"
+          class="secondary-button"
+          type="button"
+        >
+          Cancel
+        </button>
+
+        <button class="orange-action-button" type="submit">
+          + Add Contact
+        </button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="wishDialog" class="app-dialog">
+    <div class="dialog-card wish-dialog-card">
+      <div class="dialog-heading">
+        <div>
+          <span class="dialog-eyebrow">BIRTHDAY WISH</span>
+          <h2 id="wishDialogTitle">Create Birthday Wish</h2>
+          <p>
+            Image and message stay in browser memory only. Nothing is uploaded.
+          </p>
+        </div>
+
+        <button
+          id="closeWishDialog"
+          class="dialog-close"
+          type="button"
+          aria-label="Close"
+        >
+          ×
+        </button>
+      </div>
+
+      <label class="wish-message-label">
+        <span>Wish Message</span>
+        <textarea id="wishMessage" rows="4"></textarea>
+      </label>
+
+      <div class="wish-image-zone">
+        <label class="wish-upload-button">
+          🖼 Upload Wish Image
+          <input
+            id="wishImageInput"
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/gif"
+            hidden
+          >
+        </label>
+
+        <span id="wishImageStatus">
+          Optional · image stays on this device
+        </span>
+      </div>
+
+      <div id="wishPreviewWrap" class="wish-preview-wrap hidden">
+        <img id="wishImagePreview" alt="Selected birthday wish preview">
+        <button
+          id="removeWishImage"
+          class="remove-image-button"
+          type="button"
+        >
+          Remove image
+        </button>
+      </div>
+
+      <div class="dialog-actions wish-actions">
+        <button
+          id="whatsappTextOnlyButton"
+          class="secondary-button"
+          type="button"
+        >
+          WhatsApp Text Only
+        </button>
+
+        <button
+          id="shareWishButton"
+          class="orange-action-button"
+          type="button"
+        >
+          Share Wish + Image
+        </button>
+      </div>
+
+      <p class="dialog-footnote">
+        On supported mobile browsers, Share Wish + Image opens the phone's
+        native share sheet, where WhatsApp can be selected.
+      </p>
+    </div>
+  </dialog>
+
   <div id="toast" class="toast hidden" role="status"></div>
 
   <script>
@@ -2281,7 +2720,11 @@
       contacts: [],
       userName: "",
       activeView: "dashboard",
-      syncedAt: null
+      syncedAt: null,
+      wishImageFile: null,
+      wishImageObjectUrl: "",
+      wishRecipient: null,
+      installPrompt: null
     };
 
     const el = {};
@@ -2309,6 +2752,8 @@
         updateLiveClock,
         1000
       );
+
+      setupInstallPrompt();
     }
 
     function cacheElements() {
@@ -2318,6 +2763,7 @@
         "connectButton",
         "loginStatus",
         "disconnectButton",
+        "installButton",
         "syncButton",
         "pageTitle",
         "mobileMenuButton",
@@ -2342,6 +2788,16 @@
         "focusDaysCount",
         "focusActionButton",
         "upcomingList",
+        "addContactButton",
+        "contactDialog",
+        "contactForm",
+        "closeContactDialog",
+        "cancelContactButton",
+        "manualName",
+        "manualGender",
+        "manualMobile",
+        "manualWhatsapp",
+        "manualBirthday",
         "contactSearch",
         "birthdayFilter",
         "contactResultCount",
@@ -2351,6 +2807,17 @@
         "yearSelect",
         "printButton",
         "yearlyGrid",
+        "wishDialog",
+        "wishDialogTitle",
+        "closeWishDialog",
+        "wishMessage",
+        "wishImageInput",
+        "wishImageStatus",
+        "wishPreviewWrap",
+        "wishImagePreview",
+        "removeWishImage",
+        "whatsappTextOnlyButton",
+        "shareWishButton",
         "toast"
       ].forEach(
         (id) => {
@@ -2364,6 +2831,11 @@
       el.connectButton.addEventListener(
         "click",
         authorizeAndSync
+      );
+
+      el.installButton.addEventListener(
+        "click",
+        handleInstallApp
       );
 
       el.syncButton.addEventListener(
@@ -2400,6 +2872,26 @@
         }
       );
 
+      el.addContactButton.addEventListener(
+        "click",
+        openAddContactDialog
+      );
+
+      el.closeContactDialog.addEventListener(
+        "click",
+        closeAddContactDialog
+      );
+
+      el.cancelContactButton.addEventListener(
+        "click",
+        closeAddContactDialog
+      );
+
+      el.contactForm.addEventListener(
+        "submit",
+        addManualContact
+      );
+
       el.contactSearch.addEventListener(
         "input",
         renderContacts
@@ -2425,6 +2917,66 @@
         () => {
           navigate("yearly");
           window.print();
+        }
+      );
+
+      el.focusActionButton.addEventListener(
+        "click",
+        () => {
+          if (
+            el.focusActionButton.disabled
+          ) {
+            return;
+          }
+
+          openWishComposer(
+            el.focusActionButton.dataset.name || "",
+            el.focusActionButton.dataset.number || ""
+          );
+        }
+      );
+
+      el.closeWishDialog.addEventListener(
+        "click",
+        closeWishComposer
+      );
+
+      el.wishImageInput.addEventListener(
+        "change",
+        handleWishImageSelection
+      );
+
+      el.removeWishImage.addEventListener(
+        "click",
+        clearWishImage
+      );
+
+      el.shareWishButton.addEventListener(
+        "click",
+        shareWish
+      );
+
+      el.whatsappTextOnlyButton.addEventListener(
+        "click",
+        openWishInWhatsApp
+      );
+
+      document.addEventListener(
+        "click",
+        (event) => {
+          const button =
+            event.target.closest(
+              ".wish-open-button"
+            );
+
+          if (!button) {
+            return;
+          }
+
+          openWishComposer(
+            button.dataset.name || "",
+            button.dataset.number || ""
+          );
         }
       );
 
@@ -2752,6 +3304,465 @@
     }
 
 
+
+    function setupInstallPrompt() {
+      const standalone =
+        window.matchMedia(
+          "(display-mode: standalone)"
+        ).matches ||
+        window.navigator.standalone ===
+          true;
+
+      if (standalone) {
+        el.installButton.classList.add(
+          "hidden"
+        );
+      }
+
+      window.addEventListener(
+        "beforeinstallprompt",
+        (event) => {
+          event.preventDefault();
+
+          state.installPrompt =
+            event;
+
+          el.installButton.classList.remove(
+            "hidden"
+          );
+        }
+      );
+
+      window.addEventListener(
+        "appinstalled",
+        () => {
+          state.installPrompt =
+            null;
+
+          el.installButton.classList.add(
+            "hidden"
+          );
+
+          showToast(
+            "Birthday Reminder installed successfully."
+          );
+        }
+      );
+    }
+
+
+    async function handleInstallApp() {
+      const standalone =
+        window.matchMedia(
+          "(display-mode: standalone)"
+        ).matches ||
+        window.navigator.standalone ===
+          true;
+
+      if (standalone) {
+        showToast(
+          "Birthday Reminder is already installed."
+        );
+        return;
+      }
+
+      if (state.installPrompt) {
+        try {
+          await state.installPrompt.prompt();
+
+          const choice =
+            await state.installPrompt.userChoice;
+
+          if (
+            choice &&
+            choice.outcome ===
+              "accepted"
+          ) {
+            showToast(
+              "Installing Birthday Reminder…"
+            );
+          }
+
+          state.installPrompt =
+            null;
+        } catch (error) {
+          handleError(error);
+        }
+
+        return;
+      }
+
+      const isIos =
+        /iphone|ipad|ipod/i.test(
+          navigator.userAgent
+        );
+
+      if (isIos) {
+        showToast(
+          "On iPhone/iPad: tap Share, then Add to Home Screen.",
+          true
+        );
+        return;
+      }
+
+      showToast(
+        "Chrome: open ⋮ menu and choose Install app or Add to Home screen. The install button may appear after using the page briefly.",
+        true
+      );
+    }
+
+
+    function openAddContactDialog() {
+      el.contactForm.reset();
+
+      if (
+        typeof el.contactDialog.showModal ===
+          "function"
+      ) {
+        el.contactDialog.showModal();
+      }
+    }
+
+
+    function closeAddContactDialog() {
+      if (el.contactDialog.open) {
+        el.contactDialog.close();
+      }
+    }
+
+
+    function addManualContact(event) {
+      event.preventDefault();
+
+      const name =
+        el.manualName.value
+          .trim();
+
+      const mobile =
+        el.manualMobile.value
+          .trim();
+
+      const whatsapp =
+        el.manualWhatsapp.value
+          .trim() ||
+        mobile;
+
+      if (!name || !mobile) {
+        showToast(
+          "Name and Mobile Number are required.",
+          true
+        );
+        return;
+      }
+
+      let birthday =
+        null;
+
+      if (el.manualBirthday.value) {
+        const parts =
+          el.manualBirthday.value
+            .split("-")
+            .map(Number);
+
+        if (
+          parts.length === 3
+        ) {
+          birthday = {
+            year: parts[0],
+            month: parts[1],
+            day: parts[2]
+          };
+        }
+      }
+
+      state.contacts.push({
+        name,
+        gender:
+          el.manualGender.value ||
+          "Not specified",
+        mobile,
+        whatsapp,
+        birthday,
+        source: "manual"
+      });
+
+      state.contacts.sort(
+        (a, b) =>
+          a.name.localeCompare(
+            b.name
+          )
+      );
+
+      closeAddContactDialog();
+      renderEverything();
+
+      showToast(
+        `${name} added for this session only.`
+      );
+    }
+
+
+    function openWishComposer(
+      name,
+      number
+    ) {
+      if (!name) {
+        return;
+      }
+
+      state.wishRecipient = {
+        name,
+        number
+      };
+
+      el.wishDialogTitle.textContent =
+        `Wish ${name}`;
+
+      el.wishMessage.value =
+        `Happy Birthday ${name}! 🎂 Wishing you happiness, good health and a wonderful year ahead.`;
+
+      clearWishImage();
+
+      if (
+        typeof el.wishDialog.showModal ===
+          "function"
+      ) {
+        el.wishDialog.showModal();
+      }
+    }
+
+
+    function closeWishComposer() {
+      clearWishImage();
+
+      state.wishRecipient =
+        null;
+
+      if (el.wishDialog.open) {
+        el.wishDialog.close();
+      }
+    }
+
+
+    function handleWishImageSelection() {
+      const file =
+        el.wishImageInput.files &&
+        el.wishImageInput.files[0];
+
+      if (!file) {
+        clearWishImage();
+        return;
+      }
+
+      if (
+        !file.type.startsWith(
+          "image/"
+        )
+      ) {
+        el.wishImageInput.value =
+          "";
+
+        showToast(
+          "Please select an image file.",
+          true
+        );
+        return;
+      }
+
+      const maxBytes =
+        10 * 1024 * 1024;
+
+      if (
+        file.size > maxBytes
+      ) {
+        el.wishImageInput.value =
+          "";
+
+        showToast(
+          "Please select an image smaller than 10 MB.",
+          true
+        );
+        return;
+      }
+
+      clearWishImage();
+
+      state.wishImageFile =
+        file;
+
+      state.wishImageObjectUrl =
+        URL.createObjectURL(
+          file
+        );
+
+      el.wishImagePreview.src =
+        state.wishImageObjectUrl;
+
+      el.wishPreviewWrap.classList.remove(
+        "hidden"
+      );
+
+      el.wishImageStatus.textContent =
+        `${file.name} · ${(file.size / 1024 / 1024).toFixed(1)} MB`;
+    }
+
+
+    function clearWishImage() {
+      if (
+        state.wishImageObjectUrl
+      ) {
+        URL.revokeObjectURL(
+          state.wishImageObjectUrl
+        );
+      }
+
+      state.wishImageFile =
+        null;
+
+      state.wishImageObjectUrl =
+        "";
+
+      if (
+        el.wishImageInput
+      ) {
+        el.wishImageInput.value =
+          "";
+      }
+
+      if (
+        el.wishImagePreview
+      ) {
+        el.wishImagePreview.removeAttribute(
+          "src"
+        );
+      }
+
+      if (
+        el.wishPreviewWrap
+      ) {
+        el.wishPreviewWrap.classList.add(
+          "hidden"
+        );
+      }
+
+      if (
+        el.wishImageStatus
+      ) {
+        el.wishImageStatus.textContent =
+          "Optional · image stays on this device";
+      }
+    }
+
+
+    async function shareWish() {
+      if (
+        !state.wishRecipient
+      ) {
+        return;
+      }
+
+      const text =
+        el.wishMessage.value
+          .trim();
+
+      const file =
+        state.wishImageFile;
+
+      if (
+        file &&
+        navigator.share &&
+        navigator.canShare &&
+        navigator.canShare({
+          files: [file]
+        })
+      ) {
+        try {
+          await navigator.share({
+            title:
+              `Birthday Wish for ${state.wishRecipient.name}`,
+            text,
+            files: [file]
+          });
+
+          showToast(
+            "Wish shared from your device."
+          );
+
+          return;
+        } catch (error) {
+          if (
+            error &&
+            error.name ===
+              "AbortError"
+          ) {
+            return;
+          }
+
+          handleError(error);
+          return;
+        }
+      }
+
+      if (
+        !file &&
+        navigator.share
+      ) {
+        try {
+          await navigator.share({
+            title:
+              `Birthday Wish for ${state.wishRecipient.name}`,
+            text
+          });
+
+          return;
+        } catch (error) {
+          if (
+            error &&
+            error.name ===
+              "AbortError"
+          ) {
+            return;
+          }
+        }
+      }
+
+      if (file) {
+        showToast(
+          "This browser cannot share image files directly. Use WhatsApp Text Only, or try Chrome on Android.",
+          true
+        );
+        return;
+      }
+
+      openWishInWhatsApp();
+    }
+
+
+    function openWishInWhatsApp() {
+      if (
+        !state.wishRecipient
+      ) {
+        return;
+      }
+
+      const text =
+        el.wishMessage.value
+          .trim();
+
+      const url =
+        whatsappMessageUrl(
+          state.wishRecipient.number,
+          text
+        );
+
+      window.open(
+        url,
+        "_blank",
+        "noopener,noreferrer"
+      );
+    }
+
+
     async function syncContacts() {
       if (!state.accessToken) {
         authorizeAndSync();
@@ -2770,12 +3781,25 @@
             state.accessToken
           );
 
-        state.contacts =
+        const manualContacts =
+          state.contacts.filter(
+            (contact) =>
+              contact.source ===
+                "manual"
+          );
+
+        const googleContacts =
           people
             .map(
               normalizeContact
             )
-            .filter(Boolean)
+            .filter(Boolean);
+
+        state.contacts =
+          [
+            ...manualContacts,
+            ...googleContacts
+          ]
             .sort(
               (a, b) =>
                 a.name.localeCompare(
@@ -2944,7 +3968,8 @@
           phones.mobile,
         whatsapp:
           phones.whatsapp,
-        birthday
+        birthday,
+        source: "google"
       };
     }
 
@@ -3404,13 +4429,14 @@
         el.focusDaysCount.textContent =
           "0";
 
-        el.focusActionButton.href =
-          "#";
+        el.focusActionButton.disabled =
+          true;
 
-        el.focusActionButton.setAttribute(
-          "aria-disabled",
-          "true"
-        );
+        el.focusActionButton.dataset.name =
+          "";
+
+        el.focusActionButton.dataset.number =
+          "";
 
         return;
       }
@@ -3472,18 +4498,14 @@
         contact.whatsapp ||
         contact.mobile;
 
-      el.focusActionButton.href =
-        whatsappMessageUrl(
-          number,
-          wish
-        );
+      el.focusActionButton.disabled =
+        !number;
 
-      el.focusActionButton.setAttribute(
-        "aria-disabled",
-        number
-          ? "false"
-          : "true"
-      );
+      el.focusActionButton.dataset.name =
+        contact.name;
+
+      el.focusActionButton.dataset.number =
+        number || "";
     }
 
 
@@ -3902,7 +4924,13 @@
               <strong>
                 ${escapeHtml(contact.name)}
               </strong>
-              <small>Google Contact</small>
+              <small>
+                ${
+                  contact.source === "manual"
+                    ? "Session Contact"
+                    : "Google Contact"
+                }
+              </small>
             </div>
           </div>
 
@@ -3967,14 +4995,14 @@
             ${
               contact.birthday
                 ? `
-                  <a
-                    class="quick-action whatsapp"
-                    href="${whatsappMessageUrl(number, wishText)}"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    class="quick-action whatsapp wish-open-button"
+                    type="button"
+                    data-name="${escapeHtml(contact.name)}"
+                    data-number="${escapeHtml(number)}"
                   >
-                    🎂 Wish
-                  </a>
+                    🎂 Wish + Image
+                  </button>
                 `
                 : `
                   <a
@@ -4082,14 +5110,14 @@
               SMS
             </a>
 
-            <a
-              class="quick-action whatsapp"
-              href="${whatsappMessageUrl(number, wishText)}"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              class="quick-action whatsapp wish-open-button"
+              type="button"
+              data-name="${escapeHtml(contact.name)}"
+              data-number="${escapeHtml(number)}"
             >
-              🎂 Wish
-            </a>
+              🎂 Wish + Image
+            </button>
           </div>
         </article>
       `;
@@ -4242,6 +5270,7 @@
 
       const finish = () => {
         closeMobileMenu();
+        clearWishImage();
 
         state.accessToken = "";
         state.contacts = [];
