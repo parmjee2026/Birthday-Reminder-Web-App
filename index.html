@@ -16,7 +16,7 @@
   >
   <meta
     name="app-build"
-    content="privacy-first-device-v4.2.3-clean-header-share"
+    content="privacy-first-device-v4.2.4-contact-edit"
   >
   <title>Birthday Reminder — Privacy First</title>
 
@@ -2219,6 +2219,31 @@
       }
     }
 
+
+    .quick-action.edit-contact-button {
+      border-color: #f0cf9f;
+      background: #fff7eb;
+      color: var(--orange-deep);
+    }
+
+    .quick-action.restore-contact-button {
+      border-color: #cbd7e8;
+      background: #f7f9fc;
+      color: var(--navy);
+    }
+
+    .edited-device-badge {
+      display: inline-flex;
+      width: fit-content;
+      margin-top: 3px;
+      border-radius: 999px;
+      padding: 3px 7px;
+      background: var(--orange-soft);
+      color: var(--orange-deep);
+      font-size: 8px;
+      font-weight: 900;
+    }
+
   </style>
 </head>
 <body>
@@ -2284,7 +2309,7 @@
         <div class="brand-mark">🎂</div>
         <div>
           <strong>Birthday Reminder</strong>
-          <small>Private Device v4.2.3</small>
+          <small>Private Device v4.2.4</small>
         </div>
       </div>
 
@@ -2824,12 +2849,13 @@
 
   <dialog id="contactDialog" class="app-dialog">
     <form id="contactForm" class="dialog-card">
+      <input id="contactEditId" type="hidden">
       <div class="dialog-heading">
         <div>
-          <span class="dialog-eyebrow">SESSION ONLY</span>
-          <h2>Add Contact</h2>
-          <p>
-            This contact stays only in this browser tab and is cleared on reload.
+          <span id="contactDialogEyebrow" class="dialog-eyebrow">SESSION ONLY</span>
+          <h2 id="contactDialogTitle">Add Contact</h2>
+          <p id="contactDialogHelp">
+            This contact stays only in this browser tab unless device memory is enabled.
           </p>
         </div>
 
@@ -2895,7 +2921,11 @@
           Cancel
         </button>
 
-        <button class="orange-action-button" type="submit">
+        <button
+          id="contactSubmitButton"
+          class="orange-action-button"
+          type="submit"
+        >
           + Add Contact
         </button>
       </div>
@@ -3005,7 +3035,8 @@
       rememberContacts: false,
       quickReconnect: true,
       googleGrantKnown: false,
-      deviceCacheLoaded: false
+      deviceCacheLoaded: false,
+      editingContactId: ""
     };
 
     const el = {};
@@ -3080,6 +3111,11 @@
         "addContactButton",
         "contactDialog",
         "contactForm",
+        "contactEditId",
+        "contactDialogEyebrow",
+        "contactDialogTitle",
+        "contactDialogHelp",
+        "contactSubmitButton",
         "closeContactDialog",
         "cancelContactButton",
         "manualName",
@@ -3298,6 +3334,30 @@
       document.addEventListener(
         "click",
         (event) => {
+          const editButton =
+            event.target.closest(
+              ".edit-contact-button"
+            );
+
+          if (editButton) {
+            openEditContactDialog(
+              editButton.dataset.contactId || ""
+            );
+            return;
+          }
+
+          const restoreButton =
+            event.target.closest(
+              ".restore-contact-button"
+            );
+
+          if (restoreButton) {
+            restoreGoogleContactDetails(
+              restoreButton.dataset.contactId || ""
+            );
+            return;
+          }
+
           const button =
             event.target.closest(
               ".wish-open-button"
@@ -3846,6 +3906,10 @@
           ) {
             state.contacts =
               cached;
+
+            state.contacts.forEach(
+              ensureContactId
+            );
 
             state.deviceCacheLoaded =
               true;
@@ -4404,7 +4468,27 @@
 
 
     function openAddContactDialog() {
+      state.editingContactId =
+        "";
+
       el.contactForm.reset();
+
+      el.contactEditId.value =
+        "";
+
+      el.contactDialogEyebrow.textContent =
+        "SESSION / DEVICE";
+
+      el.contactDialogTitle.textContent =
+        "Add Contact";
+
+      el.contactDialogHelp.textContent =
+        state.rememberContacts
+          ? "This contact will be saved only on this device."
+          : "This contact stays only in the current browser session.";
+
+      el.contactSubmitButton.textContent =
+        "+ Add Contact";
 
       if (
         typeof el.contactDialog.showModal ===
@@ -4416,6 +4500,14 @@
 
 
     function closeAddContactDialog() {
+      state.editingContactId =
+        "";
+
+      if (el.contactEditId) {
+        el.contactEditId.value =
+          "";
+      }
+
       if (el.contactDialog.open) {
         el.contactDialog.close();
       }
@@ -4466,7 +4558,97 @@
         }
       }
 
+      const editId =
+        el.contactEditId.value ||
+        state.editingContactId;
+
+      if (editId) {
+        const contact =
+          state.contacts.find(
+            (item) =>
+              ensureContactId(item) ===
+                editId
+          );
+
+        if (!contact) {
+          showToast(
+            "Contact could not be found.",
+            true
+          );
+          closeAddContactDialog();
+          return;
+        }
+
+        if (
+          contact.source === "google" &&
+          !contact.originalGoogle
+        ) {
+          contact.originalGoogle = {
+            name:
+              contact.name,
+            gender:
+              contact.gender,
+            mobile:
+              contact.mobile,
+            whatsapp:
+              contact.whatsapp,
+            birthday:
+              cloneBirthday(
+                contact.birthday
+              )
+          };
+        }
+
+        contact.name =
+          name;
+
+        contact.gender =
+          el.manualGender.value ||
+          "Not specified";
+
+        contact.mobile =
+          mobile;
+
+        contact.whatsapp =
+          whatsapp;
+
+        contact.birthday =
+          birthday;
+
+        contact.localEdited =
+          true;
+
+        state.editingContactId =
+          "";
+
+        el.contactEditId.value =
+          "";
+
+        closeAddContactDialog();
+
+        state.contacts.sort(
+          (a, b) =>
+            a.name.localeCompare(
+              b.name
+            )
+        );
+
+        persistContactsIfEnabled();
+
+        renderEverything();
+
+        showToast(
+          contact.source === "google"
+            ? `${name} updated on this device. Google Contact was not changed.`
+            : `${name} updated.`
+        );
+
+        return;
+      }
+
       state.contacts.push({
+        id:
+          createLocalContactId(),
         name,
         gender:
           el.manualGender.value ||
@@ -4474,7 +4656,10 @@
         mobile,
         whatsapp,
         birthday,
-        source: "manual"
+        source:
+          "manual",
+        localEdited:
+          false
       });
 
       state.contacts.sort(
@@ -4486,15 +4671,7 @@
 
       closeAddContactDialog();
 
-      if (
-        state.rememberContacts
-      ) {
-        saveContactsToDevice(
-          state.contacts
-        ).catch(
-          handleError
-        );
-      }
+      persistContactsIfEnabled();
 
       renderEverything();
 
@@ -4505,6 +4682,273 @@
       );
     }
 
+
+    function openEditContactDialog(
+      contactId
+    ) {
+      const contact =
+        state.contacts.find(
+          (item) =>
+            ensureContactId(item) ===
+              contactId
+        );
+
+      if (!contact) {
+        showToast(
+          "Contact could not be found.",
+          true
+        );
+        return;
+      }
+
+      state.editingContactId =
+        contactId;
+
+      el.contactEditId.value =
+        contactId;
+
+      el.manualName.value =
+        contact.name || "";
+
+      el.manualGender.value =
+        [
+          "Male",
+          "Female",
+          "Other",
+          "Not specified"
+        ].includes(
+          contact.gender
+        )
+          ? contact.gender
+          : "Not specified";
+
+      el.manualMobile.value =
+        contact.mobile || "";
+
+      el.manualWhatsapp.value =
+        contact.whatsapp || "";
+
+      el.manualBirthday.value =
+        birthdayToInputValue(
+          contact.birthday
+        );
+
+      el.contactDialogEyebrow.textContent =
+        contact.source === "google"
+          ? "LOCAL EDIT · GOOGLE CONTACT READ-ONLY"
+          : "EDIT CONTACT";
+
+      el.contactDialogTitle.textContent =
+        `Edit ${contact.name}`;
+
+      el.contactDialogHelp.textContent =
+        contact.source === "google"
+          ? "Changes affect only Birthday Reminder on this device/session. Your original Google Contact is not edited."
+          : (
+              state.rememberContacts
+                ? "Changes are saved only on this device."
+                : "Changes remain only for the current browser session."
+            );
+
+      el.contactSubmitButton.textContent =
+        "Save Changes";
+
+      if (
+        typeof el.contactDialog.showModal ===
+          "function"
+      ) {
+        el.contactDialog.showModal();
+      }
+    }
+
+
+    function restoreGoogleContactDetails(
+      contactId
+    ) {
+      const contact =
+        state.contacts.find(
+          (item) =>
+            ensureContactId(item) ===
+              contactId
+        );
+
+      if (
+        !contact ||
+        contact.source !== "google" ||
+        !contact.originalGoogle
+      ) {
+        showToast(
+          "Original Google details are not available.",
+          true
+        );
+        return;
+      }
+
+      const original =
+        contact.originalGoogle;
+
+      contact.name =
+        original.name;
+
+      contact.gender =
+        original.gender;
+
+      contact.mobile =
+        original.mobile;
+
+      contact.whatsapp =
+        original.whatsapp;
+
+      contact.birthday =
+        cloneBirthday(
+          original.birthday
+        );
+
+      contact.localEdited =
+        false;
+
+      state.contacts.sort(
+        (a, b) =>
+          a.name.localeCompare(
+            b.name
+          )
+      );
+
+      persistContactsIfEnabled();
+
+      renderEverything();
+
+      showToast(
+        "Original Google details restored in Birthday Reminder."
+      );
+    }
+
+
+    function persistContactsIfEnabled() {
+      if (
+        state.rememberContacts
+      ) {
+        saveContactsToDevice(
+          state.contacts
+        ).catch(
+          handleError
+        );
+      }
+    }
+
+
+    function createLocalContactId() {
+      if (
+        window.crypto &&
+        typeof crypto.randomUUID ===
+          "function"
+      ) {
+        return `manual:${crypto.randomUUID()}`;
+      }
+
+      return (
+        "manual:" +
+        Date.now() +
+        ":" +
+        Math.random()
+          .toString(36)
+          .slice(2)
+      );
+    }
+
+
+    function ensureContactId(
+      contact
+    ) {
+      if (contact.id) {
+        return contact.id;
+      }
+
+      const base =
+        [
+          contact.source || "contact",
+          normalizePhoneForAction(
+            contact.mobile
+          ),
+          String(
+            contact.name || ""
+          )
+            .toLowerCase()
+            .replace(
+              /[^a-z0-9]+/g,
+              "-"
+            )
+        ]
+          .filter(Boolean)
+          .join(":");
+
+      contact.id =
+        base ||
+        createLocalContactId();
+
+      return contact.id;
+    }
+
+
+    function cloneBirthday(
+      birthday
+    ) {
+      if (!birthday) {
+        return null;
+      }
+
+      return {
+        year:
+          Number(
+            birthday.year
+          ) || 0,
+        month:
+          Number(
+            birthday.month
+          ),
+        day:
+          Number(
+            birthday.day
+          )
+      };
+    }
+
+
+    function birthdayToInputValue(
+      birthday
+    ) {
+      if (!birthday) {
+        return "";
+      }
+
+      const year =
+        Number(
+          birthday.year
+        );
+
+      if (!year) {
+        return "";
+      }
+
+      return [
+        String(year).padStart(
+          4,
+          "0"
+        ),
+        String(
+          birthday.month
+        ).padStart(
+          2,
+          "0"
+        ),
+        String(
+          birthday.day
+        ).padStart(
+          2,
+          "0"
+        )
+      ].join("-");
+    }
 
     function openWishComposer(
       name,
@@ -4785,6 +5229,22 @@
             state.accessToken
           );
 
+        state.contacts.forEach(
+          ensureContactId
+        );
+
+        const existingById =
+          new Map(
+            state.contacts.map(
+              (contact) => [
+                ensureContactId(
+                  contact
+                ),
+                contact
+              ]
+            )
+          );
+
         const manualContacts =
           state.contacts.filter(
             (contact) =>
@@ -4797,7 +5257,40 @@
             .map(
               normalizeContact
             )
-            .filter(Boolean);
+            .filter(Boolean)
+            .map(
+              (fresh) => {
+                const existing =
+                  existingById.get(
+                    fresh.id
+                  );
+
+                if (
+                  !existing ||
+                  !existing.localEdited
+                ) {
+                  return fresh;
+                }
+
+                return {
+                  ...fresh,
+                  name:
+                    existing.name,
+                  gender:
+                    existing.gender,
+                  mobile:
+                    existing.mobile,
+                  whatsapp:
+                    existing.whatsapp,
+                  birthday:
+                    cloneBirthday(
+                      existing.birthday
+                    ),
+                  localEdited:
+                    true
+                };
+              }
+            );
 
         state.contacts =
           [
@@ -4973,7 +5466,34 @@
           person.events || []
         );
 
+      const googleId =
+        person.resourceName
+          ? `google:${person.resourceName}`
+          : (
+              "google:" +
+              normalizePhoneForAction(
+                phones.mobile
+              ) +
+              ":" +
+              name.toLowerCase()
+            );
+
+      const originalGoogle = {
+        name,
+        gender,
+        mobile:
+          phones.mobile,
+        whatsapp:
+          phones.whatsapp,
+        birthday:
+          cloneBirthday(
+            birthday
+          )
+      };
+
       return {
+        id:
+          googleId,
         name,
         gender,
         mobile:
@@ -4981,7 +5501,11 @@
         whatsapp:
           phones.whatsapp,
         birthday,
-        source: "google"
+        source:
+          "google",
+        localEdited:
+          false,
+        originalGoogle
       };
     }
 
@@ -5939,10 +6463,20 @@
               <small>
                 ${
                   contact.source === "manual"
-                    ? "Session Contact"
+                    ? "Manual Contact"
                     : "Google Contact"
                 }
               </small>
+
+              ${
+                contact.localEdited
+                  ? `
+                    <span class="edited-device-badge">
+                      Edited on this device
+                    </span>
+                  `
+                  : ""
+              }
             </div>
           </div>
 
@@ -5981,6 +6515,30 @@
           </a>
 
           <div class="quick-actions">
+            <button
+              class="quick-action edit-contact-button"
+              type="button"
+              data-contact-id="${escapeHtml(ensureContactId(contact))}"
+            >
+              ✎ Edit
+            </button>
+
+            ${
+              contact.source === "google" &&
+              contact.localEdited &&
+              contact.originalGoogle
+                ? `
+                  <button
+                    class="quick-action restore-contact-button"
+                    type="button"
+                    data-contact-id="${escapeHtml(ensureContactId(contact))}"
+                  >
+                    ↶ Restore Google
+                  </button>
+                `
+                : ""
+            }
+
             <a
               class="quick-action"
               href="${callUrl(contact.mobile)}"
@@ -6099,6 +6657,14 @@
           </a>
 
           <div class="quick-actions">
+            <button
+              class="quick-action edit-contact-button"
+              type="button"
+              data-contact-id="${escapeHtml(ensureContactId(contact))}"
+            >
+              ✎ Edit
+            </button>
+
             <a
               class="quick-action"
               href="${callUrl(contact.mobile)}"

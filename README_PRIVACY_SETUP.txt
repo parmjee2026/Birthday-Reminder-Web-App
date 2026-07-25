@@ -180,3 +180,37 @@ UI refinement:
 
 Open:
 https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=4.2.3
+
+
+V4.2.4 CONTACT EDIT
+-------------------
+Added working contact editing.
+
+CONTACTS PAGE
+- Edit button on every Google/manual contact.
+- Editable:
+  Name
+  Gender
+  Mobile
+  WhatsApp
+  Birthday
+
+GOOGLE CONTACT SAFETY
+- Google Contacts remain read-only.
+- Editing a Google Contact changes only Birthday Reminder's local copy.
+- The original Google values are preserved inside the local contact object.
+- Edited Google contacts show "Edited on this device".
+- "Restore Google" returns the Birthday Reminder record to the original
+  Google-synced values.
+- Local edits survive another Google Sync during the current session.
+- If Remember Contacts on This Device is ON, local edits are saved in the
+  device's IndexedDB and remain after reopening.
+
+MANUAL CONTACTS
+- Manual contacts can also be edited.
+- They remain session-only or device-only according to Device Memory setting.
+
+No Google write/edit OAuth permission was added.
+
+Open:
+https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=4.2.4
