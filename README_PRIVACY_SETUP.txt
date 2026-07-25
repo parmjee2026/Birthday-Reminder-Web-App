@@ -67,3 +67,43 @@ PRIVACY
 
 Open after upload:
 https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=4.1
+
+
+V4.2 DEVICE PROFILE + QUICK RECONNECT
+-------------------------------------
+Added Settings & Privacy:
+
+PROFILE
+- User can save their own Name.
+- User can save a custom Status.
+- Name/status are stored only in localStorage on that device.
+- They are never uploaded to the app owner.
+
+OPTIONAL DEVICE CONTACT MEMORY
+- "Remember contacts on this device" is OFF by default.
+- When enabled, the current contact list is stored in IndexedDB on that device.
+- The installed app can reopen and show the saved contact list without Google
+  authorization just to view existing data.
+- Uploaded birthday-wish images are NOT cached.
+- Clear Saved Device Data removes the saved name, status and contact cache.
+
+QUICK GOOGLE RECONNECT
+- After the first Google consent is granted, the app remembers only that the
+  grant previously existed.
+- A future Sync tap asks Google for a new access token with prompt="" when
+  Quick Reconnect is enabled.
+- Google may return the token without showing the consent screen again if the
+  grant and Google session are still valid.
+- Google Identity Services still requires a user gesture to request a new
+  browser access token; the installed PWA cannot silently refresh it in the
+  background without a backend/refresh-token architecture.
+
+PRIVACY
+- No Firebase / Firestore
+- No Google Sheets / Apps Script
+- No owner-controlled contact database
+- Optional persistence exists ONLY on the user's own device.
+- OAuth scope remains contacts.readonly.
+
+Open:
+https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=4.2

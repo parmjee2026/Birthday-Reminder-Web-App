@@ -16,7 +16,7 @@
   >
   <meta
     name="app-build"
-    content="privacy-first-local-only-v4.1-contact-wish-install"
+    content="privacy-first-device-v4.2-profile-quick-reconnect"
   >
   <title>Birthday Reminder — Privacy First</title>
 
@@ -2065,6 +2065,93 @@
       }
     }
 
+
+    .settings-card {
+      display: grid;
+      gap: 12px;
+    }
+
+    .settings-form {
+      display: grid;
+      gap: 11px;
+    }
+
+    .settings-form label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .settings-form input {
+      width: 100%;
+    }
+
+    .settings-toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--line);
+      cursor: pointer;
+    }
+
+    .settings-toggle-row:last-of-type {
+      border-bottom: 0;
+    }
+
+    .settings-toggle-row strong,
+    .settings-toggle-row span {
+      display: block;
+    }
+
+    .settings-toggle-row strong {
+      margin-bottom: 4px;
+      color: var(--text);
+      font-size: 12px;
+    }
+
+    .settings-toggle-row span {
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    .settings-toggle-row input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      flex: 0 0 auto;
+      accent-color: var(--orange);
+    }
+
+    .settings-device-actions {
+      display: flex;
+      justify-content: flex-end;
+      padding-top: 4px;
+    }
+
+    .device-mode-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+      color: var(--orange-deep);
+      font-size: 9px;
+      font-weight: 850;
+    }
+
+    @media (max-width: 650px) {
+      .settings-toggle-row {
+        align-items: flex-start;
+      }
+
+      .settings-device-actions .danger-button {
+        width: 100%;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -2074,7 +2161,7 @@
         <div class="brand-mark">🎂</div>
         <div>
           <h1>Birthday Reminder</h1>
-          <p>Privacy-First Local Session</p>
+          <p>Privacy-First Device App</p>
         </div>
       </div>
 
@@ -2086,8 +2173,9 @@
           Apps Script, GitHub, analytics or any external database.
         </p>
         <p>
-          Data stays in temporary memory only and is cleared when you reload,
-          close the tab or press Disconnect & Clear.
+          By default, contact data stays in temporary memory. In Settings you
+          may optionally enable "Remember contacts on this device". That copy
+          stays only on this device and is never uploaded to the app owner.
         </p>
       </div>
 
@@ -2111,7 +2199,7 @@
         <div class="brand-mark">🎂</div>
         <div>
           <strong>Birthday Reminder</strong>
-          <small>Local-Only v4.1</small>
+          <small>Private Device v4.2</small>
         </div>
       </div>
 
@@ -2129,7 +2217,7 @@
           Yearly List
         </button>
         <button class="nav-button" data-view="privacy" type="button">
-          Privacy
+          Settings
         </button>
       </nav>
 
@@ -2139,8 +2227,8 @@
           class="privacy-badge"
         >
           <strong id="sidebarUserName">Google User</strong>
-          <span>Temporary session</span><br>
-          No contact data is stored by the app.
+          <span id="sidebarUserStatus">Private device mode</span><br>
+          No contact data is uploaded to the app owner.
         </div>
 
         <button
@@ -2177,7 +2265,7 @@
 
           <div class="orange-brand-copy">
             <h1>Birthday Reminder</h1>
-            <p>Private Google Contacts</p>
+            <p id="topUserStatus">Private Google Contacts</p>
           </div>
         </div>
 
@@ -2221,9 +2309,9 @@
       </header>
 
       <div class="content">
-        <div class="notice">
-          🔒 Privacy mode is active. Contact data exists only inside this
-          browser tab and is never written to a database.
+        <div id="privacyNotice" class="notice">
+          🔒 Privacy mode is active. No contact data is uploaded to Firebase,
+          Sheets, Apps Script or any owner-controlled database.
         </div>
 
         <section id="dashboardView" class="view active">
@@ -2466,6 +2554,89 @@
 
         <section id="privacyView" class="view">
           <div class="privacy-grid">
+            <article class="privacy-card settings-card">
+              <h3>Profile Settings</h3>
+              <p>
+                Your name and status are saved only on this device.
+              </p>
+
+              <form id="profileSettingsForm" class="settings-form">
+                <label>
+                  <span>Your Name</span>
+                  <input
+                    id="settingsName"
+                    type="text"
+                    maxlength="60"
+                    placeholder="e.g. Parmeshwar"
+                    autocomplete="off"
+                  >
+                </label>
+
+                <label>
+                  <span>Status</span>
+                  <input
+                    id="settingsStatus"
+                    type="text"
+                    maxlength="80"
+                    placeholder="e.g. Remember every special day 🎂"
+                    autocomplete="off"
+                  >
+                </label>
+
+                <button
+                  class="orange-action-button"
+                  type="submit"
+                >
+                  Save Profile
+                </button>
+              </form>
+            </article>
+
+            <article class="privacy-card settings-card">
+              <h3>Device Memory</h3>
+
+              <label class="settings-toggle-row">
+                <div>
+                  <strong>Remember contacts on this device</strong>
+                  <span>
+                    Lets the installed app open with the last synced contacts
+                    without asking Google again just to view them.
+                  </span>
+                </div>
+
+                <input
+                  id="rememberContactsToggle"
+                  type="checkbox"
+                >
+              </label>
+
+              <label class="settings-toggle-row">
+                <div>
+                  <strong>Quick Google reconnect</strong>
+                  <span>
+                    After the first Google approval, future Sync taps request a
+                    new access token without forcing the consent screen again
+                    when Google can reuse the existing grant.
+                  </span>
+                </div>
+
+                <input
+                  id="quickReconnectToggle"
+                  type="checkbox"
+                  checked
+                >
+              </label>
+
+              <div class="settings-device-actions">
+                <button
+                  id="clearDeviceDataButton"
+                  class="danger-button"
+                  type="button"
+                >
+                  Clear Saved Device Data
+                </button>
+              </div>
+            </article>
             <article class="privacy-card">
               <h3>Not used</h3>
               <p>Firebase Authentication</p>
@@ -2477,20 +2648,22 @@
             </article>
 
             <article class="privacy-card">
-              <h3>Temporary data flow</h3>
+              <h3>Device data flow</h3>
               <p>
-                Google Contacts → Google People API → your browser memory.
+                Google Contacts → Google People API → your browser.
               </p>
               <p>
-                Manually added contacts and uploaded birthday-wish images also
-                stay only in the current browser session.
+                By default contacts are session-only. If "Remember contacts on
+                this device" is enabled, a copy is saved in this device's
+                IndexedDB so the installed app can reopen without Google login
+                just to view the saved list.
               </p>
               <p>
-                No contact record is uploaded from the browser to the website
-                owner.
+                No contact record is uploaded to the website owner.
               </p>
               <p>
-                Reloading or closing this page clears the imported data.
+                Birthday-wish images remain session-only and are not stored in
+                the device cache.
               </p>
             </article>
 
@@ -2509,8 +2682,10 @@
             <article class="privacy-card">
               <h3>Clear immediately</h3>
               <p>
-                Press Disconnect & Clear to revoke the current access token and
-                erase all contact records from page memory.
+                Disconnect & Clear revokes the current Google access token and
+                clears current page memory. Use "Clear Saved Device Data" in
+                Settings to remove saved name, status and cached contacts from
+                this device.
               </p>
             </article>
           </div>
@@ -2542,7 +2717,7 @@
 
     <button class="bottom-nav-button" data-view="privacy" type="button">
       <span class="bottom-nav-icon">⚙</span>
-      <span>Privacy</span>
+      <span>Settings</span>
     </button>
   </nav>
 
@@ -2724,7 +2899,12 @@
       wishImageFile: null,
       wishImageObjectUrl: "",
       wishRecipient: null,
-      installPrompt: null
+      installPrompt: null,
+      userStatus: "",
+      rememberContacts: false,
+      quickReconnect: true,
+      googleGrantKnown: false,
+      deviceCacheLoaded: false
     };
 
     const el = {};
@@ -2739,6 +2919,8 @@
       cacheElements();
       bindEvents();
       setupYearOptions();
+      loadDevicePreferences();
+      hydrateAppFromDevice();
       waitForGoogleLibrary();
 
       window.setInterval(
@@ -2769,6 +2951,9 @@
         "mobileMenuButton",
         "sidebarOverlay",
         "sidebarUserName",
+        "sidebarUserStatus",
+        "topUserStatus",
+        "privacyNotice",
         "dashboardWelcome",
         "totalContacts",
         "totalBirthdays",
@@ -2807,6 +2992,12 @@
         "yearSelect",
         "printButton",
         "yearlyGrid",
+        "profileSettingsForm",
+        "settingsName",
+        "settingsStatus",
+        "rememberContactsToggle",
+        "quickReconnectToggle",
+        "clearDeviceDataButton",
         "wishDialog",
         "wishDialogTitle",
         "closeWishDialog",
@@ -2831,6 +3022,26 @@
       el.connectButton.addEventListener(
         "click",
         authorizeAndSync
+      );
+
+      el.profileSettingsForm.addEventListener(
+        "submit",
+        saveProfileSettings
+      );
+
+      el.rememberContactsToggle.addEventListener(
+        "change",
+        handleRememberContactsChange
+      );
+
+      el.quickReconnectToggle.addEventListener(
+        "change",
+        handleQuickReconnectChange
+      );
+
+      el.clearDeviceDataButton.addEventListener(
+        "click",
+        clearSavedDeviceData
       );
 
       el.installButton.addEventListener(
@@ -3109,7 +3320,9 @@
         });
     }
 
-    function authorizeAndSync() {
+    function authorizeAndSync(
+      promptMode = null
+    ) {
       try {
         setLoading(true);
 
@@ -3163,6 +3376,11 @@
                   );
                 }
 
+                state.googleGrantKnown =
+                  true;
+
+                saveDevicePreferences();
+
                 showApp();
 
                 await loadCurrentUserName(
@@ -3178,11 +3396,35 @@
             }
           );
 
+        const resolvedPrompt =
+          promptMode !== null
+            ? promptMode
+            : (
+                state.quickReconnect &&
+                state.googleGrantKnown
+                  ? ""
+                  : "consent"
+              );
+
         client.requestAccessToken({
-          prompt: "consent"
+          prompt: resolvedPrompt
         });
       } catch (error) {
         setLoading(false);
+
+        if (
+          promptMode === "" ||
+          (
+            state.quickReconnect &&
+            state.googleGrantKnown
+          )
+        ) {
+          state.googleGrantKnown =
+            false;
+
+          saveDevicePreferences();
+        }
+
         handleError(error);
       }
     }
@@ -3241,8 +3483,14 @@
           ) ||
           "Google User";
 
-        state.userName =
-          name;
+        if (
+          !state.userName ||
+          state.userName ===
+            "Google User"
+        ) {
+          state.userName =
+            name;
+        }
 
         renderUserName();
       } catch (error) {
@@ -3269,6 +3517,33 @@
 
       el.dashboardWelcome.textContent =
         `Welcome, ${name}`;
+
+      const status =
+        state.userStatus ||
+        "Private Google Contacts";
+
+      el.sidebarUserStatus.textContent =
+        status;
+
+      el.topUserStatus.textContent =
+        status;
+
+      el.settingsName.value =
+        state.userName ===
+          "Google User"
+          ? ""
+          : state.userName;
+
+      el.settingsStatus.value =
+        state.userStatus || "";
+
+      el.rememberContactsToggle.checked =
+        state.rememberContacts;
+
+      el.quickReconnectToggle.checked =
+        state.quickReconnect;
+
+      updatePrivacyNotice();
 
       if (el.topProfileCircle) {
         el.topProfileCircle.textContent =
@@ -3303,6 +3578,480 @@
       }
     }
 
+
+
+
+    const PROFILE_STORAGE_KEY =
+      "birthdayReminder.profile.v1";
+
+    const DEVICE_SETTINGS_KEY =
+      "birthdayReminder.deviceSettings.v1";
+
+    const GOOGLE_GRANT_KEY =
+      "birthdayReminder.googleGrantKnown.v1";
+
+    const CONTACT_DB_NAME =
+      "BirthdayReminderPrivateDevice";
+
+    const CONTACT_DB_VERSION =
+      1;
+
+    const CONTACT_STORE_NAME =
+      "cache";
+
+
+    function isStandaloneApp() {
+      return (
+        window.matchMedia(
+          "(display-mode: standalone)"
+        ).matches ||
+        window.navigator.standalone ===
+          true
+      );
+    }
+
+
+    function loadDevicePreferences() {
+      try {
+        const profile =
+          JSON.parse(
+            localStorage.getItem(
+              PROFILE_STORAGE_KEY
+            ) ||
+            "{}"
+          );
+
+        const settings =
+          JSON.parse(
+            localStorage.getItem(
+              DEVICE_SETTINGS_KEY
+            ) ||
+            "{}"
+          );
+
+        state.userName =
+          String(
+            profile.name || ""
+          ).trim() ||
+          "Google User";
+
+        state.userStatus =
+          String(
+            profile.status || ""
+          ).trim();
+
+        state.rememberContacts =
+          settings.rememberContacts ===
+            true;
+
+        state.quickReconnect =
+          settings.quickReconnect !==
+            false;
+
+        state.googleGrantKnown =
+          localStorage.getItem(
+            GOOGLE_GRANT_KEY
+          ) === "1";
+      } catch (error) {
+        console.warn(
+          "Device preferences could not be loaded:",
+          error
+        );
+      }
+
+      renderUserName();
+    }
+
+
+    function saveDevicePreferences() {
+      try {
+        localStorage.setItem(
+          PROFILE_STORAGE_KEY,
+          JSON.stringify({
+            name:
+              state.userName ===
+                "Google User"
+                ? ""
+                : state.userName,
+            status:
+              state.userStatus || ""
+          })
+        );
+
+        localStorage.setItem(
+          DEVICE_SETTINGS_KEY,
+          JSON.stringify({
+            rememberContacts:
+              state.rememberContacts,
+            quickReconnect:
+              state.quickReconnect
+          })
+        );
+
+        localStorage.setItem(
+          GOOGLE_GRANT_KEY,
+          state.googleGrantKnown
+            ? "1"
+            : "0"
+        );
+      } catch (error) {
+        console.warn(
+          "Device preferences could not be saved:",
+          error
+        );
+      }
+    }
+
+
+    async function hydrateAppFromDevice() {
+      if (
+        state.rememberContacts
+      ) {
+        try {
+          const cached =
+            await loadContactsFromDevice();
+
+          if (
+            Array.isArray(cached) &&
+            cached.length
+          ) {
+            state.contacts =
+              cached;
+
+            state.deviceCacheLoaded =
+              true;
+
+            renderEverything();
+          }
+        } catch (error) {
+          console.warn(
+            "Saved contacts could not be loaded:",
+            error
+          );
+        }
+      }
+
+      if (
+        isStandaloneApp() ||
+        state.userName !==
+          "Google User" ||
+        state.contacts.length > 0
+      ) {
+        showApp();
+      }
+
+      updatePrivacyNotice();
+    }
+
+
+    function saveProfileSettings(
+      event
+    ) {
+      event.preventDefault();
+
+      const name =
+        el.settingsName.value
+          .trim();
+
+      const status =
+        el.settingsStatus.value
+          .trim();
+
+      state.userName =
+        name ||
+        "Google User";
+
+      state.userStatus =
+        status;
+
+      saveDevicePreferences();
+      renderUserName();
+
+      showToast(
+        "Profile saved on this device."
+      );
+    }
+
+
+    async function handleRememberContactsChange() {
+      state.rememberContacts =
+        el.rememberContactsToggle.checked;
+
+      saveDevicePreferences();
+
+      if (
+        state.rememberContacts
+      ) {
+        await saveContactsToDevice(
+          state.contacts
+        );
+
+        showToast(
+          "Device contact memory enabled. Contacts stay only on this device."
+        );
+      } else {
+        await clearContactsFromDevice();
+
+        showToast(
+          "Saved device contact copy removed. Current session remains open."
+        );
+      }
+
+      updatePrivacyNotice();
+    }
+
+
+    function handleQuickReconnectChange() {
+      state.quickReconnect =
+        el.quickReconnectToggle.checked;
+
+      saveDevicePreferences();
+
+      showToast(
+        state.quickReconnect
+          ? "Quick reconnect enabled."
+          : "Quick reconnect disabled."
+      );
+    }
+
+
+    async function clearSavedDeviceData() {
+      const confirmed =
+        window.confirm(
+          "Clear saved name, status, remembered contacts and quick-reconnect preference from this device?"
+        );
+
+      if (!confirmed) {
+        return;
+      }
+
+      await clearContactsFromDevice();
+
+      localStorage.removeItem(
+        PROFILE_STORAGE_KEY
+      );
+
+      localStorage.removeItem(
+        DEVICE_SETTINGS_KEY
+      );
+
+      localStorage.removeItem(
+        GOOGLE_GRANT_KEY
+      );
+
+      state.userName =
+        "Google User";
+
+      state.userStatus =
+        "";
+
+      state.rememberContacts =
+        false;
+
+      state.quickReconnect =
+        true;
+
+      state.googleGrantKnown =
+        false;
+
+      state.deviceCacheLoaded =
+        false;
+
+      renderUserName();
+      updatePrivacyNotice();
+
+      showToast(
+        "Saved device data cleared."
+      );
+    }
+
+
+    function updatePrivacyNotice() {
+      if (!el.privacyNotice) {
+        return;
+      }
+
+      if (
+        state.rememberContacts
+      ) {
+        el.privacyNotice.textContent =
+          "🔒 Private Device Mode: contacts may be remembered in this device's browser storage. Nothing is uploaded to Firebase, Sheets, Apps Script or an owner-controlled database.";
+      } else {
+        el.privacyNotice.textContent =
+          "🔒 Session Mode: contacts stay in browser memory only. Nothing is uploaded to Firebase, Sheets, Apps Script or an owner-controlled database.";
+      }
+    }
+
+
+    function openContactDatabase() {
+      return new Promise(
+        (resolve, reject) => {
+          const request =
+            indexedDB.open(
+              CONTACT_DB_NAME,
+              CONTACT_DB_VERSION
+            );
+
+          request.onupgradeneeded =
+            () => {
+              const db =
+                request.result;
+
+              if (
+                !db.objectStoreNames
+                  .contains(
+                    CONTACT_STORE_NAME
+                  )
+              ) {
+                db.createObjectStore(
+                  CONTACT_STORE_NAME
+                );
+              }
+            };
+
+          request.onsuccess =
+            () =>
+              resolve(
+                request.result
+              );
+
+          request.onerror =
+            () =>
+              reject(
+                request.error
+              );
+        }
+      );
+    }
+
+
+    async function saveContactsToDevice(
+      contacts
+    ) {
+      if (
+        !state.rememberContacts
+      ) {
+        return;
+      }
+
+      const db =
+        await openContactDatabase();
+
+      await new Promise(
+        (resolve, reject) => {
+          const tx =
+            db.transaction(
+              CONTACT_STORE_NAME,
+              "readwrite"
+            );
+
+          tx.objectStore(
+            CONTACT_STORE_NAME
+          ).put(
+            {
+              contacts,
+              savedAt:
+                Date.now()
+            },
+            "contacts"
+          );
+
+          tx.oncomplete =
+            () =>
+              resolve();
+
+          tx.onerror =
+            () =>
+              reject(
+                tx.error
+              );
+        }
+      );
+
+      db.close();
+    }
+
+
+    async function loadContactsFromDevice() {
+      const db =
+        await openContactDatabase();
+
+      const record =
+        await new Promise(
+          (resolve, reject) => {
+            const tx =
+              db.transaction(
+                CONTACT_STORE_NAME,
+                "readonly"
+              );
+
+            const request =
+              tx.objectStore(
+                CONTACT_STORE_NAME
+              ).get(
+                "contacts"
+              );
+
+            request.onsuccess =
+              () =>
+                resolve(
+                  request.result ||
+                  null
+                );
+
+            request.onerror =
+              () =>
+                reject(
+                  request.error
+                );
+          }
+        );
+
+      db.close();
+
+      return (
+        record &&
+        Array.isArray(
+          record.contacts
+        )
+          ? record.contacts
+          : []
+      );
+    }
+
+
+    async function clearContactsFromDevice() {
+      const db =
+        await openContactDatabase();
+
+      await new Promise(
+        (resolve, reject) => {
+          const tx =
+            db.transaction(
+              CONTACT_STORE_NAME,
+              "readwrite"
+            );
+
+          tx.objectStore(
+            CONTACT_STORE_NAME
+          ).delete(
+            "contacts"
+          );
+
+          tx.oncomplete =
+            () =>
+              resolve();
+
+          tx.onerror =
+            () =>
+              reject(
+                tx.error
+              );
+        }
+      );
+
+      db.close();
+    }
 
 
     function setupInstallPrompt() {
@@ -3494,10 +4243,23 @@
       );
 
       closeAddContactDialog();
+
+      if (
+        state.rememberContacts
+      ) {
+        saveContactsToDevice(
+          state.contacts
+        ).catch(
+          handleError
+        );
+      }
+
       renderEverything();
 
       showToast(
-        `${name} added for this session only.`
+        state.rememberContacts
+          ? `${name} added and saved on this device.`
+          : `${name} added for this session only.`
       );
     }
 
@@ -3809,6 +4571,14 @@
 
         state.syncedAt =
           new Date();
+
+        if (
+          state.rememberContacts
+        ) {
+          await saveContactsToDevice(
+            state.contacts
+          );
+        }
 
         renderEverything();
 
@@ -5204,7 +5974,7 @@
         yearly:
           "Yearly Birthday List",
         privacy:
-          "Privacy & Data Safety"
+          "Settings & Privacy"
       };
 
       el.pageTitle.textContent =
@@ -5273,27 +6043,44 @@
         clearWishImage();
 
         state.accessToken = "";
-        state.contacts = [];
-        state.userName = "";
         state.syncedAt = null;
 
-        renderUserName();
+        if (
+          !state.rememberContacts
+        ) {
+          state.contacts = [];
+        }
 
+        renderUserName();
         renderEverything();
 
-        el.appShell.classList.add(
-          "hidden"
-        );
+        const standalone =
+          isStandaloneApp();
 
-        el.loginPage.classList.remove(
-          "hidden"
-        );
+        if (
+          standalone ||
+          state.userName !==
+            "Google User" ||
+          state.contacts.length > 0
+        ) {
+          showApp();
+        } else {
+          el.appShell.classList.add(
+            "hidden"
+          );
+
+          el.loginPage.classList.remove(
+            "hidden"
+          );
+        }
 
         el.loginStatus.textContent =
-          "Disconnected. Temporary contact data has been cleared.";
+          "Google disconnected. Saved device profile/cache was kept.";
 
         showToast(
-          "Google access revoked and page memory cleared."
+          state.rememberContacts
+            ? "Google disconnected. Saved device contacts remain available."
+            : "Google access revoked and current session contact data cleared."
         );
       };
 
