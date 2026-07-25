@@ -214,3 +214,21 @@ No Google write/edit OAuth permission was added.
 
 Open:
 https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=4.2.4
+
+
+V4.2.5 NAAM JAAP COUNTER LINK
+-----------------------------
+Added:
+Settings & Privacy -> More Apps -> Naam Jaap Counter
+
+Link:
+https://parmeshwarbtpl-rgb.github.io/japa-counter/
+
+Behavior:
+- Opens in a new browser tab/window.
+- Uses rel="noopener noreferrer".
+- No Birthday Reminder contact/profile data is passed to Naam Jaap Counter.
+- Header remains clean; the link lives only in Settings.
+
+Open:
+https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=4.2.5
