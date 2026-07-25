@@ -369,3 +369,26 @@ Privacy model remains unchanged:
 
 Open:
 https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=5.1
+
+
+V5.2 COMPACT LOGIN + PRIVACY
+============================
+
+Login improvements:
+- Long privacy paragraphs replaced with four short points.
+- Added expandable Learn more section.
+- Added Why connect? card:
+  - Find birthdays automatically
+  - See upcoming birthdays and calendar export
+  - Manage a local copy privately
+
+Wording is intentionally precise:
+- "No separate app account" because Google authorization is still required
+  when syncing Google Contacts.
+- Google contacts are delivered by Google People API to the user's browser.
+- Birthday Reminder does not maintain an owner-controlled cloud contact database.
+
+All v5.1 features remain unchanged.
+
+Open:
+https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=5.2

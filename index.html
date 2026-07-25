@@ -16,7 +16,7 @@
   >
   <meta
     name="app-build"
-    content="privacy-first-device-v5.1-duplicates-settings-privacy"
+    content="privacy-first-device-v5.2-compact-login-privacy"
   >
   <title>Birthday Reminder — Privacy First</title>
 
@@ -2683,6 +2683,219 @@
       }
     }
 
+
+    .compact-privacy-box {
+      margin-bottom: 14px;
+      padding: 15px 16px;
+    }
+
+    .compact-privacy-box > strong {
+      margin-bottom: 10px;
+    }
+
+    .privacy-summary-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .privacy-summary-list li {
+      display: grid;
+      grid-template-columns: 24px minmax(0, 1fr);
+      align-items: start;
+      gap: 7px;
+      color: #365a4b;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .privacy-summary-list li > span:first-child {
+      width: 24px;
+      text-align: center;
+    }
+
+    .privacy-learn-more {
+      margin-top: 10px;
+      border-top: 1px solid rgba(20, 128, 74, .14);
+      padding-top: 9px;
+    }
+
+    .privacy-learn-more summary {
+      width: fit-content;
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 900;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .privacy-learn-more-content {
+      margin-top: 8px;
+    }
+
+    .privacy-learn-more-content p {
+      margin: 7px 0 0;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .why-connect-card {
+      display: grid;
+      gap: 11px;
+      margin: 0 0 15px;
+      border: 1px solid #f0d3ad;
+      border-radius: 18px;
+      padding: 15px 16px;
+      background: linear-gradient(135deg, #fffaf3, #fff);
+    }
+
+    .why-connect-heading {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .why-connect-heading > div {
+      min-width: 0;
+    }
+
+    .why-connect-heading strong,
+    .why-connect-heading small {
+      display: block;
+    }
+
+    .why-connect-heading strong {
+      color: var(--orange-deep);
+      font-size: 13px;
+    }
+
+    .why-connect-heading small {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .why-connect-icon {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      flex: 0 0 auto;
+      place-items: center;
+      border-radius: 11px;
+      background: var(--orange-soft);
+      font-size: 16px;
+    }
+
+    .why-connect-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .why-connect-item {
+      display: grid;
+      grid-template-columns: 25px minmax(0, 1fr);
+      align-items: start;
+      gap: 7px;
+      border: 1px solid #f2e5d5;
+      border-radius: 13px;
+      padding: 10px;
+      background: rgba(255, 255, 255, .9);
+    }
+
+    .why-connect-item > span {
+      font-size: 16px;
+      line-height: 1.2;
+    }
+
+    .why-connect-item strong,
+    .why-connect-item small {
+      display: block;
+    }
+
+    .why-connect-item strong {
+      color: var(--text);
+      font-size: 9.5px;
+      line-height: 1.35;
+    }
+
+    .why-connect-item small {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 8px;
+      line-height: 1.35;
+    }
+
+    @media (max-width: 620px) {
+      .login-page {
+        align-items: start;
+        padding: 14px;
+      }
+
+      .login-card {
+        margin-top: 8px;
+        padding: 20px;
+        border-radius: 22px;
+      }
+
+      .brand-mark {
+        width: 50px;
+        height: 50px;
+        border-radius: 15px;
+        font-size: 23px;
+      }
+
+      .brand h1 {
+        font-size: 25px;
+      }
+
+      .brand p {
+        font-size: 12px;
+      }
+
+      .privacy-box {
+        margin-top: 17px;
+      }
+
+      .why-connect-grid {
+        grid-template-columns: 1fr;
+        gap: 7px;
+      }
+
+      .why-connect-item {
+        grid-template-columns: 28px minmax(0, 1fr);
+        padding: 9px 10px;
+      }
+
+      .why-connect-item strong {
+        font-size: 10px;
+      }
+
+      .why-connect-item small {
+        font-size: 8.5px;
+      }
+
+      .login-secondary-actions {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 390px) {
+      .login-card {
+        padding: 17px;
+      }
+
+      .privacy-summary-list li {
+        font-size: 11px;
+      }
+
+      .login-secondary-actions {
+        grid-template-columns: 1fr;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -2696,18 +2909,89 @@
         </div>
       </div>
 
-      <div class="privacy-box">
-        <strong>🔒 No cloud database and no owner storage</strong>
-        <p>
-          Your contact details go directly from Google Contacts to this browser
-          tab. They are not sent to Firebase, Firestore, Google Sheets,
-          Apps Script, GitHub, analytics or any external database.
-        </p>
-        <p>
-          By default, contact data stays in temporary memory. In Settings you
-          may optionally enable "Remember contacts on this device". That copy
-          stays only on this device and is never uploaded to the app owner.
-        </p>
+      <div class="privacy-box compact-privacy-box">
+        <strong>🔒 Privacy at a glance</strong>
+
+        <ul class="privacy-summary-list">
+          <li>
+            <span>🔐</span>
+            <span>Google Contacts load directly into this browser.</span>
+          </li>
+
+          <li>
+            <span>☁️</span>
+            <span>No Birthday Reminder cloud/contact database.</span>
+          </li>
+
+          <li>
+            <span>👤</span>
+            <span>No separate app account — Google authorization is used only for contact sync.</span>
+          </li>
+
+          <li>
+            <span>🛡️</span>
+            <span>You control device storage and can clear or disconnect anytime.</span>
+          </li>
+        </ul>
+
+        <details class="privacy-learn-more">
+          <summary>Learn more</summary>
+
+          <div class="privacy-learn-more-content">
+            <p>
+              Google provides your contact data to this browser through the
+              Google People API. Birthday Reminder does not maintain its own
+              cloud database of your contacts.
+            </p>
+
+            <p>
+              By default, contacts are session-only. If you enable
+              "Remember contacts on this device", the app stores a local copy
+              in this device's IndexedDB.
+            </p>
+
+            <p>
+              Google Contacts remain read-only. You can clear saved device data
+              or disconnect Google from Settings at any time.
+            </p>
+          </div>
+        </details>
+      </div>
+
+      <div class="why-connect-card">
+        <div class="why-connect-heading">
+          <span class="why-connect-icon">✨</span>
+          <div>
+            <strong>Why connect?</strong>
+            <small>Useful features become available immediately.</small>
+          </div>
+        </div>
+
+        <div class="why-connect-grid">
+          <div class="why-connect-item">
+            <span>🎂</span>
+            <div>
+              <strong>Find birthdays automatically</strong>
+              <small>Read birthdays already saved in Google Contacts.</small>
+            </div>
+          </div>
+
+          <div class="why-connect-item">
+            <span>📅</span>
+            <div>
+              <strong>See upcoming birthdays</strong>
+              <small>Dashboard, yearly view and calendar export.</small>
+            </div>
+          </div>
+
+          <div class="why-connect-item">
+            <span>🔒</span>
+            <div>
+              <strong>Manage privately</strong>
+              <small>Edit the app's local copy without changing Google Contacts.</small>
+            </div>
+          </div>
+        </div>
       </div>
 
       <button
@@ -2748,7 +3032,7 @@
         <div class="brand-mark">🎂</div>
         <div>
           <strong>Birthday Reminder</strong>
-          <small>Private Device v5.1</small>
+          <small>Private Device v5.2</small>
         </div>
       </div>
 
@@ -3445,11 +3729,11 @@
             <article class="privacy-card settings-card app-update-card">
               <h3>App Updates</h3>
               <p id="appVersionText">
-                Birthday Reminder v5.1
+                Birthday Reminder v5.2
               </p>
 
               <small class="settings-helper-text">
-                Build: v5.1 · Duplicates + Settings + Privacy
+                Build: v5.2 · Compact Login + Privacy
               </small>
 
               <button
@@ -3757,10 +4041,10 @@
       "https://www.googleapis.com/auth/contacts.readonly";
 
     const APP_VERSION =
-      "5.1";
+      "5.2";
 
     const SERVICE_WORKER_URL =
-      "./sw.js?v=5.1";
+      "./sw.js?v=5.2";
 
     const state = {
       accessToken: "",
@@ -5681,7 +5965,7 @@
                 "birthday-reminder-static-"
               ) &&
               key !==
-                "birthday-reminder-static-v5.1"
+                "birthday-reminder-static-v5.2"
           );
 
         await Promise.all(
