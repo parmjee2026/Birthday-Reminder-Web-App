@@ -16,7 +16,7 @@
   >
   <meta
     name="app-build"
-    content="privacy-first-device-v5.0.1-update-activation-fix"
+    content="privacy-first-device-v5.1-duplicates-settings-privacy"
   >
   <title>Birthday Reminder — Privacy First</title>
 
@@ -2501,6 +2501,188 @@
       }
     }
 
+
+    .settings-section-label {
+      grid-column: 1 / -1;
+      display: grid;
+      gap: 2px;
+      margin-top: 6px;
+      padding: 2px 2px 0;
+    }
+
+    .settings-section-label span {
+      color: var(--orange-deep);
+      font-size: 14px;
+      font-weight: 950;
+      letter-spacing: .01em;
+    }
+
+    .settings-section-label small {
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.45;
+    }
+
+    .settings-card-heading-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .duplicate-count-badge {
+      display: grid;
+      min-width: 42px;
+      height: 42px;
+      flex: 0 0 auto;
+      place-items: center;
+      border-radius: 14px;
+      background: var(--orange-soft);
+      color: var(--orange-deep);
+      font-size: 17px;
+      font-weight: 950;
+    }
+
+    .duplicate-summary {
+      display: grid;
+      gap: 4px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      background: #fafbfd;
+    }
+
+    .duplicate-summary strong {
+      color: var(--text);
+      font-size: 11px;
+    }
+
+    .duplicate-summary span {
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.5;
+    }
+
+    .privacy-dashboard-card {
+      gap: 12px;
+    }
+
+    .privacy-status-list {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: #fafbfd;
+    }
+
+    .privacy-status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .privacy-status-row:last-child {
+      border-bottom: 0;
+    }
+
+    .privacy-status-row span {
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .privacy-status-row strong {
+      color: var(--text);
+      font-size: 10px;
+      text-align: right;
+    }
+
+    .privacy-good {
+      color: #14804a !important;
+    }
+
+    .privacy-dashboard-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+    }
+
+    .duplicate-dialog-card {
+      width: min(720px, calc(100vw - 28px));
+      max-height: min(82vh, 760px);
+    }
+
+    .duplicate-list {
+      display: grid;
+      gap: 12px;
+      max-height: 54vh;
+      overflow: auto;
+      padding-right: 2px;
+    }
+
+    .duplicate-group {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: #fff;
+    }
+
+    .duplicate-number {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      background: #fff7eb;
+      color: var(--orange-deep);
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .duplicate-member {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 12px;
+      border-top: 1px solid var(--line);
+    }
+
+    .duplicate-member-copy {
+      min-width: 0;
+    }
+
+    .duplicate-member-copy strong,
+    .duplicate-member-copy span {
+      display: block;
+    }
+
+    .duplicate-member-copy strong {
+      color: var(--text);
+      font-size: 11px;
+    }
+
+    .duplicate-member-copy span {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    @media (max-width: 650px) {
+      .privacy-dashboard-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .duplicate-member {
+        grid-template-columns: 1fr;
+      }
+
+      .duplicate-member .secondary-button {
+        width: 100%;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -2566,7 +2748,7 @@
         <div class="brand-mark">🎂</div>
         <div>
           <strong>Birthday Reminder</strong>
-          <small>Private Device v5.0.1</small>
+          <small>Private Device v5.1</small>
         </div>
       </div>
 
@@ -2939,6 +3121,10 @@
 
         <section id="privacyView" class="view">
           <div class="privacy-grid">
+            <div class="settings-section-label">
+              <span>Profile</span>
+              <small>Your identity on this device</small>
+            </div>
             <article class="privacy-card settings-card">
               <h3>Profile Settings</h3>
               <p>
@@ -3011,6 +3197,140 @@
               </form>
             </article>
 
+            <div class="settings-section-label">
+              <span>Data & Privacy</span>
+              <small>Contacts, backups, duplicate review and data controls</small>
+            </div>
+            <article class="privacy-card settings-card duplicate-card">
+              <div class="settings-card-heading-row">
+                <div>
+                  <h3>Duplicate Contact Detection</h3>
+                  <p>
+                    Finds contacts that appear to use the same mobile number.
+                    Review happens only inside this device.
+                  </p>
+                </div>
+
+                <span id="duplicateCountBadge" class="duplicate-count-badge">
+                  0
+                </span>
+              </div>
+
+              <div class="duplicate-summary">
+                <strong id="duplicateSummaryText">
+                  No duplicate mobile numbers detected
+                </strong>
+                <span>
+                  Google Contacts remain read-only. Use Edit only to adjust the
+                  Birthday Reminder local copy.
+                </span>
+              </div>
+
+              <button
+                id="reviewDuplicatesButton"
+                class="secondary-button"
+                type="button"
+                disabled
+              >
+                Review Duplicates
+              </button>
+            </article>
+            <article class="privacy-card settings-card privacy-dashboard-card">
+              <h3>Privacy Dashboard</h3>
+              <p>
+                A live summary of how Birthday Reminder is handling your data.
+              </p>
+
+              <div class="privacy-status-list">
+                <div class="privacy-status-row">
+                  <span>Google Contacts</span>
+                  <strong class="privacy-good">Read Only</strong>
+                </div>
+
+                <div class="privacy-status-row">
+                  <span>Saved on this device</span>
+                  <strong id="privacySavedDeviceValue">No</strong>
+                </div>
+
+                <div class="privacy-status-row">
+                  <span>Google connection</span>
+                  <strong id="privacyGoogleConnectionValue">Not connected</strong>
+                </div>
+
+                <div class="privacy-status-row">
+                  <span>Cloud storage</span>
+                  <strong class="privacy-good">None</strong>
+                </div>
+
+                <div class="privacy-status-row">
+                  <span>Owner server storage</span>
+                  <strong class="privacy-good">None</strong>
+                </div>
+              </div>
+
+              <div class="privacy-dashboard-actions">
+                <button
+                  id="privacyClearDeviceDataButton"
+                  class="secondary-button"
+                  type="button"
+                >
+                  Clear Device Data
+                </button>
+
+                <button
+                  id="privacyDisconnectGoogleButton"
+                  class="danger-button"
+                  type="button"
+                >
+                  Disconnect Google
+                </button>
+              </div>
+            </article>
+            <article class="privacy-card settings-card">
+              <h3>Device Memory</h3>
+
+              <label class="settings-toggle-row">
+                <div>
+                  <strong>Remember contacts on this device</strong>
+                  <span>
+                    Lets the installed app open with the last synced contacts
+                    without asking Google again just to view them.
+                  </span>
+                </div>
+
+                <input
+                  id="rememberContactsToggle"
+                  type="checkbox"
+                >
+              </label>
+
+              <label class="settings-toggle-row">
+                <div>
+                  <strong>Quick Google reconnect</strong>
+                  <span>
+                    After the first Google approval, future Sync taps request a
+                    new access token without forcing the consent screen again
+                    when Google can reuse the existing grant.
+                  </span>
+                </div>
+
+                <input
+                  id="quickReconnectToggle"
+                  type="checkbox"
+                  checked
+                >
+              </label>
+
+              <div class="settings-device-actions">
+                <button
+                  id="clearDeviceDataButton"
+                  class="danger-button"
+                  type="button"
+                >
+                  Clear Saved Device Data
+                </button>
+              </div>
+            </article>
             <article class="privacy-card settings-card data-tools-card">
               <h3>Calendar & Backup</h3>
               <p>
@@ -3069,117 +3389,17 @@
                 photo. CSV is a simple portable contact/birthday export.
               </small>
             </article>
-
-            <article class="privacy-card settings-card app-update-card">
-              <h3>App Updates</h3>
-              <p id="appVersionText">
-                Birthday Reminder v5.0.1
-              </p>
-
-              <small class="settings-helper-text">
-                Build: v5.0.1 · Calendar + Backup + Update Fix
-              </small>
-
-              <button
-                id="checkUpdateButton"
-                class="secondary-button"
-                type="button"
-              >
-                ↻ Check for Updates
-              </button>
-            </article>
-
-            <article class="privacy-card settings-card more-apps-card">
-              <h3>More Apps</h3>
-
-              <a
-                class="related-app-card"
-                href="https://parmeshwarbtpl-rgb.github.io/japa-counter/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <div class="related-app-icon">ॐ</div>
-
-                <div class="related-app-copy">
-                  <strong>Naam Jaap Counter</strong>
-                  <span>Open your mantra counting app</span>
-                </div>
-
-                <span class="related-app-arrow">→</span>
-              </a>
-            </article>
-
-            <article class="privacy-card settings-card">
-              <h3>Share Birthday Reminder</h3>
-              <p>
-                Share only the public app link. Your contacts, profile name,
-                status and birthday data are never included.
-              </p>
-
-              <button
-                id="settingsShareButton"
-                class="orange-action-button"
-                type="button"
-              >
-                ↗ Share App
-              </button>
-            </article>
-
-            <article class="privacy-card settings-card">
-              <h3>Device Memory</h3>
-
-              <label class="settings-toggle-row">
-                <div>
-                  <strong>Remember contacts on this device</strong>
-                  <span>
-                    Lets the installed app open with the last synced contacts
-                    without asking Google again just to view them.
-                  </span>
-                </div>
-
-                <input
-                  id="rememberContactsToggle"
-                  type="checkbox"
-                >
-              </label>
-
-              <label class="settings-toggle-row">
-                <div>
-                  <strong>Quick Google reconnect</strong>
-                  <span>
-                    After the first Google approval, future Sync taps request a
-                    new access token without forcing the consent screen again
-                    when Google can reuse the existing grant.
-                  </span>
-                </div>
-
-                <input
-                  id="quickReconnectToggle"
-                  type="checkbox"
-                  checked
-                >
-              </label>
-
-              <div class="settings-device-actions">
-                <button
-                  id="clearDeviceDataButton"
-                  class="danger-button"
-                  type="button"
-                >
-                  Clear Saved Device Data
-                </button>
-              </div>
-            </article>
             <article class="privacy-card">
-              <h3>Not used</h3>
-              <p>Firebase Authentication</p>
-              <p>Cloud Firestore</p>
-              <p>Google Sheets</p>
-              <p>Apps Script</p>
-              <p>Cloud Functions or Scheduler</p>
-              <p>Analytics, tracking or advertising SDK</p>
+              <h3>Requested permission</h3>
+              <p>
+                The app asks only for read-only Google Contacts access.
+              </p>
+              <p>
+                The same read-only permission is used to show your display
+                name through Google People API. No separate profile scope is
+                requested. The app cannot edit or delete contacts.
+              </p>
             </article>
-
             <article class="privacy-card">
               <h3>Device data flow</h3>
               <p>
@@ -3199,19 +3419,15 @@
                 the device cache.
               </p>
             </article>
-
             <article class="privacy-card">
-              <h3>Requested permission</h3>
-              <p>
-                The app asks only for read-only Google Contacts access.
-              </p>
-              <p>
-                The same read-only permission is used to show your display
-                name through Google People API. No separate profile scope is
-                requested. The app cannot edit or delete contacts.
-              </p>
+              <h3>Not used</h3>
+              <p>Firebase Authentication</p>
+              <p>Cloud Firestore</p>
+              <p>Google Sheets</p>
+              <p>Apps Script</p>
+              <p>Cloud Functions or Scheduler</p>
+              <p>Analytics, tracking or advertising SDK</p>
             </article>
-
             <article class="privacy-card">
               <h3>Clear immediately</h3>
               <p>
@@ -3220,6 +3436,63 @@
                 Settings to remove saved profile photo, name, status and cached
                 contacts from this device.
               </p>
+            </article>
+
+            <div class="settings-section-label">
+              <span>App & More</span>
+              <small>Updates, sharing and related apps</small>
+            </div>
+            <article class="privacy-card settings-card app-update-card">
+              <h3>App Updates</h3>
+              <p id="appVersionText">
+                Birthday Reminder v5.1
+              </p>
+
+              <small class="settings-helper-text">
+                Build: v5.1 · Duplicates + Settings + Privacy
+              </small>
+
+              <button
+                id="checkUpdateButton"
+                class="secondary-button"
+                type="button"
+              >
+                ↻ Check for Updates
+              </button>
+            </article>
+            <article class="privacy-card settings-card more-apps-card">
+              <h3>More Apps</h3>
+
+              <a
+                class="related-app-card"
+                href="https://parmeshwarbtpl-rgb.github.io/japa-counter/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <div class="related-app-icon">ॐ</div>
+
+                <div class="related-app-copy">
+                  <strong>Naam Jaap Counter</strong>
+                  <span>Open your mantra counting app</span>
+                </div>
+
+                <span class="related-app-arrow">→</span>
+              </a>
+            </article>
+            <article class="privacy-card settings-card">
+              <h3>Share Birthday Reminder</h3>
+              <p>
+                Share only the public app link. Your contacts, profile name,
+                status and birthday data are never included.
+              </p>
+
+              <button
+                id="settingsShareButton"
+                class="orange-action-button"
+                type="button"
+              >
+                ↗ Share App
+              </button>
             </article>
           </div>
         </section>
@@ -3253,6 +3526,42 @@
       <span>Settings</span>
     </button>
   </nav>
+
+  <dialog id="duplicateDialog" class="app-dialog duplicate-dialog">
+    <div class="dialog-card duplicate-dialog-card">
+      <div class="dialog-heading">
+        <div>
+          <span class="dialog-eyebrow">LOCAL REVIEW</span>
+          <h2>Possible Duplicate Contacts</h2>
+          <p>
+            Contacts below share the same normalized mobile number.
+            Nothing is changed automatically.
+          </p>
+        </div>
+
+        <button
+          id="closeDuplicateDialog"
+          class="dialog-close"
+          type="button"
+          aria-label="Close"
+        >
+          ×
+        </button>
+      </div>
+
+      <div id="duplicateList" class="duplicate-list"></div>
+
+      <div class="dialog-actions">
+        <button
+          id="doneDuplicateReviewButton"
+          class="orange-action-button"
+          type="button"
+        >
+          Done
+        </button>
+      </div>
+    </div>
+  </dialog>
 
   <dialog id="contactDialog" class="app-dialog">
     <form id="contactForm" class="dialog-card">
@@ -3448,10 +3757,10 @@
       "https://www.googleapis.com/auth/contacts.readonly";
 
     const APP_VERSION =
-      "5.0.1";
+      "5.1";
 
     const SERVICE_WORKER_URL =
-      "./sw.js?v=5.0.1";
+      "./sw.js?v=5.1";
 
     const state = {
       accessToken: "",
@@ -3591,6 +3900,17 @@
         "rememberContactsToggle",
         "quickReconnectToggle",
         "clearDeviceDataButton",
+        "duplicateCountBadge",
+        "duplicateSummaryText",
+        "reviewDuplicatesButton",
+        "duplicateDialog",
+        "closeDuplicateDialog",
+        "doneDuplicateReviewButton",
+        "duplicateList",
+        "privacySavedDeviceValue",
+        "privacyGoogleConnectionValue",
+        "privacyClearDeviceDataButton",
+        "privacyDisconnectGoogleButton",
         "wishDialog",
         "wishDialogTitle",
         "closeWishDialog",
@@ -3648,6 +3968,31 @@
       el.clearDeviceDataButton.addEventListener(
         "click",
         clearSavedDeviceData
+      );
+
+      el.privacyClearDeviceDataButton.addEventListener(
+        "click",
+        clearSavedDeviceData
+      );
+
+      el.privacyDisconnectGoogleButton.addEventListener(
+        "click",
+        disconnectAndClear
+      );
+
+      el.reviewDuplicatesButton.addEventListener(
+        "click",
+        openDuplicateReview
+      );
+
+      el.closeDuplicateDialog.addEventListener(
+        "click",
+        closeDuplicateReview
+      );
+
+      el.doneDuplicateReviewButton.addEventListener(
+        "click",
+        closeDuplicateReview
       );
 
       el.settingsShareButton.addEventListener(
@@ -3859,6 +4204,8 @@
             );
 
           if (editButton) {
+            closeDuplicateReview();
+
             openEditContactDialog(
               editButton.dataset.contactId || ""
             );
@@ -4533,6 +4880,7 @@
       }
 
       updatePrivacyNotice();
+      renderPrivacyDashboard();
     }
 
 
@@ -4600,6 +4948,7 @@
 
       renderUserName();
       updatePrivacyNotice();
+      renderPrivacyDashboard();
 
       showToast(
         "Saved device data cleared."
@@ -5332,7 +5681,7 @@
                 "birthday-reminder-static-"
               ) &&
               key !==
-                "birthday-reminder-static-v5.0.1"
+                "birthday-reminder-static-v5.1"
           );
 
         await Promise.all(
@@ -6927,6 +7276,200 @@
       renderContacts();
       renderBirthdays();
       renderYearly();
+      renderDuplicateDetection();
+      renderPrivacyDashboard();
+    }
+
+
+
+    function duplicateMobileGroups() {
+      const groups =
+        new Map();
+
+      state.contacts.forEach(
+        (contact) => {
+          const number =
+            normalizePhoneForAction(
+              contact.mobile ||
+              contact.whatsapp
+            );
+
+          if (
+            !number ||
+            number.length < 7
+          ) {
+            return;
+          }
+
+          if (
+            !groups.has(
+              number
+            )
+          ) {
+            groups.set(
+              number,
+              []
+            );
+          }
+
+          groups.get(
+            number
+          ).push(
+            contact
+          );
+        }
+      );
+
+      return Array.from(
+        groups.entries()
+      )
+        .filter(
+          ([, contacts]) =>
+            contacts.length > 1
+        )
+        .sort(
+          (a, b) =>
+            b[1].length -
+            a[1].length
+        );
+    }
+
+
+    function renderDuplicateDetection() {
+      if (
+        !el.duplicateCountBadge ||
+        !el.duplicateSummaryText ||
+        !el.reviewDuplicatesButton
+      ) {
+        return;
+      }
+
+      const groups =
+        duplicateMobileGroups();
+
+      const extraContacts =
+        groups.reduce(
+          (sum, [, contacts]) =>
+            sum +
+            Math.max(
+              0,
+              contacts.length - 1
+            ),
+          0
+        );
+
+      el.duplicateCountBadge.textContent =
+        String(
+          groups.length
+        );
+
+      el.duplicateSummaryText.textContent =
+        groups.length
+          ? `${groups.length} possible duplicate group${groups.length === 1 ? "" : "s"} · ${extraContacts} extra contact${extraContacts === 1 ? "" : "s"}`
+          : "No duplicate mobile numbers detected";
+
+      el.reviewDuplicatesButton.disabled =
+        groups.length === 0;
+    }
+
+
+    function openDuplicateReview() {
+      const groups =
+        duplicateMobileGroups();
+
+      if (!groups.length) {
+        showToast(
+          "No duplicate mobile numbers detected."
+        );
+        return;
+      }
+
+      el.duplicateList.innerHTML =
+        groups.map(
+          ([number, contacts]) => `
+            <section class="duplicate-group">
+              <div class="duplicate-number">
+                <span>+${escapeHtml(number)}</span>
+                <span>${contacts.length} contacts</span>
+              </div>
+
+              ${contacts.map(
+                (contact) => `
+                  <div class="duplicate-member">
+                    <div class="duplicate-member-copy">
+                      <strong>${escapeHtml(contact.name || "Unnamed Contact")}</strong>
+                      <span>
+                        ${escapeHtml(contact.source === "google" ? "Google Contact" : "Manual Contact")}
+                        · ${escapeHtml(contact.birthday ? formatBirthday(contact.birthday) : "Birthday missing")}
+                      </span>
+                    </div>
+
+                    <button
+                      class="secondary-button edit-contact-button"
+                      type="button"
+                      data-contact-id="${escapeHtml(ensureContactId(contact))}"
+                    >
+                      Edit Local Copy
+                    </button>
+                  </div>
+                `
+              ).join("")}
+            </section>
+          `
+        ).join("");
+
+      if (
+        typeof el.duplicateDialog.showModal ===
+          "function"
+      ) {
+        el.duplicateDialog.showModal();
+      }
+    }
+
+
+    function closeDuplicateReview() {
+      if (
+        el.duplicateDialog &&
+        el.duplicateDialog.open
+      ) {
+        el.duplicateDialog.close();
+      }
+    }
+
+
+    function renderPrivacyDashboard() {
+      if (
+        !el.privacySavedDeviceValue ||
+        !el.privacyGoogleConnectionValue
+      ) {
+        return;
+      }
+
+      el.privacySavedDeviceValue.textContent =
+        state.rememberContacts
+          ? "Yes"
+          : "No";
+
+      el.privacySavedDeviceValue.classList.toggle(
+        "privacy-good",
+        state.rememberContacts
+      );
+
+      el.privacyGoogleConnectionValue.textContent =
+        state.accessToken
+          ? "Connected"
+          : (
+              state.googleGrantKnown
+                ? "Grant remembered"
+                : "Not connected"
+            );
+
+      el.privacyGoogleConnectionValue.classList.toggle(
+        "privacy-good",
+        Boolean(
+          state.accessToken
+        )
+      );
     }
 
 

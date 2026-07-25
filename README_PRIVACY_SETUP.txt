@@ -331,3 +331,41 @@ Expected Settings order:
 
 Open:
 https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=5.0.1
+
+
+V5.1 DUPLICATES + SETTINGS + PRIVACY
+====================================
+
+1. DUPLICATE CONTACT DETECTION
+- Detects contacts sharing the same normalized mobile number.
+- Displays duplicate group count and extra-contact count.
+- Review Duplicates opens a local review dialog.
+- Each duplicate record can be opened in the existing Edit Contact dialog.
+- No contact is automatically deleted, merged or modified.
+- Google Contacts remain read-only.
+
+2. SETTINGS ORGANIZATION
+Settings now has three clear sections:
+- Profile
+- Data & Privacy
+- App & More
+
+3. PRIVACY DASHBOARD
+Live values:
+- Google Contacts: Read Only
+- Saved on this device: Yes/No
+- Google connection: Connected / Grant remembered / Not connected
+- Cloud storage: None
+- Owner server storage: None
+
+Actions:
+- Clear Device Data
+- Disconnect Google
+
+Privacy model remains unchanged:
+- No Firebase / Firestore / Sheets / Apps Script contact database
+- Google scope remains contacts.readonly
+- Device persistence remains optional
+
+Open:
+https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=5.1
