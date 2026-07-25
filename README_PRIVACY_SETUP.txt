@@ -258,3 +258,48 @@ Privacy:
 
 Open:
 https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=4.2.6
+
+
+V5.0 CALENDAR + BACKUP + APP UPDATE
+===================================
+
+CALENDAR
+- Add to Calendar button on every contact that has a birthday.
+- Individual recurring yearly birthday .ics export.
+- Export All Birthdays creates one recurring .ics calendar file.
+- Import Birthdays (.ics) imports birthday events as local/manual records.
+- Birthday Reminder's own .ics export includes optional custom contact metadata
+  (name, gender, mobile, WhatsApp and birth year) for better round-trip import.
+- Generic .ics files still import the event name/date when those custom fields
+  are not present.
+
+BACKUP / RESTORE
+- Export My Data (JSON)
+  Includes profile name/status, profile photo, contacts, birthdays, local edits,
+  and original Google snapshots used by Restore Google.
+- Export My Data (CSV)
+  Portable spreadsheet-style export of contact/birthday fields.
+- Import Backup accepts Birthday Reminder JSON or CSV.
+- Imports merge with current local data and skip obvious duplicates.
+- JSON profile photo is restored to this device's IndexedDB.
+- No backup is uploaded to the app owner.
+
+APP UPDATE
+- PWA service worker updated to v5.0.
+- When a newer service worker is installed and waiting, app shows:
+    New version available
+    [Update Now]
+- Update Now activates the waiting version and reloads the app.
+- Settings also includes Check for Updates.
+- Service worker caches only public same-origin app-shell files.
+- Google OAuth, Google People API, contacts, tokens, profile data, backups and
+  uploaded wish images are never placed in Cache Storage.
+
+PRIVACY
+- Google Contacts scope remains contacts.readonly.
+- No Firebase / Firestore / Google Sheets / Apps Script.
+- Device contact persistence remains optional.
+- Calendar and backup files are created locally in the browser.
+
+Open:
+https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=5.0

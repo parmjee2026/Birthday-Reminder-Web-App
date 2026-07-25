@@ -1,4 +1,4 @@
-const STATIC_CACHE = "birthday-reminder-static-v4.2.1";
+const STATIC_CACHE = "birthday-reminder-static-v5.0";
 
 const STATIC_ASSETS = [
   "./",
@@ -13,8 +13,16 @@ self.addEventListener("install", (event) => {
     caches
       .open(STATIC_CACHE)
       .then((cache) => cache.addAll(STATIC_ASSETS))
-      .then(() => self.skipWaiting())
   );
+});
+
+self.addEventListener("message", (event) => {
+  if (
+    event.data &&
+    event.data.type === "SKIP_WAITING"
+  ) {
+    self.skipWaiting();
+  }
 });
 
 self.addEventListener("activate", (event) => {
@@ -36,17 +44,17 @@ self.addEventListener("fetch", (event) => {
   const request = event.request;
   const url = new URL(request.url);
 
-  // Never intercept/cache Google OAuth, People API, or any cross-origin request.
+  // Never intercept or cache Google OAuth, People API,
+  // or any other cross-origin request.
   if (url.origin !== self.location.origin) {
     return;
   }
 
-  // Never cache non-GET requests.
   if (request.method !== "GET") {
     return;
   }
 
-  // Navigation: network first so new deployments update quickly.
+  // Navigation stays network-first so deployed versions are preferred.
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request)
@@ -56,7 +64,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Static same-origin app files only.
+  // Same-origin public static app files only.
   event.respondWith(
     caches.match(request).then((cached) => {
       if (cached) {
