@@ -392,3 +392,20 @@ All v5.1 features remain unchanged.
 
 Open:
 https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=5.2
+
+
+V5.2.1 COMPACT WHY CONNECT
+==========================
+
+Refined the login screen based on UX feedback:
+- Why connect? now appears as a compact 3-point list directly above Connect.
+- Reduced white space on mobile.
+- Benefits are immediately scannable:
+  1. Find birthdays automatically
+  2. Upcoming birthday reminders
+  3. Manage contacts privately
+
+The detailed explanation remains available under Privacy -> Learn more.
+
+Open:
+https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=5.2.1

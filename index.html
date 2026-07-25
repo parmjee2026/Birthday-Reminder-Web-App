@@ -16,7 +16,7 @@
   >
   <meta
     name="app-build"
-    content="privacy-first-device-v5.2-compact-login-privacy"
+    content="privacy-first-device-v5.2.1-compact-why-connect"
   >
   <title>Birthday Reminder — Privacy First</title>
 
@@ -2896,6 +2896,87 @@
       }
     }
 
+
+    .why-connect-compact {
+      margin: 0 0 13px;
+      border: 1px solid #f0d3ad;
+      border-radius: 16px;
+      padding: 13px 15px;
+      background: linear-gradient(135deg, #fffaf3, #fff);
+    }
+
+    .why-connect-compact-heading {
+      display: grid;
+      gap: 2px;
+      margin-bottom: 9px;
+    }
+
+    .why-connect-compact-heading span {
+      color: var(--orange-deep);
+      font-size: 13px;
+      font-weight: 950;
+    }
+
+    .why-connect-compact-heading small {
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.35;
+    }
+
+    .why-connect-compact-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .why-connect-compact-list li {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr);
+      align-items: start;
+      gap: 8px;
+    }
+
+    .why-connect-compact-list li > span {
+      font-size: 17px;
+      line-height: 1.2;
+      text-align: center;
+    }
+
+    .why-connect-compact-list strong,
+    .why-connect-compact-list small {
+      display: block;
+    }
+
+    .why-connect-compact-list strong {
+      color: var(--text);
+      font-size: 10.5px;
+      line-height: 1.3;
+    }
+
+    .why-connect-compact-list small {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 8.5px;
+      line-height: 1.35;
+    }
+
+    @media (max-width: 620px) {
+      .compact-privacy-box {
+        margin-bottom: 10px;
+      }
+
+      .why-connect-compact {
+        margin-bottom: 11px;
+        padding: 12px 13px;
+      }
+
+      .why-connect-compact-list {
+        gap: 7px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -2958,40 +3039,37 @@
         </details>
       </div>
 
-      <div class="why-connect-card">
-        <div class="why-connect-heading">
-          <span class="why-connect-icon">✨</span>
-          <div>
-            <strong>Why connect?</strong>
-            <small>Useful features become available immediately.</small>
-          </div>
+      <div class="why-connect-compact">
+        <div class="why-connect-compact-heading">
+          <span>Why connect?</span>
+          <small>Get the useful features without creating a separate app account.</small>
         </div>
 
-        <div class="why-connect-grid">
-          <div class="why-connect-item">
+        <ul class="why-connect-compact-list">
+          <li>
             <span>🎂</span>
             <div>
               <strong>Find birthdays automatically</strong>
               <small>Read birthdays already saved in Google Contacts.</small>
             </div>
-          </div>
+          </li>
 
-          <div class="why-connect-item">
+          <li>
             <span>📅</span>
             <div>
-              <strong>See upcoming birthdays</strong>
-              <small>Dashboard, yearly view and calendar export.</small>
+              <strong>Upcoming birthday reminders</strong>
+              <small>See next birthdays, yearly view and calendar export.</small>
             </div>
-          </div>
+          </li>
 
-          <div class="why-connect-item">
-            <span>🔒</span>
+          <li>
+            <span>🗂️</span>
             <div>
-              <strong>Manage privately</strong>
-              <small>Edit the app's local copy without changing Google Contacts.</small>
+              <strong>Manage contacts privately</strong>
+              <small>Edit Birthday Reminder's local copy without changing Google Contacts.</small>
             </div>
-          </div>
-        </div>
+          </li>
+        </ul>
       </div>
 
       <button
@@ -3032,7 +3110,7 @@
         <div class="brand-mark">🎂</div>
         <div>
           <strong>Birthday Reminder</strong>
-          <small>Private Device v5.2</small>
+          <small>Private Device v5.2.1</small>
         </div>
       </div>
 
@@ -3729,11 +3807,11 @@
             <article class="privacy-card settings-card app-update-card">
               <h3>App Updates</h3>
               <p id="appVersionText">
-                Birthday Reminder v5.2
+                Birthday Reminder v5.2.1
               </p>
 
               <small class="settings-helper-text">
-                Build: v5.2 · Compact Login + Privacy
+                Build: v5.2.1 · Compact Why Connect
               </small>
 
               <button
@@ -4041,10 +4119,10 @@
       "https://www.googleapis.com/auth/contacts.readonly";
 
     const APP_VERSION =
-      "5.2";
+      "5.2.1";
 
     const SERVICE_WORKER_URL =
-      "./sw.js?v=5.2";
+      "./sw.js?v=5.2.1";
 
     const state = {
       accessToken: "",
@@ -5965,7 +6043,7 @@
                 "birthday-reminder-static-"
               ) &&
               key !==
-                "birthday-reminder-static-v5.2"
+                "birthday-reminder-static-v5.2.1"
           );
 
         await Promise.all(
