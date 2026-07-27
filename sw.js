@@ -1,85 +1,96 @@
-const CACHE_NAME = "birthday-reminder-v1";
+const STATIC_CACHE = "birthday-reminder-static-v5.2.2";
 
-const APP_SHELL = [
+const STATIC_ASSETS = [
   "./",
-  "index.html",
-  "assets/style.css",
-  "js/app.js",
-  "manifest.webmanifest",
-  "icons/icon-192.png",
-  "icons/icon-512.png"
+  "./index.html",
+  "./manifest.webmanifest",
+  "./icon-192.png",
+  "./icon-512.png"
 ];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(APP_SHELL);
-    })
+    caches
+      .open(STATIC_CACHE)
+      .then((cache) => cache.addAll(STATIC_ASSETS))
   );
+});
 
-  self.skipWaiting();
+self.addEventListener("message", (event) => {
+  if (
+    event.data &&
+    event.data.type === "SKIP_WAITING"
+  ) {
+    self.skipWaiting();
+  }
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
-      );
-    })
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(
+          keys
+            .filter((key) => key !== STATIC_CACHE)
+            .map((key) => caches.delete(key))
+        )
+      )
+      .then(() => self.clients.claim())
   );
-
-  self.clients.claim();
 });
 
 self.addEventListener("fetch", (event) => {
   const request = event.request;
+  const url = new URL(request.url);
+
+  // Never intercept or cache Google OAuth, People API,
+  // or any other cross-origin request.
+  if (url.origin !== self.location.origin) {
+    return;
+  }
 
   if (request.method !== "GET") {
     return;
   }
 
-  const url = new URL(request.url);
-
-  if (
-    url.hostname.includes("script.google.com") ||
-    url.hostname.includes("googleusercontent.com")
-  ) {
+  // Navigation stays network-first so deployed versions are preferred.
+  if (request.mode === "navigate") {
     event.respondWith(
-      fetch(request).catch(() => {
-        return new Response(
-          JSON.stringify({
-            success: false,
-            error: "You are offline."
-          }),
-          {
-            headers: {
-              "Content-Type": "application/json"
-            }
-          }
-        );
-      })
+      fetch(request)
+        .then((response) => response)
+        .catch(() => caches.match("./index.html"))
     );
-
     return;
   }
 
+  // Same-origin public static app files only.
   event.respondWith(
     caches.match(request).then((cached) => {
-      return (
-        cached ||
-        fetch(request).then((response) => {
+      if (cached) {
+        return cached;
+      }
+
+      return fetch(request).then((response) => {
+        const pathname = url.pathname.toLowerCase();
+        const isStatic =
+          pathname.endsWith(".png") ||
+          pathname.endsWith(".webmanifest") ||
+          pathname.endsWith(".html");
+
+        if (
+          isStatic &&
+          response.ok
+        ) {
           const copy = response.clone();
 
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, copy);
-          });
+          caches
+            .open(STATIC_CACHE)
+            .then((cache) => cache.put(request, copy));
+        }
 
-          return response;
-        })
-      );
+        return response;
+      });
     })
   );
 });
