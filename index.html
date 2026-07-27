@@ -1,996 +1,496 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="description" content="A simple digital Naam Jaap and mantra counter with Google Sheets synchronization.">
-    <meta name="theme-color" content="#ff6f00">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta charset="utf-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+  <meta
+    name="theme-color"
+    content="#0d47a1"
+  >
+  <meta
+    name="description"
+    content="Birthday Reminder Web App"
+  >
 
-    <title>Naam Jaap Counter v2.9.15</title>
+  <title>Birthday Reminder</title>
 
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" href="icon-192.png?v=2915" sizes="192x192">
-    <link rel="apple-touch-icon" href="icon-192.png?v=2915">
-    <link rel="stylesheet" href="style.css?v=2915">
-    <link rel="stylesheet" href="mala-goal.css?v=2915">
-    <link rel="stylesheet" href="background-music.css?v=2915">
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-
-    <style>
-        a.primary-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            box-sizing: border-box;
-        }
-
-        .bhajan-modal[hidden] {
-            display: none;
-        }
-
-        .bhajan-modal {
-            position: fixed;
-            inset: 0;
-            z-index: 10050;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            padding: 0;
-        }
-
-        .bhajan-modal-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.58);
-            -webkit-backdrop-filter: blur(2px);
-            backdrop-filter: blur(2px);
-        }
-
-        .bhajan-modal-box {
-            position: relative;
-            z-index: 1;
-            width: min(100%, 540px);
-            max-height: min(82vh, 620px);
-            overflow-y: auto;
-            padding: 12px 18px calc(18px + env(safe-area-inset-bottom));
-            border-radius: 24px 24px 0 0;
-            background: #ffffff;
-            box-shadow: 0 -14px 42px rgba(0, 0, 0, 0.28);
-            animation: bhajanSheetUp 0.24s ease-out;
-            box-sizing: border-box;
-        }
-
-        .bhajan-modal-handle {
-            width: 48px;
-            height: 5px;
-            margin: 0 auto 18px;
-            border-radius: 999px;
-            background: #d5d5d5;
-        }
-
-        .bhajan-modal-box h3 {
-            margin: 0 0 6px;
-            text-align: center;
-        }
-
-        .bhajan-modal-intro {
-            margin: 0 0 18px;
-            text-align: center;
-            color: #666666;
-            line-height: 1.5;
-        }
-
-        .bhajan-option {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            width: 100%;
-            min-height: 72px;
-            margin-bottom: 12px;
-            padding: 12px 15px;
-            border: 1px solid #e4e4e4;
-            border-radius: 16px;
-            background: #ffffff;
-            color: #222222;
-            text-decoration: none;
-            box-sizing: border-box;
-            touch-action: manipulation;
-        }
-
-        .bhajan-option:hover {
-            border-color: #ffb36b;
-            background: #fff8f1;
-        }
-
-        .bhajan-option:active {
-            transform: scale(0.985);
-        }
-
-        .bhajan-option:focus-visible {
-            outline: 3px solid rgba(255, 111, 0, 0.28);
-            outline-offset: 2px;
-        }
-
-        .bhajan-option-icon {
-            display: grid;
-            width: 46px;
-            height: 46px;
-            flex: 0 0 46px;
-            place-items: center;
-            border-radius: 50%;
-            background: #f3f3f3;
-            font-size: 23px;
-        }
-
-        .bhajan-option-copy {
-            min-width: 0;
-        }
-
-        .bhajan-option strong,
-        .bhajan-option small {
-            display: block;
-        }
-
-        .bhajan-option strong {
-            font-size: 1rem;
-        }
-
-        .bhajan-option small {
-            margin-top: 4px;
-            color: #737373;
-            line-height: 1.35;
-        }
-
-        .bhajan-modal-close {
-            margin-top: 4px;
-        }
-
-        @keyframes bhajanSheetUp {
-            from {
-                transform: translateY(100%);
-                opacity: 0.65;
-            }
-
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        @media (min-width: 700px) {
-            .bhajan-modal {
-                align-items: center;
-                padding: 20px;
-            }
-
-            .bhajan-modal-box {
-                border-radius: 24px;
-                padding-bottom: 20px;
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .bhajan-modal-box {
-                animation: none;
-            }
-        }
-
-        .more-apps-card {
-            overflow: hidden;
-        }
-
-        .more-apps-heading {
-            margin-bottom: 12px;
-        }
-
-        .related-app-link {
-            display: grid;
-            grid-template-columns: 52px minmax(0, 1fr) auto;
-            align-items: center;
-            gap: 13px;
-            min-height: 82px;
-            padding: 14px;
-            border: 1px solid #ffd2ad;
-            border-radius: 18px;
-            background: linear-gradient(135deg, #fff8f1 0%, #ffffff 72%);
-            color: inherit;
-            text-decoration: none;
-            box-sizing: border-box;
-            transition:
-                transform 0.16s ease,
-                border-color 0.16s ease,
-                box-shadow 0.16s ease;
-        }
-
-        .related-app-link:hover,
-        .related-app-link:focus-visible {
-            transform: translateY(-2px);
-            border-color: #ffad66;
-            box-shadow: 0 10px 26px rgba(255, 111, 0, 0.12);
-            outline: none;
-        }
-
-        .related-app-link:active {
-            transform: scale(0.99);
-        }
-
-        .related-app-icon {
-            display: grid;
-            width: 52px;
-            height: 52px;
-            place-items: center;
-            border-radius: 16px;
-            background: #ff6f00;
-            color: #ffffff;
-            font-size: 25px;
-            box-shadow: 0 6px 16px rgba(255, 111, 0, 0.18);
-        }
-
-        .related-app-copy {
-            min-width: 0;
-        }
-
-        .related-app-copy strong,
-        .related-app-copy span {
-            display: block;
-        }
-
-        .related-app-copy strong {
-            margin-bottom: 4px;
-            font-size: 1rem;
-        }
-
-        .related-app-copy span {
-            color: #6f6f6f;
-            font-size: 0.86rem;
-            line-height: 1.4;
-        }
-
-        .related-app-arrow {
-            color: #ff6f00;
-            font-size: 24px;
-            font-weight: 800;
-            line-height: 1;
-        }
-
-        @media (max-width: 420px) {
-            .related-app-link {
-                grid-template-columns: 46px minmax(0, 1fr) auto;
-                gap: 10px;
-                padding: 12px;
-            }
-
-            .related-app-icon {
-                width: 46px;
-                height: 46px;
-                border-radius: 14px;
-                font-size: 22px;
-            }
-
-            .related-app-copy span {
-                font-size: 0.8rem;
-            }
-        }
-
-</style>
+  <link
+    rel="manifest"
+    href="manifest.webmanifest"
+  >
+  <link
+    rel="icon"
+    href="icons/icon-192.png"
+  >
+  <link
+    rel="apple-touch-icon"
+    href="icons/icon-192.png"
+  >
+  <link
+    rel="stylesheet"
+    href="assets/style.css"
+  >
 </head>
+
 <body>
-    <section id="authGate" class="auth-gate" aria-labelledby="authTitle">
-        <div class="auth-card">
-            <div class="auth-mark" aria-hidden="true">ॐ</div>
-            <p class="eyebrow">Secure Sync</p>
-            <h1 id="authTitle">Naam Jaap Counter</h1>
-            <p class="auth-intro">Sign in with Google to keep activity linked to a verified account and a pseudonymous device key.</p>
-            <div id="googleSignInButton" class="google-signin-button"></div>
-            <button id="continueOfflineBtn" class="secondary-btn full-width" type="button" hidden>Continue Offline</button>
-            <div id="authLoading" class="auth-loading" hidden>
-                <span class="spinner" aria-hidden="true"></span>
-                <span>Verifying…</span>
-            </div>
-            <p id="authMessage" class="auth-message" data-type="info">Loading secure sign-in…</p>
-            <p class="auth-message" data-type="info">Mobile: open this site directly in Chrome or Safari. Google Sign-In does not work inside WhatsApp and other embedded browsers.</p>
-            <div class="privacy-note">
-                <strong>Privacy:</strong> The app stores your verified Google account ID, name, email, login times, a hashed device key, and jaap activity. It never stores your Google password or client secret.
-            </div>
-        </div>
-    </section>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Birthday Reminder</p>
+        <h1 id="pageTitle">Dashboard</h1>
+      </div>
 
-    <div id="appRoot" hidden>
-        <header class="app-header">
-            <div class="header-brand">
-                <div class="brand-mark" aria-hidden="true">ॐ</div>
-                <div>
-                    <h1>Naam Jaap Counter</h1>
-                    <p id="connectionText" class="connection-text">Signed in — connecting…</p>
-                </div>
-            </div>
-            <button id="accountButton" class="account-chip" type="button" aria-label="Open account settings">
-                <span class="account-initial" data-user-initial>G</span>
-                <span class="account-chip-copy">
-                    <span class="account-chip-name" data-user-name>Google User</span>
-                    <span class="account-chip-status" data-local-profile-status>Naam Jaap • Trusted Device</span>
-                </span>
-            </button>
-        </header>
-
-        <div id="offlineBanner" class="offline-banner" hidden>
-            <span id="offlineBannerText">Offline mode is active. New counts are saved on this device.</span>
-            <button id="reconnectBtn" class="banner-action" type="button" hidden>Sign in to Sync</button>
-        </div>
-
-        <main class="app-shell">
-            <section id="dashboardView" class="view active" data-view="dashboard" aria-labelledby="dashboardTitle">
-                <h2 id="dashboardTitle" class="sr-only">Dashboard</h2>
-
-                <section class="card clock-card" aria-label="Current date and time">
-                    <div class="clock-icon" aria-hidden="true">◷</div>
-                    <div class="clock-copy">
-                        <p id="currentDate" class="clock-date">Loading date…</p>
-                        <strong id="currentTime" class="clock-time">--:--:--</strong>
-                        <p id="currentTimezone" class="clock-timezone">Device local time</p>
-                    </div>
-                </section>
-
-                <section class="card counter-card">
-                    <p class="eyebrow">Selected Mantra</p>
-                    <h3 id="mantra" class="mantra-text">ॐ नमः शिवाय</h3>
-
-                    <div class="inline-mantra-picker">
-                        <label for="mantraSelect">Change Mantra</label>
-                        <select id="mantraSelect" aria-label="Choose mantra">
-                            <option value="ॐ नमः शिवाय">ॐ नमः शिवाय</option>
-                            <option value="ॐ गं गणपतये नमः">ॐ गं गणपतये नमः</option>
-                            <option value="श्री राम जय राम जय जय राम">श्री राम जय राम जय जय राम</option>
-                            <option value="ॐ नमो भगवते वासुदेवाय">ॐ नमो भगवते वासुदेवाय</option>
-                            <option value="हरे कृष्ण हरे कृष्ण">हरे कृष्ण हरे कृष्ण</option>
-                            <option value="राधा राधा">राधा राधा</option>
-                        </select>
-                    </div>
-
-                    <div id="counter" class="counter" aria-live="polite">0</div>
-
-                    <button id="tapBtn" class="tap-btn" type="button" aria-label="Add one jaap count">
-                        <span class="tap-value">+1</span>
-                        <span class="tap-label">Tap to count</span>
-                    </button>
-                </section>
-
-                <section class="stats" aria-label="Jaap statistics">
-                    <article class="stat-card">
-                        <span>Selected Mantra Today</span>
-                        <strong id="today">0</strong>
-                    </article>
-                    <article class="stat-card">
-                        <span>Selected Mantra Lifetime</span>
-                        <strong id="lifetime">0</strong>
-                    </article>
-                </section>
-
-                <section class="card mala-card" aria-labelledby="malaTitle">
-                    <div class="section-heading-row">
-                        <div>
-                            <p class="eyebrow">Selected Mantra</p>
-                            <h3 id="malaTitle">Selected Mantra Mala Progress</h3>
-                        </div>
-                        <strong id="malaProgressText" class="mala-progress-text">0 / 108</strong>
-                    </div>
-                    <div class="progress-track mala-progress-track" role="progressbar" aria-label="Selected mantra current mala progress" aria-valuemin="0" aria-valuemax="108" aria-valuenow="0">
-                        <div id="malaProgress" class="progress-fill mala-progress-fill"></div>
-                    </div>
-                    <div class="mala-stats">
-                        <div>
-                            <span>Selected Mantra — Today Malas</span>
-                            <strong id="todayMalas">0</strong>
-                        </div>
-                        <div>
-                            <span>Selected Mantra — Lifetime Malas</span>
-                            <strong id="lifetimeMalas">0</strong>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="card target-card goal-card" aria-labelledby="dailyMalaGoalTitle">
-                    <div class="section-heading-row">
-                        <div>
-                            <p class="eyebrow">Selected Mantra</p>
-                            <h3 id="dailyMalaGoalTitle">Daily Mala Goal</h3>
-                        </div>
-                        <strong id="targetPercent" class="target-percent">0%</strong>
-                    </div>
-
-                    <div class="goal-summary-row">
-                        <strong class="goal-count">
-                            <span id="targetCurrent">0</span>
-                            <span aria-hidden="true">/</span>
-                            <span id="targetTotal">1</span>
-                            <small>माला</small>
-                        </strong>
-                        <span id="goalMantraLabel" class="goal-mantra-label">ॐ नमः शिवाय</span>
-                    </div>
-
-                    <div class="progress-track" role="progressbar" aria-label="Daily mala goal progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-                        <div id="targetProgress" class="progress-fill"></div>
-                    </div>
-
-                    <p id="goalJaapText" class="goal-jaap-text">0 / 108 जाप</p>
-                    <p id="goalRemaining" class="goal-remaining">Remaining: 1 माला</p>
-                </section>
-
-                <section class="card bhajan-card" aria-labelledby="bhajanOptionsTitle">
-                    <p class="eyebrow">Devotional Audio</p>
-                    <h3 id="bhajanOptionsTitle">भजन सुनें</h3>
-                    <p class="field-help">
-                        YouTube या YouTube Music में भजन सुनने के लिए विकल्प चुनें।
-                    </p>
-                    <button
-                        id="openBhajanOptions"
-                        class="primary-btn full-width"
-                        type="button"
-                        aria-haspopup="dialog"
-                        aria-controls="bhajanOptionModal"
-                        aria-expanded="false"
-                    >
-                        🎵 भजन सुनने का विकल्प चुनें
-                    </button>
-                </section>
-
-                                <section class="card share-card" aria-labelledby="shareAppTitle">
-                    <p class="eyebrow">Invite Others</p>
-
-                    <h3 id="shareAppTitle">Naam Jaap Counter Share करें</h3>
-
-                    <p class="field-help">
-                        अपने परिवार और मित्रों के साथ यह devotional app share करें।
-                    </p>
-
-                    <button
-                        id="shareAppBtn"
-                        class="primary-btn full-width"
-                        type="button"
-                        aria-label="Share Naam Jaap Counter"
-                    >
-                        📤 Social Media पर Share करें
-                    </button>
-
-                    <p
-                        id="shareAppStatus"
-                        class="field-help"
-                        data-type="info"
-                        aria-live="polite"
-                    ></p>
-                </section>
-
-                <section class="card action-buttons" aria-label="Reset counter actions">
-                    <button id="resetTodayBtn" class="secondary-btn" type="button">Reset This Mantra Today</button>
-                    <button id="resetAllBtn" class="danger-btn" type="button">Reset This Mantra Lifetime</button>
-                </section>
-            </section>
-
-            <section id="historyView" class="view" data-view="history" aria-labelledby="historyTitle" hidden>
-                <div class="page-heading">
-                    <div>
-                        <p class="eyebrow">Google Sheets</p>
-                        <h2 id="historyTitle">Jaap History</h2>
-                    </div>
-                    <button id="refreshHistoryBtn" class="icon-btn" type="button" aria-label="Refresh history">↻</button>
-                </div>
-
-                <section id="historySummary" class="stats history-summary" aria-label="History summary">
-                    <article class="stat-card">
-                        <span>Entries</span>
-                        <strong id="historyEntries">0</strong>
-                    </article>
-                    <article class="stat-card">
-                        <span>Added</span>
-                        <strong id="historyAdded">0</strong>
-                    </article>
-                </section>
-
-                <div id="historyLoading" class="state-card" hidden>
-                    <span class="spinner" aria-hidden="true"></span>
-                    <p>Loading history…</p>
-                </div>
-
-                <div id="historyEmpty" class="state-card" hidden>
-                    <div class="state-icon" aria-hidden="true">🕉️</div>
-                    <h3>No history found</h3>
-                    <p>Your jaap activity will appear here after counting.</p>
-                </div>
-
-                <div id="historyError" class="state-card error-state" hidden>
-                    <div class="state-icon" aria-hidden="true">!</div>
-                    <h3>History could not be loaded</h3>
-                    <p id="historyErrorText">Please check your connection and try again.</p>
-                    <button id="retryHistoryBtn" class="secondary-btn" type="button">Try Again</button>
-                </div>
-
-                <div id="historyList" class="history-list" aria-live="polite"></div>
-            </section>
-
-            <section id="settingsView" class="view" data-view="settings" aria-labelledby="settingsTitle" hidden>
-                <div class="page-heading">
-                    <div>
-                        <p class="eyebrow">Preferences</p>
-                        <h2 id="settingsTitle">Settings</h2>
-                    </div>
-                </div>
-
-                <section class="card settings-card">
-                    <div class="setting-row">
-                        <div>
-                            <label for="voiceEnabled">Voice Support</label>
-                            <p>Allow the browser to speak the selected mantra.</p>
-                        </div>
-                        <label class="switch">
-                            <input id="voiceEnabled" type="checkbox">
-                            <span class="switch-slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="setting-row">
-                        <div>
-                            <label for="autoSpeakEnabled">Auto Speak</label>
-                            <p>Speak the mantra automatically after each successful count.</p>
-                        </div>
-                        <label class="switch">
-                            <input id="autoSpeakEnabled" type="checkbox">
-                            <span class="switch-slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="setting-field">
-                        <label for="voiceSelect">Voice</label>
-                        <select id="voiceSelect">
-                            <option value="">Automatic Hindi voice</option>
-                        </select>
-                        <p id="voiceHelp" class="field-help">Voice availability depends on your device and browser.</p>
-                    </div>
-
-                    <button id="testVoiceBtn" class="secondary-btn full-width" type="button">Test Selected Voice</button>
-                </section>
-
-                <section class="card background-music-card" aria-labelledby="backgroundMusicTitle">
-                    <div class="section-heading-row music-heading-row">
-                        <div>
-                            <p class="eyebrow">Peaceful Audio</p>
-                            <h3 id="backgroundMusicTitle">Background Temple Music</h3>
-                        </div>
-                        <label class="switch" aria-label="Enable background temple music">
-                            <input id="backgroundMusicEnabled" type="checkbox">
-                            <span class="switch-slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="setting-field music-volume-field">
-                        <div class="music-volume-label-row">
-                            <label for="backgroundMusicVolume">Music Volume</label>
-                            <strong id="backgroundMusicVolumeText">20%</strong>
-                        </div>
-                        <input
-                            id="backgroundMusicVolume"
-                            class="music-volume-slider"
-                            type="range"
-                            min="0"
-                            max="100"
-                            step="1"
-                            value="20"
-                        >
-                    </div>
-
-                    <button id="backgroundMusicPlayPause" class="secondary-btn full-width" type="button">
-                        ▶ Start Music
-                    </button>
-                    <p id="backgroundMusicStatus" class="field-help music-status" data-type="info">
-                        Music is off. Tap Start Music to begin.
-                    </p>
-                    <p class="field-help">
-                        Browser autoplay rules require one tap before music can start. Music becomes softer while mantra voice is speaking.
-                    </p>
-                </section>
-
-                <section class="card goal-settings-card" aria-labelledby="malaGoalSettingsTitle">
-                    <p class="eyebrow">Selected Mantra</p>
-                    <h3 id="malaGoalSettingsTitle">Set Daily Mala Goal</h3>
-                    <p class="goal-selected-mantra">
-                        Goal for: <strong id="goalSettingsMantra">ॐ नमः शिवाय</strong>
-                    </p>
-
-                    <div class="goal-quick-options" aria-label="Quick mala goal options">
-                        <button class="goal-quick-btn" type="button" data-goal-malas="1">1 माला</button>
-                        <button class="goal-quick-btn" type="button" data-goal-malas="5">5 माला</button>
-                        <button class="goal-quick-btn" type="button" data-goal-malas="11">11 माला</button>
-                        <button class="goal-quick-btn" type="button" data-goal-malas="21">21 माला</button>
-                    </div>
-
-                    <form id="malaGoalForm" class="mala-goal-form">
-                        <label for="malaGoalInput">Daily goal in malas</label>
-                        <div class="mala-goal-input-row">
-                            <input
-                                id="malaGoalInput"
-                                type="number"
-                                min="1"
-                                max="10000"
-                                step="1"
-                                inputmode="numeric"
-                                value="1"
-                                required
-                            >
-                            <button id="saveMalaGoalBtn" class="primary-btn" type="submit">Save Goal</button>
-                        </div>
-                    </form>
-
-                    <p id="malaGoalHelp" class="field-help" data-type="info">
-                        1 माला = 108 जाप। हर Google user और हर mantra का goal अलग रहेगा।
-                    </p>
-                </section>
-
-                <section class="card custom-mantra-card" aria-labelledby="customMantraTitle">
-                    <p class="eyebrow">My Mantras</p>
-                    <h3 id="customMantraTitle">Add Your Own Mantra</h3>
-                    <p class="field-help">MP3 की जरूरत नहीं है। Browser Hindi voice mantra text बोलेगी।</p>
-
-                    <form id="customMantraForm" class="custom-mantra-form">
-                        <label for="customMantraInput">Mantra text</label>
-                        <div class="custom-mantra-input-row">
-                            <input
-                                id="customMantraInput"
-                                type="text"
-                                maxlength="120"
-                                autocomplete="off"
-                                placeholder="जैसे: जय श्री कृष्ण"
-                            >
-                            <button id="addCustomMantraBtn" class="primary-btn" type="submit">Add</button>
-                        </div>
-                    </form>
-
-                    <p id="customMantraHelp" class="field-help" data-type="info">
-                        Custom mantra की counting भी अलग daily, lifetime और mala count में रहेगी।
-                    </p>
-
-                    <div id="customMantraList" class="custom-mantra-list" aria-live="polite"></div>
-                </section>
-
-                <section class="card reminder-card" aria-labelledby="reminderTitle">
-                    <div class="section-heading-row reminder-heading">
-                        <div>
-                            <p class="eyebrow">Jaap Reminder</p>
-                            <h3 id="reminderTitle">Daily Reminder</h3>
-                        </div>
-                        <label class="switch" aria-label="Enable daily reminder">
-                            <input id="reminderEnabled" type="checkbox">
-                            <span class="switch-slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="setting-field">
-                        <label for="reminderTime">Reminder Time</label>
-                        <input id="reminderTime" type="time" value="06:00">
-                    </div>
-
-                    <div class="setting-field">
-                        <label for="reminderLabel">Reminder Message</label>
-                        <input id="reminderLabel" type="text" maxlength="80" value="समय हो गया है—नाम जप करें।">
-                    </div>
-
-                    <div class="setting-field">
-                        <label for="reminderToneSelect">Alarm Tone</label>
-                        <select id="reminderToneSelect">
-                            <option value="temple-bell">Temple Bell — devotional</option>
-                            <option value="morning-chime">Morning Chime — soft</option>
-                        </select>
-                    </div>
-
-                    <div class="setting-field">
-                        <div class="music-volume-label-row">
-                            <label for="reminderToneVolume">Alarm Tone Volume</label>
-                            <strong id="reminderToneVolumeText">75%</strong>
-                        </div>
-                        <input
-                            id="reminderToneVolume"
-                            class="music-volume-slider"
-                            type="range"
-                            min="0"
-                            max="100"
-                            step="1"
-                            value="75"
-                            aria-label="Alarm tone volume"
-                        >
-                    </div>
-
-                    <p id="reminderStatus" class="reminder-status">Reminder is off.</p>
-
-                    <div class="reminder-actions">
-                        <button id="enableNotificationsBtn" class="secondary-btn" type="button">Enable Notifications</button>
-                        <button id="testReminderBtn" class="secondary-btn" type="button">Test Alarm & Notification</button>
-                        <button id="addCalendarBtn" class="primary-btn" type="button">Add to Phone Calendar</button>
-                    </div>
-
-                    <p class="field-help reminder-help">Choose Temple Bell or Morning Chime. The selected alarm tone plays while this app/PWA is open. Tap Test Alarm once after opening the app. When the app is fully closed, use Phone Calendar for the most reliable system alarm.</p>
-                </section>
-
-                <section class="card account-card">
-                    <div class="account-profile">
-                        <span class="account-avatar" data-user-initial>G</span>
-                        <div>
-                            <p class="eyebrow">Signed-in Account</p>
-                            <h3 data-user-name>Google User</h3>
-                            <p class="account-local-status" data-local-profile-status>Naam Jaap • Trusted Device</p>
-                            <p data-user-email></p>
-                            <p id="accountDeviceKey" class="device-key">Registered device</p>
-                        </div>
-                    </div>
-                    <p class="field-help">The device key is a server-side hash. The raw browser device ID is not stored in Google Sheets.</p>
-                    <button id="signOutBtn" class="secondary-btn full-width" type="button">Sign Out</button>
-                </section>
-
-                <section class="card install-card">
-                    <div>
-                        <p class="eyebrow">Progressive Web App</p>
-                        <h3>Install Naam Jaap Counter</h3>
-                        <p id="installHelp">Install it on your phone for an app-like experience.</p>
-                    </div>
-                    <button id="installAppBtn" class="primary-btn" type="button" hidden>Install App</button>
-                </section>
-
-
-                <section class="card more-apps-card" aria-labelledby="moreAppsTitle">
-                    <div class="more-apps-heading">
-                        <p class="eyebrow">More Apps</p>
-                        <h3 id="moreAppsTitle">Explore More</h3>
-                    </div>
-
-                    <a
-                        class="related-app-link"
-                        href="https://parmjee2026.github.io/Birthday-Reminder-Web-App/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label="Open Birthday Reminder web app"
-                    >
-                        <span class="related-app-icon" aria-hidden="true">🎂</span>
-
-                        <span class="related-app-copy">
-                            <strong>Birthday Reminder</strong>
-                            <span>Privately check upcoming birthdays and create birthday wishes.</span>
-                        </span>
-
-                        <span class="related-app-arrow" aria-hidden="true">→</span>
-                    </a>
-                </section>
-
-                <section class="card about-card">
-                    <p class="eyebrow">About</p>
-                    <h3 id="aboutAppVersion">Naam Jaap Counter v2.9.15</h3>
-                    <p>Frontend: HTML, CSS and Vanilla JavaScript</p>
-                    <p>Backend: Google Apps Script and Google Sheets</p>
-                </section>
-            </section>
-        </main>
-
+      <div class="top-actions">
         <button
-            id="backgroundMusicFloatingButton"
-            class="music-floating-button"
-            type="button"
-            aria-label="Start background temple music"
-            aria-pressed="false"
-            title="Background temple music"
+          class="icon-button"
+          id="installButton"
+          type="button"
+          title="Install app"
+          hidden
         >
-            <span id="backgroundMusicFloatingIcon" aria-hidden="true">🔇</span>
+          ⬇
         </button>
 
-        <nav class="bottom-nav" aria-label="Primary navigation">
-            <button id="dashboardTab" class="nav-btn active" type="button" data-target="dashboard" aria-current="page">
-                <span class="nav-icon" aria-hidden="true">▦</span>
-                <span>Dashboard</span>
-            </button>
-            <button id="historyTab" class="nav-btn" type="button" data-target="history">
-                <span class="nav-icon" aria-hidden="true">↺</span>
-                <span>History</span>
-            </button>
-            <button id="settingsTab" class="nav-btn" type="button" data-target="settings">
-                <span class="nav-icon" aria-hidden="true">⚙</span>
-                <span>Settings</span>
-            </button>
-        </nav>
-    </div>
+        <button
+          class="icon-button"
+          id="refreshButton"
+          type="button"
+          title="Refresh"
+        >
+          ↻
+        </button>
+      </div>
+    </header>
 
-
-    <div
-        id="bhajanOptionModal"
-        class="bhajan-modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="bhajanModalTitle"
-        aria-describedby="bhajanModalDescription"
+    <main class="content">
+      <section
+        id="connectionBanner"
+        class="connection-banner"
         hidden
-    >
-        <div class="bhajan-modal-overlay" data-close-bhajan-modal></div>
+      ></section>
 
-        <div class="bhajan-modal-box">
-            <div class="bhajan-modal-handle" aria-hidden="true"></div>
-
-            <h3 id="bhajanModalTitle">भजन कहाँ सुनना है?</h3>
-            <p id="bhajanModalDescription" class="bhajan-modal-intro">
-                अपना पसंदीदा music option चुनें।
+      <section
+        id="dashboardView"
+        class="view is-active"
+      >
+        <div class="hero-card">
+          <div>
+            <p class="hero-kicker">Next celebration</p>
+            <h2 id="nextBirthdayName">
+              No birthday loaded
+            </h2>
+            <p id="nextBirthdayMeta">
+              Connect the app to your Apps Script API.
             </p>
+          </div>
 
-            <a
-                class="bhajan-option"
-                href="https://www.youtube.com/@unique_collection2026/videos"
-                rel="noopener noreferrer"
-                data-bhajan-link
-            >
-                <span class="bhajan-option-icon" aria-hidden="true">▶️</span>
-                <span class="bhajan-option-copy">
-                    <strong>YouTube</strong>
-                    <small>हमारे channel के भजन videos खोलें</small>
-                </span>
-            </a>
+          <div class="hero-cake">
+            🎂
+          </div>
+        </div>
 
-            <a
-                class="bhajan-option"
-                href="https://music.youtube.com/search?q=Unique%20Collection%202026%20Bhajan"
-                rel="noopener noreferrer"
-                data-bhajan-link
+        <div class="stats-grid">
+          <article class="stat-card">
+            <span>Total</span>
+            <strong id="totalCount">0</strong>
+          </article>
+
+          <article class="stat-card today">
+            <span>Today</span>
+            <strong id="todayCount">0</strong>
+          </article>
+
+          <article class="stat-card upcoming">
+            <span id="upcomingLabel">Next 7 days</span>
+            <strong id="upcomingCount">0</strong>
+          </article>
+        </div>
+
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Coming up</p>
+            <h2>Upcoming birthdays</h2>
+          </div>
+
+          <button
+            class="text-button"
+            data-nav="birthdays"
+            type="button"
+          >
+            View all
+          </button>
+        </div>
+
+        <div
+          id="upcomingList"
+          class="card-list"
+        ></div>
+      </section>
+
+      <section
+        id="birthdaysView"
+        class="view"
+      >
+        <div class="toolbar">
+          <label class="search-box">
+            <span>⌕</span>
+            <input
+              id="birthdaySearch"
+              type="search"
+              placeholder="Search name, relation or number"
             >
-                <span class="bhajan-option-icon" aria-hidden="true">🎵</span>
-                <span class="bhajan-option-copy">
-                    <strong>YouTube Music</strong>
-                    <small>YouTube Music में bhajan search खोलें</small>
-                </span>
-            </a>
+          </label>
+
+          <select id="genderFilter">
+            <option value="">All genders</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+            <option value="Prefer not to say">
+              Prefer not to say
+            </option>
+          </select>
+        </div>
+
+        <div
+          id="birthdayList"
+          class="card-list"
+        ></div>
+      </section>
+
+      <section
+        id="yearlyView"
+        class="view"
+      >
+        <div class="toolbar yearly-toolbar">
+          <label>
+            <span class="field-label">Birthday list year</span>
+            <input
+              id="yearInput"
+              type="number"
+              min="1900"
+              max="2200"
+            >
+          </label>
+
+          <button
+            class="primary-button"
+            id="loadYearButton"
+            type="button"
+          >
+            Load year
+          </button>
+        </div>
+
+        <div
+          id="yearlyList"
+          class="year-groups"
+        ></div>
+      </section>
+
+      <section
+        id="settingsView"
+        class="view"
+      >
+        <form
+          id="settingsForm"
+          class="settings-card"
+        >
+          <h2>Connection</h2>
+
+          <label>
+            <span class="field-label">
+              Apps Script Web App URL
+            </span>
+            <input
+              id="apiUrlInput"
+              type="url"
+              placeholder="https://script.google.com/macros/s/.../exec"
+              required
+            >
+          </label>
+
+          <label>
+            <span class="field-label">
+              Web App access key
+            </span>
+            <input
+              id="apiKeyInput"
+              type="password"
+              placeholder="Your private access key"
+              required
+            >
+          </label>
+
+          <h2>Birthday settings</h2>
+
+          <label>
+            <span class="field-label">
+              Reminder days
+            </span>
+            <input
+              id="reminderDaysInput"
+              type="number"
+              min="0"
+              max="365"
+              value="7"
+            >
+          </label>
+
+          <label>
+            <span class="field-label">
+              Yearly list year
+            </span>
+            <input
+              id="settingsYearInput"
+              type="number"
+              min="1900"
+              max="2200"
+            >
+          </label>
+
+          <label>
+            <span class="field-label">
+              Default country code
+            </span>
+            <input
+              id="countryCodeInput"
+              type="text"
+              value="91"
+              maxlength="4"
+            >
+          </label>
+
+          <label>
+            <span class="field-label">
+              WhatsApp birthday message
+            </span>
+            <textarea
+              id="whatsappMessageInput"
+              rows="4"
+              maxlength="500"
+            ></textarea>
+            <small>
+              Use {name} and {date} placeholders.
+            </small>
+          </label>
+
+          <div class="form-actions">
+            <button
+              class="secondary-button"
+              id="testConnectionButton"
+              type="button"
+            >
+              Test connection
+            </button>
 
             <button
-                id="closeBhajanOptions"
-                class="secondary-btn full-width bhajan-modal-close"
-                type="button"
+              class="primary-button"
+              type="submit"
             >
-                Cancel
+              Save settings
             </button>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <button
+      class="fab"
+      id="addBirthdayButton"
+      type="button"
+      aria-label="Add birthday"
+    >
+      +
+    </button>
+
+    <nav class="bottom-nav">
+      <button
+        class="nav-item is-active"
+        data-nav="dashboard"
+        type="button"
+      >
+        <span>⌂</span>
+        <small>Home</small>
+      </button>
+
+      <button
+        class="nav-item"
+        data-nav="birthdays"
+        type="button"
+      >
+        <span>☷</span>
+        <small>Birthdays</small>
+      </button>
+
+      <button
+        class="nav-item"
+        data-nav="yearly"
+        type="button"
+      >
+        <span>▣</span>
+        <small>Year</small>
+      </button>
+
+      <button
+        class="nav-item"
+        data-nav="settings"
+        type="button"
+      >
+        <span>⚙</span>
+        <small>Settings</small>
+      </button>
+    </nav>
+  </div>
+
+  <dialog id="birthdayDialog">
+    <form
+      id="birthdayForm"
+      method="dialog"
+      class="dialog-card"
+    >
+      <div class="dialog-header">
+        <div>
+          <p class="eyebrow">Birthday record</p>
+          <h2 id="dialogTitle">Add birthday</h2>
         </div>
-    </div>
 
-    <div id="toastRegion" class="toast-region" aria-live="polite" aria-atomic="true"></div>
+        <button
+          class="icon-button close-button"
+          id="closeDialogButton"
+          type="button"
+        >
+          ×
+        </button>
+      </div>
 
-    <script src="config.js?v=2915"></script>
-    <script src="offline.js?v=2915"></script>
-    <script src="api.js?v=2915"></script>
-    <script src="auth.js?v=2915"></script>
-    <script src="trusted-device.js?v=2915"></script>
-    <script src="profile.js?v=2915"></script>
-    <script src="settings.js?v=2915"></script>
-    <script src="history.js?v=2915"></script>
-    <script src="ui.js?v=2915"></script>
-    <script src="reminder.js?v=2915"></script>
-    <script src="app.js?v=2915"></script>
-    <script src="custom-mantras.js?v=2915"></script>
-    <script src="ecosystem.js?v=2915"></script>
-    <script src="app-updates.js?v=2915"></script>
-    <script src="dashboard-polish.js?v=2915"></script>
-    <script src="mobile-ui-fix.js?v=2915"></script>
-    <script src="sync-settings.js?v=2915"></script>
-    <audio id="templeBackgroundAudio" src="temple-music.mp3?v=2915" preload="none" loop></audio>
-    <audio id="reminderToneAudio" src="reminder-temple-bell.wav?v=2915" preload="auto" playsinline></audio>
-    <script src="background-music.js?v=2915"></script>
+      <input
+        id="recordIdInput"
+        type="hidden"
+      >
 
-    <script>
-        (() => {
-            const openButton = document.getElementById("openBhajanOptions");
-            const closeButton = document.getElementById("closeBhajanOptions");
-            const modal = document.getElementById("bhajanOptionModal");
-            const overlay = modal?.querySelector("[data-close-bhajan-modal]");
-            const optionLinks = modal?.querySelectorAll("[data-bhajan-link]") || [];
-            let previousActiveElement = null;
+      <div class="form-grid">
+        <label class="full">
+          <span class="field-label">Name *</span>
+          <input
+            id="nameInput"
+            type="text"
+            maxlength="100"
+            required
+          >
+        </label>
 
-            if (!openButton || !closeButton || !modal) {
-                return;
-            }
+        <label>
+          <span class="field-label">Gender *</span>
+          <select
+            id="genderInput"
+            required
+          >
+            <option value="">Select</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+            <option value="Prefer not to say">
+              Prefer not to say
+            </option>
+          </select>
+        </label>
 
-            function openModal() {
-                previousActiveElement = document.activeElement;
-                modal.hidden = false;
-                openButton.setAttribute("aria-expanded", "true");
-                document.body.style.overflow = "hidden";
+        <label>
+          <span class="field-label">DOB *</span>
+          <input
+            id="dobInput"
+            type="date"
+            required
+          >
+        </label>
 
-                const firstOption = modal.querySelector("[data-bhajan-link]");
-                window.requestAnimationFrame(() => {
-                    firstOption?.focus();
-                });
-            }
+        <label>
+          <span class="field-label">Mobile</span>
+          <input
+            id="mobileInput"
+            type="tel"
+            maxlength="30"
+          >
+        </label>
 
-            function closeModal() {
-                modal.hidden = true;
-                openButton.setAttribute("aria-expanded", "false");
-                document.body.style.overflow = "";
+        <label>
+          <span class="field-label">
+            WhatsApp Number
+          </span>
+          <input
+            id="whatsappInput"
+            type="tel"
+            maxlength="30"
+          >
+        </label>
 
-                if (previousActiveElement instanceof HTMLElement) {
-                    previousActiveElement.focus();
-                } else {
-                    openButton.focus();
-                }
-            }
+        <label>
+          <span class="field-label">Relation</span>
+          <input
+            id="relationInput"
+            type="text"
+          >
+        </label>
 
-            openButton.addEventListener("click", openModal);
-            closeButton.addEventListener("click", closeModal);
-            overlay?.addEventListener("click", closeModal);
+        <label>
+          <span class="field-label">Email</span>
+          <input
+            id="emailInput"
+            type="email"
+          >
+        </label>
 
-            optionLinks.forEach((link) => {
-                link.addEventListener("click", () => {
-                    modal.hidden = true;
-                    openButton.setAttribute("aria-expanded", "false");
-                    document.body.style.overflow = "";
-                });
-            });
+        <label class="full">
+          <span class="field-label">Notes</span>
+          <textarea
+            id="notesInput"
+            rows="3"
+            maxlength="1000"
+          ></textarea>
+        </label>
+      </div>
 
-            document.addEventListener("keydown", (event) => {
-                if (event.key === "Escape" && !modal.hidden) {
-                    closeModal();
-                }
-            });
-        })();
-    </script>
-    <script>
-    (() => {
-        const shareButton = document.getElementById("shareAppBtn");
-        const shareStatus = document.getElementById("shareAppStatus");
+      <div class="form-actions">
+        <button
+          class="danger-button"
+          id="deleteBirthdayButton"
+          type="button"
+          hidden
+        >
+          Delete
+        </button>
 
-        if (!shareButton) {
-            return;
-        }
+        <span class="action-spacer"></span>
 
-        const shareData = {
-            title: "Naam Jaap Counter",
-            text: "नाम जप, माला और daily goal track करने के लिए Naam Jaap Counter खोलें।",
-            url: "https://parmeshwarbtpl-rgb.github.io/japa-counter/"
-        };
+        <button
+          class="secondary-button"
+          id="cancelBirthdayButton"
+          type="button"
+        >
+          Cancel
+        </button>
 
-        async function copyShareLink() {
-            try {
-                await navigator.clipboard.writeText(shareData.url);
+        <button
+          class="primary-button"
+          id="saveBirthdayButton"
+          type="submit"
+        >
+          Save
+        </button>
+      </div>
+    </form>
+  </dialog>
 
-                if (shareStatus) {
-                    shareStatus.textContent =
-                        "App link copy हो गया। अब इसे कहीं भी paste करके share करें।";
-                }
-            } catch (error) {
-                if (shareStatus) {
-                    shareStatus.textContent =
-                        "Share नहीं हो पाया। App link manually copy करें: " +
-                        shareData.url;
-                }
-            }
-        }
+  <div
+    id="toast"
+    class="toast"
+    role="status"
+  ></div>
 
-        shareButton.addEventListener("click", async () => {
-            if (shareStatus) {
-                shareStatus.textContent = "";
-            }
-
-            try {
-                if (navigator.share) {
-                    await navigator.share(shareData);
-
-                    if (shareStatus) {
-                        shareStatus.textContent = "App successfully share किया गया।";
-                    }
-
-                    return;
-                }
-
-                await copyShareLink();
-            } catch (error) {
-                // User ने share panel बंद किया है तो error message न दिखाएँ।
-                if (error?.name === "AbortError") {
-                    return;
-                }
-
-                await copyShareLink();
-            }
-        });
-    })();
-</script>
+  <script src="js/app.js"></script>
 </body>
 </html>
