@@ -1,0 +1,54 @@
+Naam Jaap Counter v2.9.15 — Sync Status in Settings
+
+CHANGE REQUEST
+Move this Dashboard card:
+SYNC
+Synced
+Google Sheets
+
+to Settings.
+
+RESULT
+Dashboard:
+- Daily Streak remains.
+- Sync status card is removed from Dashboard.
+- Daily Streak becomes full width.
+
+Settings:
+- New Cloud Sync > Google Sheets Sync card.
+- Shows the same live sync status:
+  • Synced / Google Sheets
+  • Sync Pending / Saved on device
+  • Offline Safe / Saved on device
+  • Sync Retry / Count is safe
+- Existing underlying sync logic is unchanged.
+
+UPLOAD / REPLACE
+1. index.html
+2. config.js
+3. sw.js
+4. app-updates.js
+5. sync-settings.js   NEW
+
+KEEP EXISTING
+- dashboard-polish.js
+- mobile-ui-fix.js
+- profile.js
+- trusted-device.js
+- ecosystem.js
+
+No Google Apps Script change required.
+
+TEST
+1. Upload all 5 files.
+2. Close/reopen installed PWA.
+3. Dashboard:
+   - Sync card should NOT appear.
+   - Daily Streak should remain.
+4. Settings:
+   - Cloud Sync / Google Sheets Sync card should appear.
+   - It should show live sync status.
+5. About / App Updates should show v2.9.15.
+
+Suggested commit:
+feat: move Google Sheets sync status from dashboard to settings v2.9.15
