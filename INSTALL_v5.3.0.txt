@@ -1,0 +1,77 @@
+Birthday Reminder v5.3.0 — Dashboard & Quick Actions
+
+CURRENT BASE
+- Designed for the current Birthday Reminder v5.2.2 repository.
+- Privacy-first Google Contacts architecture is unchanged.
+- No Firebase, Google Sheets, Apps Script or new owner database is added.
+
+NEW IN v5.3.0
+1. Better Dashboard Date
+   - Weekday underneath the large clock.
+   - Full date underneath it.
+   - Example:
+       Friday
+       25 July 2026
+
+2. Better Next Birthday
+   - “Days Left” wording.
+   - Birthday date remains visible.
+   - Full weekday is added.
+   - Existing Create Birthday Wish action remains.
+
+3. Birthday Available Badge
+   - Contacts with a saved birthday show:
+       🎂 Birthday Available
+
+4. Colour-Coded Yearly List
+   - January to December use subtle individual month accents.
+   - Text remains readable and colour is not the only information.
+
+5. Stronger Bottom Navigation
+   - Active mobile page gets an orange pill/background effect.
+
+6. Friendly Empty States
+   - Birthday empty states use a friendly message.
+   - Sync Contacts button is offered where useful.
+
+7. Upcoming This Week — Quick Actions
+   - Dashboard panel for birthdays in the next 7 days.
+   - Direct:
+       📞 Call
+       💬 WhatsApp
+       🎁 Create Wish
+   - Uses existing local contact data and existing wish composer.
+
+UPLOAD / REPLACE IN GITHUB
+1. v530-enhancements.js   NEW
+2. sw.js                  REPLACE
+
+IMPORTANT
+- Do NOT replace index.html for this update.
+- The new service worker upgrades the delivered v5.2.2 HTML to v5.3.0 and injects
+  v530-enhancements.js.
+- The built-in update checker will also see the transformed v5.3.0 index after
+  the new service worker controls the app.
+
+AFTER UPLOAD
+1. Open Birthday Reminder while online.
+2. Wait a few seconds.
+3. Close the browser/PWA completely.
+4. Reopen it.
+5. If v5.2.2 still appears, reload once or use Settings > Check for Updates.
+6. Confirm Settings shows Birthday Reminder v5.3.0.
+7. Test:
+   - Dashboard date underneath clock.
+   - Next Birthday: Days Left + weekday.
+   - Contacts: Birthday Available badge.
+   - Yearly: month colour accents.
+   - Bottom nav active pill.
+   - Upcoming This Week quick actions.
+   - Empty birthday state Sync Contacts button.
+
+ROLLBACK
+- Restore the previous sw.js.
+- Delete v530-enhancements.js.
+
+Suggested commit:
+feat: birthday reminder v5.3 dashboard quick actions and UX polish
