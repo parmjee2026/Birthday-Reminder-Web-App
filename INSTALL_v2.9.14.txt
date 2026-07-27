@@ -1,0 +1,56 @@
+Naam Jaap Counter v2.9.14 — Mobile Header & Sync Card Fix
+
+FIXED
+- Mobile header now fits cleanly on narrow phones.
+- Header title is kept compact and limited to about two lines.
+- Profile chip shows photo + name on mobile; status is hidden only in the header.
+- Full profile status remains available in Settings / Signed-in Account.
+- Mobile connection line shows short labels such as:
+    Google Sheets • Synced
+    Google Sheets • Syncing
+    Offline • Saved locally
+- Dashboard Sync card no longer repeats/truncates “Synced with Google…”.
+- Online Sync card now reads clearly:
+    SYNC
+    Synced
+    Google Sheets
+- Offline/pending states use short readable messages.
+
+UNCHANGED
+- Jaap counting logic
+- Selected-mantra isolation
+- Google Sheets sync engine
+- Offline queue
+- Daily streak logic
+- Profile photo and manual crop
+- Reminder tones
+- Trusted Device
+- Data Safety
+
+UPLOAD / REPLACE
+1. index.html
+2. config.js
+3. sw.js
+4. app-updates.js
+5. mobile-ui-fix.js   NEW
+
+KEEP EXISTING
+- dashboard-polish.js
+- profile.js
+- trusted-device.js
+- ecosystem.js
+
+No Google Apps Script changes required.
+
+TEST
+1. Upload all 5 files.
+2. Close the installed PWA completely.
+3. Reopen it.
+4. Header should fit without title/profile collision.
+5. Mobile header should show photo + Parmeshwar (or saved display name), without the status line.
+6. Header connection line should be short.
+7. Dashboard Sync card should show “Synced / Google Sheets” without ellipsis.
+8. About and App Updates should show v2.9.14.
+
+Suggested commit:
+fix: mobile header fit and sync card readability v2.9.14

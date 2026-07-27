@@ -1,321 +1,115 @@
-const STATIC_CACHE =
-  "birthday-reminder-static-v5.3.0";
-
-const ENHANCEMENT_SCRIPT =
-  "./v530-enhancements.js?v=5.3.0";
-
-const STATIC_ASSETS = [
-  "./",
-  "./index.html",
-  "./manifest.webmanifest",
-  "./icon-192.png",
-  "./icon-512.png",
-  ENHANCEMENT_SCRIPT
+const CACHE_NAME = "naam-jaap-counter-v2-9-14-mobile-header-sync-fix";
+const APP_SHELL = [
+    "./",
+    "./index.html",
+    "./style.css?v=2914",
+    "./mala-goal.css?v=2914",
+    "./background-music.css?v=2914",
+    "./config.js?v=2914",
+    "./offline.js?v=2914",
+    "./api.js?v=2914",
+    "./auth.js?v=2914",
+    "./trusted-device.js?v=2914",
+    "./profile.js?v=2914",
+    "./settings.js?v=2914",
+    "./history.js?v=2914",
+    "./ui.js?v=2914",
+    "./reminder.js?v=2914",
+    "./app.js?v=2914",
+    "./custom-mantras.js?v=2914",
+    "./ecosystem.js?v=2914",
+    "./app-updates.js?v=2914",
+    "./dashboard-polish.js?v=2914",
+    "./mobile-ui-fix.js?v=2914",
+    "./background-music.js?v=2914",
+    "./temple-music.mp3?v=2914",
+    "./reminder-temple-bell.wav?v=2914",
+    "./reminder-morning-chime.wav?v=2914",
+    "./manifest.json",
+    "./icon-192.png",
+    "./icon-512.png"
 ];
 
-function upgradeV530Html(html) {
-  let text = String(html || "");
-
-  // The repository can keep the large monolithic index.html unchanged.
-  // The service worker upgrades version markers in the delivered HTML.
-  text = text
-    .replaceAll(
-      "5.2.2",
-      "5.3.0"
-    )
-    .replaceAll(
-      "privacy-first-device-v5.3.0-privacy-notice-settings",
-      "privacy-first-device-v5.3.0-dashboard-quick-actions"
-    )
-    .replaceAll(
-      "Build: v5.3.0 · Privacy Notice in Settings",
-      "Build: v5.3.0 · Dashboard & Quick Actions"
-    );
-
-  if (
-    !text.includes(
-      "v530-enhancements.js"
-    )
-  ) {
-    const script =
-      `<script src="${ENHANCEMENT_SCRIPT}"></script>`;
-
-    if (
-      text.includes(
-        "</body>"
-      )
-    ) {
-      text = text.replace(
-        "</body>",
-        `  ${script}\n</body>`
-      );
-    } else {
-      text += `\n${script}`;
-    }
-  }
-
-  return text;
-}
-
-async function upgradedHtmlResponse(
-  response
-) {
-  if (!response) {
-    return response;
-  }
-
-  const contentType =
-    response.headers.get(
-      "content-type"
-    ) || "";
-
-  if (
-    !contentType.includes(
-      "text/html"
-    )
-  ) {
-    return response;
-  }
-
-  const html =
-    await response.text();
-
-  const headers =
-    new Headers(
-      response.headers
-    );
-
-  headers.delete(
-    "content-length"
-  );
-
-  return new Response(
-    upgradeV530Html(
-      html
-    ),
-    {
-      status:
-        response.status,
-      statusText:
-        response.statusText,
-      headers
-    }
-  );
-}
-
-self.addEventListener(
-  "install",
-  (event) => {
+self.addEventListener("install", event => {
     event.waitUntil(
-      caches
-        .open(
-          STATIC_CACHE
-        )
-        .then(
-          (cache) =>
-            cache.addAll(
-              STATIC_ASSETS
-            )
-        )
-        .then(
-          () =>
-            self.skipWaiting()
-        )
+        caches.open(CACHE_NAME)
+            .then(cache => cache.addAll(APP_SHELL))
+            .then(() => self.skipWaiting())
     );
-  }
-);
+});
 
-self.addEventListener(
-  "message",
-  (event) => {
-    if (
-      event.data &&
-      event.data.type ===
-        "SKIP_WAITING"
-    ) {
-      self.skipWaiting();
+
+self.addEventListener("message", event => {
+    if (event.data?.type === "SKIP_WAITING") {
+        self.skipWaiting();
     }
-  }
-);
+});
 
-self.addEventListener(
-  "activate",
-  (event) => {
+self.addEventListener("activate", event => {
     event.waitUntil(
-      caches
-        .keys()
-        .then(
-          (keys) =>
-            Promise.all(
-              keys
-                .filter(
-                  (key) =>
-                    key !==
-                    STATIC_CACHE
-                )
-                .map(
-                  (key) =>
-                    caches.delete(
-                      key
-                    )
-                )
-            )
-        )
-        .then(
-          () =>
-            self.clients.claim()
-        )
+        caches.keys()
+            .then(keys => Promise.all(
+                keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
+            ))
+            .then(() => self.clients.claim())
     );
-  }
-);
+});
 
-self.addEventListener(
-  "fetch",
-  (event) => {
-    const request =
-      event.request;
+self.addEventListener("fetch", event => {
+    const requestUrl = new URL(event.request.url);
 
-    const url =
-      new URL(
-        request.url
-      );
+    if (event.request.method !== "GET") return;
 
-    // Never intercept Google OAuth, People API,
-    // or any other cross-origin request.
-    if (
-      url.origin !==
-      self.location.origin
-    ) {
-      return;
+    if (requestUrl.origin !== self.location.origin) {
+        event.respondWith(fetch(event.request));
+        return;
     }
 
-    if (
-      request.method !==
-      "GET"
-    ) {
-      return;
-    }
-
-    // Navigation stays network-first and is upgraded to v5.3.0.
-    if (
-      request.mode ===
-      "navigate"
-    ) {
-      event.respondWith(
-        fetch(request)
-          .then(
-            upgradedHtmlResponse
-          )
-          .catch(
-            async () => {
-              const cached =
-                await caches.match(
-                  "./index.html"
-                );
-
-              return cached
-                ? upgradedHtmlResponse(
-                    cached
-                  )
-                : cached;
-            }
-          )
-      );
-
-      return;
-    }
-
-    // Update checks may request index.html through fetch(), not navigation.
-    // Transform those responses too so the built-in updater sees v5.3.0.
-    if (
-      url.pathname.endsWith(
-        "/index.html"
-      ) ||
-      url.pathname.endsWith(
-        "/"
-      )
-    ) {
-      event.respondWith(
-        fetch(request)
-          .then(
-            upgradedHtmlResponse
-          )
-          .catch(
-            async () => {
-              const cached =
-                await caches.match(
-                  "./index.html"
-                );
-
-              return cached
-                ? upgradedHtmlResponse(
-                    cached
-                  )
-                : cached;
-            }
-          )
-      );
-
-      return;
+    if (event.request.mode === "navigate") {
+        event.respondWith(
+            fetch(event.request)
+                .then(networkResponse => {
+                    if (networkResponse && networkResponse.status === 200) {
+                        const clone = networkResponse.clone();
+                        caches.open(CACHE_NAME).then(cache => cache.put("./index.html", clone));
+                    }
+                    return networkResponse;
+                })
+                .catch(() => caches.match("./index.html"))
+        );
+        return;
     }
 
     event.respondWith(
-      caches
-        .match(
-          request
-        )
-        .then(
-          (cached) => {
-            if (cached) {
-              return cached;
-            }
+        caches.match(event.request).then(cachedResponse => {
+            if (cachedResponse) return cachedResponse;
 
-            return fetch(
-              request
-            ).then(
-              (response) => {
-                const pathname =
-                  url.pathname.toLowerCase();
-
-                const isStatic =
-                  pathname.endsWith(
-                    ".png"
-                  ) ||
-                  pathname.endsWith(
-                    ".webmanifest"
-                  ) ||
-                  pathname.endsWith(
-                    ".html"
-                  ) ||
-                  pathname.endsWith(
-                    ".js"
-                  );
-
-                if (
-                  isStatic &&
-                  response.ok
-                ) {
-                  const copy =
-                    response.clone();
-
-                  caches
-                    .open(
-                      STATIC_CACHE
-                    )
-                    .then(
-                      (cache) =>
-                        cache.put(
-                          request,
-                          copy
-                        )
-                    );
+            return fetch(event.request).then(networkResponse => {
+                if (!networkResponse || networkResponse.status !== 200) {
+                    return networkResponse;
                 }
 
-                return response;
-              }
-            );
-          }
-        )
+                const responseClone = networkResponse.clone();
+                caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone));
+                return networkResponse;
+            });
+        })
     );
-  }
-);
+});
+
+self.addEventListener("notificationclick", event => {
+    event.notification.close();
+    const targetUrl = new URL(event.notification.data?.url || "./", self.location.href).href;
+
+    event.waitUntil(
+        clients.matchAll({ type: "window", includeUncontrolled: true }).then(windowClients => {
+            for (const client of windowClients) {
+                if (client.url.startsWith(self.location.origin) && "focus" in client) {
+                    client.navigate(targetUrl);
+                    return client.focus();
+                }
+            }
+            return clients.openWindow ? clients.openWindow(targetUrl) : undefined;
+        })
+    );
+});
