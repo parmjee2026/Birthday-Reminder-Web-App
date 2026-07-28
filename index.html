@@ -16,7 +16,7 @@
   >
   <meta
     name="app-build"
-    content="privacy-first-device-v5.3.1-embedded-app-suite"
+    content="privacy-first-device-v5.3.2-embedded-app-suite"
   >
   <title>Birthday Reminder — Privacy First</title>
 
@@ -28,7 +28,7 @@
 
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="stylesheet" href="embedded-suite.css?v=531">
-  <script src="embedded-suite.js?v=531" defer></script>
+  <script src="embedded-suite.js?v=532" defer></script>
   <link rel="icon" href="./icon-192.png" sizes="192x192">
   <link rel="apple-touch-icon" href="./icon-192.png">
 
@@ -3467,7 +3467,7 @@
         <div class="brand-mark">🎂</div>
         <div>
           <strong>Birthday Reminder</strong>
-          <small>Private Device v5.3.1</small>
+          <small>Private Device v5.3.2</small>
         </div>
       </div>
 
@@ -4203,11 +4203,11 @@
             <article class="privacy-card settings-card app-update-card">
               <h3>App Updates</h3>
               <p id="appVersionText">
-                Birthday Reminder v5.3.1
+                Birthday Reminder v5.3.2
               </p>
 
               <small class="settings-helper-text">
-                Build: v5.3.1 · Personal Apps Home
+                Build: v5.3.2 · Profile Header Fix
               </small>
 
               <button
@@ -4514,10 +4514,10 @@
       "https://www.googleapis.com/auth/contacts.readonly";
 
     const APP_VERSION =
-      "5.3.1";
+      "5.3.2";
 
     const SERVICE_WORKER_URL =
-      "./sw.js?v=5.3.1";
+      "./sw.js?v=5.3.2";
 
     const state = {
       accessToken: "",
@@ -6438,7 +6438,7 @@
                 "birthday-reminder-static-"
               ) &&
               key !==
-                "birthday-reminder-static-v5.3.1"
+                "birthday-reminder-static-v5.3.2"
           );
 
         await Promise.all(

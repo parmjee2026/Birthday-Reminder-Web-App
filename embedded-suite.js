@@ -60,7 +60,37 @@
       console.warn("Birthday profile could not be read:", error);
     }
 
+    let liveName = "";
+    let liveStatus = "";
+    let livePhotoUrl = "";
+
+    try {
+      if (
+        typeof state !== "undefined" &&
+        state
+      ) {
+        liveName =
+          usableName(state.userName);
+
+        liveStatus =
+          String(
+            state.userStatus || ""
+          ).trim();
+
+        livePhotoUrl =
+          String(
+            state.profilePhotoUrl || ""
+          ).trim();
+      }
+    } catch (error) {
+      console.warn(
+        "Live Birthday profile could not be read:",
+        error
+      );
+    }
+
     const name =
+      liveName ||
       usableName(profile.name) ||
       usableName(
         textFrom([
@@ -68,24 +98,23 @@
           "#dashboardWelcome"
         ])
       ) ||
-      "Guest";
+      "Welcome back";
 
     const status =
+      liveStatus ||
       String(profile.status || "").trim() ||
       textFrom([
         "#topUserStatus",
         "#sidebarUserStatus"
       ]) ||
-      (
-        name === "Guest"
-          ? "Choose an app to continue"
-          : "Private Google Contacts"
-      );
+      "Private Google Contacts";
 
     return {
       name,
       status,
-      avatarSource: document.getElementById("topProfileCircle")
+      photoUrl: livePhotoUrl,
+      avatarSource:
+        document.getElementById("topProfileCircle")
     };
   }
 
@@ -140,12 +169,16 @@
     if (!avatar) return;
 
     let backgroundImage = "";
-    let imageSource = "";
+    let imageSource =
+      String(identity.photoUrl || "").trim();
 
     const source = identity.avatarSource;
 
     if (source) {
-      if (source instanceof HTMLImageElement) {
+      if (
+        source instanceof HTMLImageElement &&
+        !imageSource
+      ) {
         imageSource =
           source.currentSrc ||
           source.src ||
@@ -190,8 +223,88 @@
     avatar.classList.remove("has-photo");
   }
 
-  function updatePersonalHeader() {
+  let birthdayPhotoObjectUrl = "";
+
+  async function loadBirthdayPhotoFromIndexedDB() {
+    if (
+      current !== "birthday" ||
+      birthdayPhotoObjectUrl
+    ) {
+      return birthdayPhotoObjectUrl;
+    }
+
+    if (!("indexedDB" in window)) {
+      return "";
+    }
+
+    try {
+      const db = await new Promise(
+        (resolve, reject) => {
+          const request = indexedDB.open(
+            "BirthdayReminderPrivateDevice",
+            1
+          );
+
+          request.onsuccess = () =>
+            resolve(request.result);
+
+          request.onerror = () =>
+            reject(request.error);
+        }
+      );
+
+      const record = await new Promise(
+        (resolve, reject) => {
+          const transaction =
+            db.transaction(
+              "cache",
+              "readonly"
+            );
+
+          const request =
+            transaction
+              .objectStore("cache")
+              .get("profilePhoto");
+
+          request.onsuccess = () =>
+            resolve(request.result || null);
+
+          request.onerror = () =>
+            reject(request.error);
+        }
+      );
+
+      db.close();
+
+      if (
+        record?.blob instanceof Blob
+      ) {
+        birthdayPhotoObjectUrl =
+          URL.createObjectURL(record.blob);
+      }
+
+      return birthdayPhotoObjectUrl;
+    } catch (error) {
+      console.warn(
+        "Birthday profile photo fallback could not be loaded:",
+        error
+      );
+
+      return "";
+    }
+  }
+
+
+  async function updatePersonalHeader() {
     const identity = readIdentity();
+
+    if (
+      current === "birthday" &&
+      !identity.photoUrl
+    ) {
+      identity.photoUrl =
+        await loadBirthdayPhotoFromIndexedDB();
+    }
 
     const nameElement =
       document.getElementById("embeddedSuiteUserName");
@@ -532,6 +645,35 @@
     }
 
     updatePersonalHeader();
+
+    const profileTargets = [
+      document.getElementById("topProfileCircle"),
+      document.getElementById("sidebarUserName"),
+      document.getElementById("sidebarUserStatus"),
+      document.getElementById("topUserStatus")
+    ].filter(Boolean);
+
+    if (
+      profileTargets.length &&
+      "MutationObserver" in window
+    ) {
+      const profileObserver =
+        new MutationObserver(
+          updatePersonalHeader
+        );
+
+      profileTargets.forEach((target) => {
+        profileObserver.observe(
+          target,
+          {
+            attributes: true,
+            childList: true,
+            characterData: true,
+            subtree: true
+          }
+        );
+      });
+    }
 
     window.setInterval(
       updatePersonalHeader,
