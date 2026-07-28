@@ -3,7 +3,7 @@
   "name": "Birthday Reminder",
   "short_name": "Birthdays",
   "description": "Privacy-first birthday reminder using temporary browser memory.",
-  "start_url": "./?source=pwa&v=5.2.2",
+  "start_url": "./?source=pwa&v=5.3.0",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f6f7fb",
@@ -35,5 +35,8 @@
       "short_name": "Birthdays",
       "url": "./?source=pwa#birthdays"
     }
-  ]
+  ],
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
 }

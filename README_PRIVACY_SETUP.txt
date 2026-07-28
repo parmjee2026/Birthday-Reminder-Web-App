@@ -1,3 +1,9 @@
+V5.3.0 CURRENT ARCHITECTURE NOTICE
+==================================
+My App Suite is now embedded inside Birthday Reminder and Naam Jaap.
+Any older README sections mentioning a separate My App Suite launcher are historical only.
+Use the embedded launcher and archive the old launcher repository only after both apps are verified.
+
 V4.0 ORANGE MOBILE APP UI
 -------------------------
 UI redesigned to match the supplied orange mobile-app reference.
@@ -411,7 +417,7 @@ Open:
 https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=5.2.1
 
 
-V5.2.2 PRIVACY NOTICE IN SETTINGS
+V5.3.0 PRIVACY NOTICE IN SETTINGS
 =================================
 
 UI refinement:
@@ -434,4 +440,82 @@ No privacy architecture change:
 - Device persistence remains optional.
 
 Open:
-https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=5.2.2
+https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=5.3.0
+
+
+V5.3.0 APP SUITE NAVIGATION
+===========================
+
+Phase 2 soft-merge navigation has been added.
+
+Settings > App & More > My Apps now includes:
+- My App Suite
+  [retired separate launcher — My App Suite is now embedded]
+- Naam Jaap Counter
+  https://parmeshwarbtpl-rgb.github.io/japa-counter/
+
+Architecture remains separate:
+- Birthday Reminder Google Contacts permission remains read-only.
+- No shared database has been added.
+- No Naam Jaap activity is read by Birthday Reminder.
+- Links open as separate apps with noopener/noreferrer protection.
+
+Deploy/test:
+https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=5.3.0
+
+
+V5.3.0 COMMON APP SUITE BRANDING
+================================
+Branding-only Phase 3 update.
+
+Settings > App & More > My Apps:
+- shows "Part of My App Suite"
+- marks My App Suite as the common home
+- keeps Naam Jaap Counter as the direct related app
+
+No changes to:
+- contacts.readonly OAuth scope
+- Google People API behaviour
+- IndexedDB/localStorage data model
+- backup/calendar logic
+- contact editing
+- service-worker cross-origin privacy rules
+
+Central home:
+[retired separate launcher — My App Suite is now embedded]
+
+V5.3.0 APP LAUNCH FIX
+=====================
+- My App Suite and Naam Jaap links no longer force target="_blank".
+- WhatsApp/external action links are unchanged.
+- Added PWA launch_handler navigate-existing.
+- contacts.readonly and privacy/data architecture unchanged.
+
+
+V5.3.0 HEADER APP SWITCHER
+==========================
+A compact Apps icon (▦) is now available in the Birthday Reminder header.
+
+Tap it to open a bottom sheet:
+- Birthday Reminder — Current
+- Naam Jaap Counter
+- My App Suite
+
+The header contains no app URL or long app-link text.
+Switching uses the same browsing context; target=_blank is not used.
+Google Contacts remains read-only and all privacy/storage architecture is unchanged.
+
+Test:
+https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=5.3.0
+
+
+V5.3.0 — EMBEDDED MY APP SUITE
+==============================
+- My App Suite is now the first screen inside Birthday Reminder.
+- Header ▦ reopens the same launcher.
+- Login screen gets a My Apps button.
+- The separate My App Suite URL is removed from this build.
+- Cross-app switch opens Naam Jaap with ?enter=1, then the target cleans that parameter.
+- contacts.readonly and all privacy/storage logic remain unchanged.
+
+Archive the old my-app-suite repository only after both apps are tested.

@@ -16,7 +16,7 @@
   >
   <meta
     name="app-build"
-    content="privacy-first-device-v5.2.2-privacy-notice-settings"
+    content="privacy-first-device-v5.3.0-embedded-app-suite"
   >
   <title>Birthday Reminder — Privacy First</title>
 
@@ -27,6 +27,8 @@
   <meta name="apple-mobile-web-app-title" content="Birthday Reminder">
 
   <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="embedded-suite.css?v=530">
+  <script src="embedded-suite.js?v=530" defer></script>
   <link rel="icon" href="./icon-192.png" sizes="192x192">
   <link rel="apple-touch-icon" href="./icon-192.png">
 
@@ -2245,6 +2247,65 @@
     }
 
 
+
+    .suite-ecosystem-strip {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 2px;
+      border: 1px solid #f3d5b2;
+      border-radius: 14px;
+      padding: 10px 11px;
+      background: linear-gradient(135deg, #fff8ef, #ffffff);
+    }
+
+    .suite-ecosystem-mark {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border-radius: 11px;
+      background: linear-gradient(135deg, #ff7100, #ff8d00);
+      color: #fff;
+      font-weight: 950;
+    }
+
+    .suite-ecosystem-copy strong,
+    .suite-ecosystem-copy small {
+      display: block;
+    }
+
+    .suite-ecosystem-copy strong {
+      color: var(--orange-deep);
+      font-size: 11px;
+    }
+
+    .suite-ecosystem-copy small {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 8.5px;
+      line-height: 1.35;
+    }
+
+    .related-app-card.suite-home-card {
+      border-color: #efbb79;
+      background: linear-gradient(135deg, #fff4e5, #ffffff);
+    }
+
+    .related-app-card.suite-home-card .related-app-copy strong::after {
+      content: "Common Home";
+      display: inline-flex;
+      margin-left: 6px;
+      border-radius: 999px;
+      padding: 2px 5px;
+      background: #ffe2bf;
+      color: #a94c00;
+      font-size: 6.5px;
+      font-weight: 950;
+      vertical-align: 1px;
+    }
+
     .more-apps-card {
       gap: 10px;
     }
@@ -3041,7 +3102,239 @@
       line-height: 1.5;
     }
 
-  </style>
+  
+    /* Phase 3.2 — compact app switcher */
+    .app-switcher-button {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, .72);
+      border-radius: 13px;
+      background: rgba(255, 255, 255, .96);
+      color: var(--orange-deep);
+      font-size: 21px;
+      font-weight: 900;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow: 0 5px 14px rgba(165, 71, 0, .12);
+    }
+
+    .app-switcher-button:hover,
+    .app-switcher-button:focus-visible {
+      background: #ffffff;
+      outline: 3px solid rgba(255, 255, 255, .25);
+      outline-offset: 2px;
+    }
+
+    .app-switcher-layer[hidden] {
+      display: none !important;
+    }
+
+    .app-switcher-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 10080;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .app-switcher-overlay {
+      position: absolute;
+      inset: 0;
+      border: 0;
+      background: rgba(17, 24, 39, .52);
+      backdrop-filter: blur(2px);
+    }
+
+    .app-switcher-sheet {
+      position: relative;
+      z-index: 1;
+      width: min(100%, 520px);
+      max-height: min(82vh, 620px);
+      overflow-y: auto;
+      border-radius: 24px 24px 0 0;
+      padding: 10px 16px calc(18px + env(safe-area-inset-bottom));
+      background: #ffffff;
+      box-shadow: 0 -18px 46px rgba(0, 0, 0, .22);
+      animation: appSwitcherUp .2s ease-out;
+    }
+
+    .app-switcher-handle {
+      width: 44px;
+      height: 5px;
+      margin: 0 auto 13px;
+      border-radius: 999px;
+      background: #d9dce1;
+    }
+
+    .app-switcher-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 13px;
+    }
+
+    .app-switcher-heading h3,
+    .app-switcher-heading p {
+      margin: 0;
+    }
+
+    .app-switcher-heading h3 {
+      font-size: 18px;
+    }
+
+    .app-switcher-heading p {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.4;
+    }
+
+    .app-switcher-close {
+      display: grid;
+      width: 36px;
+      height: 36px;
+      flex: 0 0 36px;
+      place-items: center;
+      border: 0;
+      border-radius: 50%;
+      background: #f1f3f6;
+      color: #343941;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .app-switcher-options {
+      display: grid;
+      gap: 9px;
+    }
+
+    .app-switcher-option {
+      display: grid;
+      grid-template-columns: 46px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 11px;
+      min-height: 68px;
+      width: 100%;
+      border: 1px solid #e5e8ed;
+      border-radius: 16px;
+      padding: 10px 12px;
+      background: #ffffff;
+      color: inherit;
+      text-align: left;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .app-switcher-option:hover,
+    .app-switcher-option:focus-visible {
+      border-color: var(--orange-border);
+      background: #fff9f3;
+      outline: none;
+    }
+
+    .app-switcher-option.current {
+      border-color: #efc38e;
+      background: #fff6ec;
+      cursor: default;
+    }
+
+    .app-switcher-option-icon {
+      display: grid;
+      width: 46px;
+      height: 46px;
+      place-items: center;
+      border-radius: 14px;
+      background: var(--orange-soft);
+      font-size: 23px;
+    }
+
+    .app-switcher-option-copy strong,
+    .app-switcher-option-copy small {
+      display: block;
+    }
+
+    .app-switcher-option-copy strong {
+      font-size: 12px;
+    }
+
+    .app-switcher-option-copy small {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.35;
+    }
+
+    .app-switcher-state {
+      border-radius: 999px;
+      padding: 4px 7px;
+      background: #ffe4c5;
+      color: #a84b00;
+      font-size: 7px;
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    .app-switcher-arrow {
+      color: var(--orange-deep);
+      font-size: 19px;
+      font-weight: 900;
+    }
+
+    .app-switcher-note {
+      margin: 12px 2px 0;
+      color: var(--muted);
+      font-size: 8.5px;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    @keyframes appSwitcherUp {
+      from { transform: translateY(100%); opacity: .75; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @media (min-width: 700px) {
+      .app-switcher-layer {
+        align-items: center;
+        padding: 18px;
+      }
+
+      .app-switcher-sheet {
+        border-radius: 24px;
+        padding-bottom: 18px;
+      }
+    }
+
+    @media (max-width: 820px) {
+      .app-switcher-button {
+        width: 38px;
+        height: 38px;
+        flex-basis: 38px;
+        border-radius: 11px;
+        font-size: 19px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .app-switcher-button {
+        width: 36px;
+        height: 36px;
+        flex-basis: 36px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .app-switcher-sheet {
+        animation: none;
+      }
+    }
+
+</style>
 </head>
 <body>
   <section id="loginPage" class="login-page">
@@ -3174,7 +3467,7 @@
         <div class="brand-mark">🎂</div>
         <div>
           <strong>Birthday Reminder</strong>
-          <small>Private Device v5.2.2</small>
+          <small>Private Device v5.3.0</small>
         </div>
       </div>
 
@@ -3271,6 +3564,18 @@
             ></span>
             <span class="sync-label-desktop">↻ Sync All Contacts</span>
             <span class="sync-label-mobile">↻ Sync</span>
+          </button>
+
+          <button
+            id="appSwitcherButton"
+            class="app-switcher-button"
+            type="button"
+            aria-label="Switch app"
+            aria-haspopup="dialog"
+            aria-expanded="false"
+            title="Switch app"
+          >
+            <span aria-hidden="true">▦</span>
           </button>
 
           <div
@@ -3898,11 +4203,11 @@
             <article class="privacy-card settings-card app-update-card">
               <h3>App Updates</h3>
               <p id="appVersionText">
-                Birthday Reminder v5.2.2
+                Birthday Reminder v5.3.0
               </p>
 
               <small class="settings-helper-text">
-                Build: v5.2.2 · Privacy Notice in Settings
+                Build: v5.3.0 · Embedded My App Suite
               </small>
 
               <button
@@ -3914,13 +4219,35 @@
               </button>
             </article>
             <article class="privacy-card settings-card more-apps-card">
-              <h3>More Apps</h3>
+              <h3>My Apps</h3>
+
+              <div class="suite-ecosystem-strip">
+                <div class="suite-ecosystem-mark">✦</div>
+                <div class="suite-ecosystem-copy">
+                  <strong>Part of My App Suite</strong>
+                  <small>Common navigation. Independent login, permissions and data.</small>
+                </div>
+              </div>
+
+              <a
+                class="related-app-card suite-home-card"
+                href="#"
+                aria-label="Open My App Suite"
+              >
+                <div class="related-app-icon">🏠</div>
+
+                <div class="related-app-copy">
+                  <strong>My App Suite</strong>
+                  <span>Open the common home for your personal apps</span>
+                </div>
+
+                <span class="related-app-arrow">→</span>
+              </a>
 
               <a
                 class="related-app-card"
                 href="https://parmeshwarbtpl-rgb.github.io/japa-counter/"
-                target="_blank"
-                rel="noopener noreferrer"
+                aria-label="Open Naam Jaap Counter"
               >
                 <div class="related-app-icon">ॐ</div>
 
@@ -4210,10 +4537,10 @@
       "https://www.googleapis.com/auth/contacts.readonly";
 
     const APP_VERSION =
-      "5.2.2";
+      "5.3.0";
 
     const SERVICE_WORKER_URL =
-      "./sw.js?v=5.2.2";
+      "./sw.js?v=5.3.0";
 
     const state = {
       accessToken: "",
@@ -6134,7 +6461,7 @@
                 "birthday-reminder-static-"
               ) &&
               key !==
-                "birthday-reminder-static-v5.2.2"
+                "birthday-reminder-static-v5.3.0"
           );
 
         await Promise.all(
@@ -10970,5 +11297,138 @@
       );
     }
   </script>
+
+  <div
+    id="appSwitcherLayer"
+    class="app-switcher-layer"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="appSwitcherTitle"
+    hidden
+  >
+    <button
+      class="app-switcher-overlay"
+      type="button"
+      data-close-app-switcher
+      aria-label="Close app switcher"
+    ></button>
+
+    <div class="app-switcher-sheet">
+      <div class="app-switcher-handle" aria-hidden="true"></div>
+
+      <div class="app-switcher-heading">
+        <div>
+          <h3 id="appSwitcherTitle">Switch App</h3>
+          <p>Move between your apps without mixing their data.</p>
+        </div>
+
+        <button
+          id="appSwitcherClose"
+          class="app-switcher-close"
+          type="button"
+          aria-label="Close app switcher"
+        >×</button>
+      </div>
+
+      <div class="app-switcher-options">
+        <div
+          class="app-switcher-option current"
+          aria-current="page"
+        >
+          <span class="app-switcher-option-icon" aria-hidden="true">🎂</span>
+          <span class="app-switcher-option-copy">
+            <strong>Birthday Reminder</strong>
+            <small>Birthdays, contacts, wishes and calendar</small>
+          </span>
+          <span class="app-switcher-state">Current</span>
+        </div>
+
+        <a
+          class="app-switcher-option"
+          href="https://parmeshwarbtpl-rgb.github.io/japa-counter/"
+          data-switch-app
+        >
+          <span class="app-switcher-option-icon" aria-hidden="true">ॐ</span>
+          <span class="app-switcher-option-copy">
+            <strong>Naam Jaap Counter</strong>
+            <small>Mantra counting, goals and history</small>
+          </span>
+          <span class="app-switcher-arrow" aria-hidden="true">→</span>
+        </a>
+
+        <a
+          class="app-switcher-option"
+          href="#"
+          data-switch-app
+        >
+          <span class="app-switcher-option-icon" aria-hidden="true">🏠</span>
+          <span class="app-switcher-option-copy">
+            <strong>My App Suite</strong>
+            <small>Open the common home for your apps</small>
+          </span>
+          <span class="app-switcher-arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+
+      <p class="app-switcher-note">
+        Each app keeps its own login, permissions and stored data.
+      </p>
+    </div>
+  </div>
+
+
+  <script>
+    (() => {
+      const button = document.getElementById("appSwitcherButton");
+      const layer = document.getElementById("appSwitcherLayer");
+      const closeButton = document.getElementById("appSwitcherClose");
+      const overlay = layer?.querySelector("[data-close-app-switcher]");
+      const switchLinks = layer?.querySelectorAll("[data-switch-app]") || [];
+      let previousFocus = null;
+
+      if (!button || !layer || !closeButton) return;
+
+      function openSwitcher() {
+        previousFocus = document.activeElement;
+        layer.hidden = false;
+        button.setAttribute("aria-expanded", "true");
+        document.body.style.overflow = "hidden";
+        window.requestAnimationFrame(() => closeButton.focus());
+      }
+
+      function closeSwitcher() {
+        layer.hidden = true;
+        button.setAttribute("aria-expanded", "false");
+        document.body.style.overflow = "";
+
+        if (previousFocus instanceof HTMLElement) {
+          previousFocus.focus();
+        } else {
+          button.focus();
+        }
+      }
+
+      button.addEventListener("click", openSwitcher);
+      closeButton.addEventListener("click", closeSwitcher);
+      overlay?.addEventListener("click", closeSwitcher);
+
+      switchLinks.forEach((link) => {
+        // Same browsing context: do not force an external/custom-tab header.
+        link.removeAttribute("target");
+        link.removeAttribute("rel");
+        link.addEventListener("click", () => {
+          layer.hidden = true;
+          document.body.style.overflow = "";
+        });
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && !layer.hidden) {
+          closeSwitcher();
+        }
+      });
+    })();
+  </script>
+
 </body>
 </html>

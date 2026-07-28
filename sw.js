@@ -1,9 +1,11 @@
-const STATIC_CACHE = "birthday-reminder-static-v5.2.2";
+const STATIC_CACHE = "birthday-reminder-static-v5.3.0";
 
 const STATIC_ASSETS = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
+  "./embedded-suite.css?v=530",
+  "./embedded-suite.js?v=530",
   "./icon-192.png",
   "./icon-512.png"
 ];
