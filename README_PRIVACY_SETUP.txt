@@ -1,4 +1,4 @@
-V5.3.0 CURRENT ARCHITECTURE NOTICE
+V5.3.1 CURRENT ARCHITECTURE NOTICE
 ==================================
 My App Suite is now embedded inside Birthday Reminder and Naam Jaap.
 Any older README sections mentioning a separate My App Suite launcher are historical only.
@@ -417,7 +417,7 @@ Open:
 https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=5.2.1
 
 
-V5.3.0 PRIVACY NOTICE IN SETTINGS
+V5.3.1 PRIVACY NOTICE IN SETTINGS
 =================================
 
 UI refinement:
@@ -440,10 +440,10 @@ No privacy architecture change:
 - Device persistence remains optional.
 
 Open:
-https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=5.3.0
+https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=5.3.1
 
 
-V5.3.0 APP SUITE NAVIGATION
+V5.3.1 APP SUITE NAVIGATION
 ===========================
 
 Phase 2 soft-merge navigation has been added.
@@ -461,10 +461,10 @@ Architecture remains separate:
 - Links open as separate apps with noopener/noreferrer protection.
 
 Deploy/test:
-https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=5.3.0
+https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=5.3.1
 
 
-V5.3.0 COMMON APP SUITE BRANDING
+V5.3.1 COMMON APP SUITE BRANDING
 ================================
 Branding-only Phase 3 update.
 
@@ -484,7 +484,7 @@ No changes to:
 Central home:
 [retired separate launcher — My App Suite is now embedded]
 
-V5.3.0 APP LAUNCH FIX
+V5.3.1 APP LAUNCH FIX
 =====================
 - My App Suite and Naam Jaap links no longer force target="_blank".
 - WhatsApp/external action links are unchanged.
@@ -492,7 +492,7 @@ V5.3.0 APP LAUNCH FIX
 - contacts.readonly and privacy/data architecture unchanged.
 
 
-V5.3.0 HEADER APP SWITCHER
+V5.3.1 HEADER APP SWITCHER
 ==========================
 A compact Apps icon (▦) is now available in the Birthday Reminder header.
 
@@ -506,10 +506,10 @@ Switching uses the same browsing context; target=_blank is not used.
 Google Contacts remains read-only and all privacy/storage architecture is unchanged.
 
 Test:
-https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=5.3.0
+https://parmjee2026.github.io/Birthday-Reminder-Web-App/?v=5.3.1
 
 
-V5.3.0 — EMBEDDED MY APP SUITE
+V5.3.1 — EMBEDDED MY APP SUITE
 ==============================
 - My App Suite is now the first screen inside Birthday Reminder.
 - Header ▦ reopens the same launcher.

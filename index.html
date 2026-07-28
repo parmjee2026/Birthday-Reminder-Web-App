@@ -16,7 +16,7 @@
   >
   <meta
     name="app-build"
-    content="privacy-first-device-v5.3.0-embedded-app-suite"
+    content="privacy-first-device-v5.3.1-embedded-app-suite"
   >
   <title>Birthday Reminder — Privacy First</title>
 
@@ -27,8 +27,8 @@
   <meta name="apple-mobile-web-app-title" content="Birthday Reminder">
 
   <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="stylesheet" href="embedded-suite.css?v=530">
-  <script src="embedded-suite.js?v=530" defer></script>
+  <link rel="stylesheet" href="embedded-suite.css?v=531">
+  <script src="embedded-suite.js?v=531" defer></script>
   <link rel="icon" href="./icon-192.png" sizes="192x192">
   <link rel="apple-touch-icon" href="./icon-192.png">
 
@@ -3467,7 +3467,7 @@
         <div class="brand-mark">🎂</div>
         <div>
           <strong>Birthday Reminder</strong>
-          <small>Private Device v5.3.0</small>
+          <small>Private Device v5.3.1</small>
         </div>
       </div>
 
@@ -4203,11 +4203,11 @@
             <article class="privacy-card settings-card app-update-card">
               <h3>App Updates</h3>
               <p id="appVersionText">
-                Birthday Reminder v5.3.0
+                Birthday Reminder v5.3.1
               </p>
 
               <small class="settings-helper-text">
-                Build: v5.3.0 · Embedded My App Suite
+                Build: v5.3.1 · Personal Apps Home
               </small>
 
               <button
@@ -4218,47 +4218,24 @@
                 ↻ Check for Updates
               </button>
             </article>
+            
             <article class="privacy-card settings-card more-apps-card">
-              <h3>My Apps</h3>
+              <h3>App Switcher</h3>
 
-              <div class="suite-ecosystem-strip">
-                <div class="suite-ecosystem-mark">✦</div>
-                <div class="suite-ecosystem-copy">
-                  <strong>Part of My App Suite</strong>
-                  <small>Common navigation. Independent login, permissions and data.</small>
-                </div>
-              </div>
+              <p>
+                Open Birthday Reminder or Naam Jaap Counter from one screen.
+                Their data remains separate.
+              </p>
 
-              <a
-                class="related-app-card suite-home-card"
-                href="#"
-                aria-label="Open My App Suite"
+              <button
+                class="orange-action-button embedded-suite-settings-button"
+                type="button"
+                data-open-embedded-suite
               >
-                <div class="related-app-icon">🏠</div>
-
-                <div class="related-app-copy">
-                  <strong>My App Suite</strong>
-                  <span>Open the common home for your personal apps</span>
-                </div>
-
-                <span class="related-app-arrow">→</span>
-              </a>
-
-              <a
-                class="related-app-card"
-                href="https://parmeshwarbtpl-rgb.github.io/japa-counter/"
-                aria-label="Open Naam Jaap Counter"
-              >
-                <div class="related-app-icon">ॐ</div>
-
-                <div class="related-app-copy">
-                  <strong>Naam Jaap Counter</strong>
-                  <span>Open your mantra counting app</span>
-                </div>
-
-                <span class="related-app-arrow">→</span>
-              </a>
+                ▦ Open Your Apps
+              </button>
             </article>
+
             <article class="privacy-card settings-card">
               <h3>Share Birthday Reminder</h3>
               <p>
@@ -4537,10 +4514,10 @@
       "https://www.googleapis.com/auth/contacts.readonly";
 
     const APP_VERSION =
-      "5.3.0";
+      "5.3.1";
 
     const SERVICE_WORKER_URL =
-      "./sw.js?v=5.3.0";
+      "./sw.js?v=5.3.1";
 
     const state = {
       accessToken: "",
@@ -6461,7 +6438,7 @@
                 "birthday-reminder-static-"
               ) &&
               key !==
-                "birthday-reminder-static-v5.3.0"
+                "birthday-reminder-static-v5.3.1"
           );
 
         await Promise.all(
